@@ -20,7 +20,7 @@ const Schema = z.object({
   META_API_BASE_URL: z.url().default("https://api.meta.ai/v1"),
   BASETEN_API_KEY: z.string().min(1).optional(),
   BASETEN_BASE_URL: z.url().default("https://inference.baseten.co/v1"),
-  BASETEN_MODEL: z.string().min(1).default("meta-models/muse-spark-open-1026"),
+  BASETEN_MODEL: z.string().min(1).default("meta-models/muse-spark-open"),
   FAL_KEY: z.string().min(1).optional(),
 
   NEXT_PUBLIC_SUPABASE_URL: z.url().optional(),
