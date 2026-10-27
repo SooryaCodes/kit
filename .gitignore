@@ -37,3 +37,7 @@ yarn-debug.log*
 pnpm-debug.log*
 .idea/
 .vscode/
+
+# Spike output (generated locally)
+/public/spike/
+/spike-report.json
