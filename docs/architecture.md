@@ -2,12 +2,12 @@
 
 ## User flow
 
-1. **Home** — choose a template (Bag, Desk, Fit, Collection, Seller Drop)
-2. **Upload** — one photo
-3. **Detect** — items outlined on the photo; tap to remove / add; confirm
-4. **Build** — items lift into 3D one by one with live progress
-5. **Studio** — 3D scene, editable labels (name, brand, price, link), animation preset, themed world
-6. **Export** — 1080×1920 MP4 + shareable interactive 3D page
+1. **Home**: choose a template (Bag, Desk, Fit, Collection, Seller Drop)
+2. **Upload**: one photo
+3. **Detect**: items outlined on the photo; tap to remove / add; confirm
+4. **Build**: items lift into 3D one by one with live progress
+5. **Studio**: 3D scene, editable labels (name, brand, price, link), animation preset, themed world
+6. **Export**: 1080×1920 MP4 + shareable interactive 3D page
 
 ## Pipeline
 

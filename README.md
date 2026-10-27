@@ -2,7 +2,7 @@
 
 **Photograph your stuff. Get a 3D Reel.**
 
-Kit turns one phone photo of your things — what's in your bag, your desk setup, your outfit, your collection, or a seller's products — into an animated 3D showcase. Every item is detected, cut out, rebuilt as a textured 3D model, identified and labelled, then animated and exported as a vertical video in under a minute.
+Kit turns one phone photo of your things into an animated 3D showcase: what's in your bag, your desk setup, your outfit, your collection, or a seller's products. Every item is detected, cut out, rebuilt as a textured 3D model, identified and labelled, then animated and exported as a vertical video in under a minute.
 
 > Status: in active development.
 
