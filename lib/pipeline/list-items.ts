@@ -7,7 +7,8 @@ import type OpenAI from "openai";
 import { baseten, basetenModel } from "../baseten";
 import { cached, hash } from "../cache";
 import { tokenCost, type TokenUsage } from "../cost";
-import { hasEnv } from "../env";
+import { BudgetError, paid, type JobBudget } from "../budget";
+import { hasSecret } from "../env";
 import { createLogger, errorMessage } from "../log";
 import { META_MODELS, meta } from "../meta";
 import type { Photo } from "./photo";
@@ -78,6 +79,10 @@ export interface ListResult {
 
 type Lister = "open" | "spark";
 
+const MAX_TOKENS = 12_000;
+// worst case: ~3k input tokens (image + prompt) and every output token used
+const ESTIMATE_USD = (3_000 * 1.25 + MAX_TOKENS * 4.25) / 1_000_000;
+
 function toPixels(box: z.infer<typeof NormBox>, w: number, h: number): PixelBox {
   const x1 = Math.min(box.x_min, box.x_max);
   const x2 = Math.max(box.x_min, box.x_max);
@@ -131,7 +136,7 @@ async function callOpen(photo: Photo, retryNote?: string) {
     ],
     tool_choice: { type: "function", function: { name: "report_items" } },
     temperature: 0.2,
-    max_tokens: 16000,
+    max_tokens: MAX_TOKENS,
   });
   const msg = res.choices[0]?.message;
   const call = msg?.tool_calls?.find((c) => c.type === "function");
@@ -153,18 +158,26 @@ async function callSpark(photo: Photo, retryNote?: string) {
       },
     ],
     response_format: { type: "json_schema", json_schema: { name: "ItemList", schema: JSON_SCHEMA } },
-    max_tokens: 16000,
+    max_tokens: MAX_TOKENS,
   });
   return { raw: res.choices[0]?.message?.content ?? "", usage: res.usage as TokenUsage | undefined };
 }
 
-async function listWith(lister: Lister, photo: Photo) {
+async function listWith(lister: Lister, photo: Photo, job?: JobBudget) {
   const call = lister === "open" ? callOpen : callSpark;
+  const priceModel = lister === "open" ? "muse-spark-open" : "muse-spark-1.3";
+  const provider = lister === "open" ? "baseten" : "meta";
+  const model = lister === "open" ? basetenModel() : META_MODELS.spark;
   let usd = 0;
   let lastError = "";
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const { raw, usage } = await call(photo, attempt > 1 ? lastError : undefined);
-    usd += tokenCost(lister === "open" ? "muse-spark-open" : "muse-spark-1.3", usage);
+  // Muse Spark Open gets one repair attempt; Muse Spark 1.3 output is schema-constrained, so one call
+  const attempts = lister === "open" ? 2 : 1;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const { raw, usage } = await paid(
+      { provider, model, estimateUsd: ESTIMATE_USD, actualUsd: (r) => tokenCost(priceModel, r.usage), job, label: `list items #${attempt}` },
+      () => call(photo, attempt > 1 ? lastError : undefined),
+    );
+    usd += tokenCost(priceModel, usage);
     const parsed = ItemList.safeParse(parseCandidate(raw));
     if (parsed.success) return { list: parsed.data, usd, attempts: attempt, usage };
     lastError = parsed.error.issues
@@ -173,21 +186,22 @@ async function listWith(lister: Lister, photo: Photo) {
       .join("; ") || "output was not JSON";
     log.warn("invalid item list", { lister, attempt, error: lastError, sample: raw.slice(0, 200) });
   }
-  throw new Error(`${lister} returned invalid JSON twice: ${lastError}`);
+  throw new Error(`${lister} returned an invalid item list: ${lastError}`);
 }
 
-export async function listItems(photo: Photo, prefer: Lister = "open"): Promise<ListResult> {
-  const order: Lister[] = prefer === "open" && hasEnv("BASETEN_API_KEY") ? ["open", "spark"] : ["spark"];
+export async function listItems(photo: Photo, job?: JobBudget, prefer: Lister = "open"): Promise<ListResult> {
+  const order: Lister[] = prefer === "open" && hasSecret("BASETEN_API_KEY") ? ["open", "spark"] : ["spark"];
   let lastErr: unknown;
   for (const lister of order) {
     const model = lister === "open" ? basetenModel() : META_MODELS.spark;
     try {
       const key = hash("list-items-v1", model, PROMPT, photo.hash);
-      const { value, hit } = await cached("list-items", key, () => listWith(lister, photo));
+      const { value, hit } = await cached("list-items", key, () => listWith(lister, photo, job));
       const items = value.list.items.map((it) => ({ ...it, pixelBox: toPixels(it.box, photo.width, photo.height) }));
       log.info("listed", { model, items: items.length, usd: value.usd, attempts: value.attempts, cached: hit });
       return { items, model, usd: hit ? 0 : value.usd, cached: hit, attempts: value.attempts, usage: value.usage };
     } catch (err) {
+      if (err instanceof BudgetError) throw err;
       lastErr = err;
       log.warn("lister failed, trying next", { lister, error: errorMessage(err) });
     }

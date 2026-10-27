@@ -12,7 +12,9 @@ import {
   recordsOfKind,
   type ResponsesEvent,
 } from "@meta-sam/parser";
+import { paid, type JobBudget } from "./budget";
 import { cached, hash } from "./cache";
+import { PRICES } from "./cost";
 import { createLogger } from "./log";
 import { META_MODELS, meta } from "./meta";
 
@@ -94,10 +96,12 @@ async function run(image: SamImage, text: string): Promise<CachedMatch[]> {
   });
 }
 
-async function segment(image: SamImage, text: string, label: string): Promise<SamResult> {
+async function segment(image: SamImage, text: string, label: string, job?: JobBudget): Promise<SamResult> {
   const start = performance.now();
   const key = hash(META_MODELS.sam, image.hash, text);
-  const { value, hit } = await cached("sam", key, () => run(image, text));
+  const { value, hit } = await cached("sam", key, () =>
+    paid({ provider: "meta", model: META_MODELS.sam, estimateUsd: PRICES["sam-3.1-image"], job, label: `sam ${label}` }, () => run(image, text)),
+  );
   const ms = Math.round(performance.now() - start);
   log.info("segmented", { prompt: label, matches: value.length, ms, cached: hit });
   return {
@@ -108,17 +112,17 @@ async function segment(image: SamImage, text: string, label: string): Promise<Sa
 }
 
 /** Concept prompt: every instance of a short noun phrase. */
-export function segmentPhrase(image: SamImage, phrase: string): Promise<SamResult> {
-  return segment(image, phrase.trim(), phrase);
+export function segmentPhrase(image: SamImage, phrase: string, job?: JobBudget): Promise<SamResult> {
+  return segment(image, phrase.trim(), phrase, job);
 }
 
 /** Box prompts: one object per box, reported under the given id. Max 16 per call. */
-export function segmentBoxes(image: SamImage, boxes: Array<{ id: number; box: PixelBox }>): Promise<SamResult> {
+export function segmentBoxes(image: SamImage, boxes: Array<{ id: number; box: PixelBox }>, job?: JobBudget): Promise<SamResult> {
   if (boxes.length === 0) return Promise.resolve({ matches: [], cached: true, ms: 0 });
   if (boxes.length > 16) throw new Error(`SAM box prompts are limited to 16 objects, got ${boxes.length}`);
   const text = buildObjectPrompt({
     size: { width: image.width, height: image.height },
     objects: boxes.map((b) => ({ id: b.id, prompts: [{ box: b.box }] })),
   });
-  return segment(image, text, `${boxes.length} boxes`);
+  return segment(image, text, `${boxes.length} boxes`, job);
 }

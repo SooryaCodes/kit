@@ -2,7 +2,7 @@
 // Docs: https://fal.ai/models/fal-ai/sam-3/3d-objects/api
 
 import { fal } from "@fal-ai/client";
-import { env } from "./env";
+import { secret } from "./env";
 
 export const SAM_3D_OBJECTS = "fal-ai/sam-3/3d-objects";
 
@@ -10,7 +10,7 @@ let configured = false;
 
 export function falClient(): typeof fal {
   if (!configured) {
-    fal.config({ credentials: env("FAL_KEY") });
+    fal.config({ credentials: secret("FAL_KEY") });
     configured = true;
   }
   return fal;

@@ -2,8 +2,10 @@
 // Docs: https://dev.meta.ai/docs/quickstart
 
 import OpenAI from "openai";
-import { env } from "./env";
+import { config, secret } from "./env";
 
+// Standard tier only. Contributor-tier IDs (*-contributor) let Meta train on inputs,
+// which must never happen with users' photos; lib/budget.ts refuses them.
 export const META_MODELS = {
   spark: "muse-spark-1.3",
   sam: "sam-3.1",
@@ -14,9 +16,10 @@ let client: OpenAI | undefined;
 
 export function meta(): OpenAI {
   client ??= new OpenAI({
-    baseURL: env("META_API_BASE_URL"),
-    apiKey: env("META_API_KEY"),
-    maxRetries: 3,
+    baseURL: config().META_API_BASE_URL,
+    apiKey: secret("META_API_KEY"),
+    // retries are owned by lib/budget.ts (one retry, network/5xx only)
+    maxRetries: 0,
     timeout: 120_000,
   });
   return client;

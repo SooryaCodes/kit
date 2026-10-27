@@ -4,20 +4,20 @@
 // so structured results come back through a forced tool call instead.
 
 import OpenAI from "openai";
-import { env } from "./env";
+import { config, secret } from "./env";
 
 let client: OpenAI | undefined;
 
 export function baseten(): OpenAI {
   client ??= new OpenAI({
-    baseURL: env("BASETEN_BASE_URL"),
-    apiKey: env("BASETEN_API_KEY"),
-    maxRetries: 2,
+    baseURL: config().BASETEN_BASE_URL,
+    apiKey: secret("BASETEN_API_KEY"),
+    maxRetries: 0,
     timeout: 180_000,
   });
   return client;
 }
 
 export function basetenModel(): string {
-  return env("BASETEN_MODEL");
+  return config().BASETEN_MODEL;
 }
