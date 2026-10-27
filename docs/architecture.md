@@ -28,13 +28,32 @@
 
 ## Data model
 
-- `jobs` — photo, template, status, per-step timings, per-step cost
-- `items` — job, name, phrase, mask, glb, status, brand, model, price, link, confidence, fallback
-- `reels` — job, mp4, preset, share slug
+Supabase Postgres, migrations in `supabase/migrations/`.
+
+- `jobs`: photo, template, status, per-step timings, per-step cost
+- `items`: job, name, phrase, box, mask, crop, glb, status, fal request id, brand, model, price, link, confidence
+- `reels`: job, mp4, cover, world, preset, share slug
+- `model_cache`: model responses keyed by input hash
+- `api_spend`: one row per paid model call (provider, model, USD, job)
+- `job_requests`: hashed client IPs for rate limiting
+
+Storage buckets: `photos` and `masks` are private; `glbs` (models and cutouts) and `reels` are public.
+Live progress: the build screen subscribes to `items` (and `jobs`) changes for its job over Supabase Realtime.
+
+## Cost controls
+
+Every paid call (Meta Model API, Baseten, fal) goes through `lib/budget.ts`:
+
+- Per-provider spend caps, a per-job cap, max items per job and max jobs per day, all set by env.
+- `AI_DISABLED=true` stops all paid calls; `MOCK_AI=true` serves cached responses only.
+- One retry at most, only on network errors and 5xx. fal jobs are submitted once and resumed by request id, never re-submitted.
+- Every call is logged with its cost and written to `api_spend`. `GET /api/admin/spend` (bearer `ADMIN_TOKEN`) shows totals against caps.
+- Job creation is limited per IP per hour.
+- Standard tier only. Contributor-tier models, which allow training on inputs, are refused.
 
 ## Principles
 
-- Every model call is cached by input hash.
+- Every model call is cached by input hash. A cache hit costs nothing.
 - Every pipeline step logs with levels (debug/info/warn/error) and records timing + cost.
 - Long-running work (3D reconstruction) runs through a queue + webhooks, never inside a request.
 - Never show a price without a real source link.
