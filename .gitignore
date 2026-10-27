@@ -1,0 +1,39 @@
+# ─────────────────────────────────────────────────────────────
+# PRIVATE — never pushed to GitHub
+# Hackathon context, research, build plan, Claude Code prompts.
+# ─────────────────────────────────────────────────────────────
+/private/
+/CLAUDE.md
+/CLAUDE.local.md
+/START_HERE.md
+/.claude/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies / build
+node_modules/
+.next/
+out/
+dist/
+build/
+.vercel/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local data / test inputs (may contain personal photos)
+/test-photos/
+/.cache/
+/tmp/
+
+# OS / editor
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.idea/
+.vscode/
