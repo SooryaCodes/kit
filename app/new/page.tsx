@@ -8,7 +8,8 @@ export const metadata: Metadata = { title: "Make a Reel · Kit" };
 export default async function NewPage({ searchParams }: { searchParams: Promise<{ template?: string }> }) {
   const { template } = await searchParams;
   return (
-    <main className="min-h-svh bg-grid">
+    <main className="bg-studio relative isolate min-h-svh">
+      <div className="bg-grid pointer-events-none fixed inset-0 -z-10" aria-hidden />
       <AppHeader action={false} />
       <CreateFlow initialTemplate={isTemplateId(template) ? template : "bag"} />
     </main>

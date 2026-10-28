@@ -27,7 +27,7 @@ function cropRect(item: JobItemView, photo: { width: number; height: number }): 
 function PhotoStage({ job, dim, children }: { job: JobView; dim: number; children?: React.ReactNode }) {
   const ratio = job.photo ? job.photo.width / job.photo.height : 4 / 3;
   return (
-    <div className="relative mx-auto w-full overflow-hidden rounded-xl bg-red-900" style={{ aspectRatio: ratio, maxWidth: `min(100%, calc(68svh * ${ratio}))` }}>
+    <div className="relative mx-auto w-full overflow-hidden rounded-3xl bg-paper-deep" style={{ aspectRatio: ratio, maxWidth: `min(100%, calc(68svh * ${ratio}))` }}>
       {job.photoUrl && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={job.photoUrl} alt="Your photo" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700" style={{ opacity: 1 - dim }} />
@@ -47,10 +47,8 @@ function Working({ job }: { job: JobView }) {
   const [a, b] = WORKING_COPY[job.status] ?? WORKING_COPY.listing!;
   return (
     <section className="flex flex-col items-center gap-8">
-      <h1 className="font-display text-[clamp(2.25rem,1.4rem+4vw,4.5rem)] leading-[0.92]" aria-live="polite">
-        {a}
-        <br />
-        {b}
+      <h1 className="font-display text-title" aria-live="polite">
+        {a} <span className="italic">{b}</span>
       </h1>
       <PhotoStage job={job} dim={0.15}>
         <div className="kit-scan absolute inset-x-0 h-1/4" aria-hidden />
@@ -91,15 +89,13 @@ function Detect({ job }: { job: JobView }) {
   return (
     <section className="flex flex-col items-center gap-8">
       <div>
-        <h1 className="font-display text-[clamp(2.25rem,1.4rem+4vw,4.5rem)] leading-[0.92]">
-          Found {job.items.length}
-          <br />
-          things
+        <h1 className="font-display text-title">
+          Found {job.items.length} <span className="italic">things</span>
         </h1>
-        <p className="mt-4 text-lead text-ink-muted">Tap anything you don&apos;t want in your Reel. Rename items below.</p>
+        <p className="mx-auto mt-4 max-w-xl text-lead text-ink-muted">Tap anything you don&apos;t want in your Reel. Rename items below.</p>
       </div>
 
-      <PhotoStage job={job} dim={0.55}>
+      <PhotoStage job={job} dim={0.6}>
         {job.photo &&
           job.items.map((item) => {
             const r = cropRect(item, job.photo!);
@@ -112,8 +108,8 @@ function Detect({ job }: { job: JobView }) {
                 onClick={() => toggle(item.idx)}
                 aria-pressed={on}
                 aria-label={`${on ? "Remove" : "Keep"} ${names[item.idx] ?? item.name}`}
-                className="absolute transition-[opacity,transform] duration-300 hover:scale-[1.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                style={{ ...r, opacity: on ? 1 : 0.18 }}
+                className="absolute transition-[opacity,transform,filter] duration-300 hover:scale-[1.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt-500"
+                style={{ ...r, opacity: on ? 1 : 0.22, filter: on ? "drop-shadow(0 10px 14px rgb(40 30 20 / .28))" : "grayscale(1)" }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={item.cropUrl} alt="" className="h-full w-full object-contain" draggable={false} />
@@ -126,13 +122,13 @@ function Detect({ job }: { job: JobView }) {
         {job.items.map((item) => {
           const on = keep.has(item.idx);
           return (
-            <li key={item.id} className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors ${on ? "bg-white" : "bg-white/40"}`}>
+            <li key={item.id} className={`flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors ${on ? "bg-card" : "bg-card/40"}`}>
               <button
                 type="button"
                 onClick={() => toggle(item.idx)}
                 aria-pressed={on}
                 aria-label={on ? "Remove from Reel" : "Add to Reel"}
-                className={`flex size-6 shrink-0 items-center justify-center rounded text-[13px] font-bold transition-colors ${on ? "bg-red-500 text-white" : "bg-red-100 text-transparent"}`}
+                className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold transition-colors ${on ? "bg-cobalt-500 text-white" : "bg-paper-deep text-transparent"}`}
               >
                 ✓
               </button>
@@ -145,7 +141,7 @@ function Detect({ job }: { job: JobView }) {
                 onChange={(e) => setNames((n) => ({ ...n, [item.idx]: e.target.value }))}
                 maxLength={60}
                 aria-label="Item name"
-                className={`min-w-0 flex-1 rounded bg-transparent px-1 py-1 text-[16px] outline-none focus:bg-red-50 ${on ? "text-ink" : "text-ink-muted line-through"}`}
+                className={`min-w-0 flex-1 rounded-lg bg-transparent px-1.5 py-1 text-[16px] outline-none focus:bg-paper ${on ? "text-ink" : "text-ink-faint line-through"}`}
               />
             </li>
           );
@@ -157,12 +153,12 @@ function Detect({ job }: { job: JobView }) {
           type="button"
           onClick={build}
           disabled={busy || keep.size === 0}
-          className="rounded-md bg-red-500 px-8 py-4 text-[18px] font-medium text-white transition-transform active:scale-[0.97] disabled:opacity-60"
+          className="rounded-full bg-cobalt-500 px-8 py-4 text-[18px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97] disabled:opacity-60"
         >
           {busy ? "Starting…" : `Build ${keep.size} ${keep.size === 1 ? "item" : "items"} in 3D`}
         </button>
         {error && (
-          <p role="alert" className="text-[15px] font-medium text-red-700">
+          <p role="alert" className="text-[15px] font-medium text-destructive">
             {error}
           </p>
         )}
@@ -232,18 +228,14 @@ function Build({ job }: { job: JobView }) {
   return (
     <section ref={container} className="flex flex-col items-center gap-8">
       <div>
-        <h1 className="font-display text-[clamp(2.25rem,1.4rem+4vw,4.5rem)] leading-[0.92]" aria-live="polite">
+        <h1 className="font-display text-title" aria-live="polite">
           {all ? (
             <>
-              Your kit
-              <br />
-              is 3D
+              Your kit, <span className="italic">in 3D</span>
             </>
           ) : (
             <>
-              Building
-              <br />
-              in 3D
+              Building <span className="italic">in 3D</span>
             </>
           )}
         </h1>
@@ -252,16 +244,16 @@ function Build({ job }: { job: JobView }) {
         </p>
       </div>
 
-      <PhotoStage job={job} dim={0.82}>
+      <PhotoStage job={job} dim={0.9}>
         {job.items.map((item, i) => (rects[i] ? <ItemSlot key={item.id} item={item} rect={rects[i]!} /> : null))}
       </PhotoStage>
 
-      <div className="h-2 w-full max-w-md overflow-hidden rounded-full bg-red-100" aria-hidden>
-        <div className="h-full rounded-full bg-red-500 transition-[width] duration-700" style={{ width: `${(done / Math.max(1, job.items.length)) * 100}%` }} />
+      <div className="h-1.5 w-full max-w-md overflow-hidden rounded-full bg-paper-deep" aria-hidden>
+        <div className="h-full rounded-full bg-cobalt-500 transition-[width] duration-700" style={{ width: `${(done / Math.max(1, job.items.length)) * 100}%` }} />
       </div>
 
       {all ? (
-        <Link href={`/j/${job.id}/studio`} className="rounded-md bg-red-500 px-8 py-4 text-[18px] font-medium text-white transition-transform active:scale-[0.97]">
+        <Link href={`/j/${job.id}/studio`} className="rounded-full bg-cobalt-500 px-8 py-4 text-[18px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97]">
           Make it a Reel
         </Link>
       ) : (
@@ -286,13 +278,11 @@ export function JobScreen({ id }: { id: string }) {
   if (job.status === "failed" || job.status === "budget_exceeded") {
     return (
       <section className="flex flex-col items-center gap-6 py-16">
-        <h1 className="font-display text-[clamp(2rem,1.3rem+3vw,3.75rem)] leading-[0.95]">
-          That didn&apos;t
-          <br />
-          work
+        <h1 className="font-display text-title">
+          That didn&apos;t <span className="italic">work</span>
         </h1>
         <p className="max-w-md text-lead text-ink-muted">{job.userMessage ?? "Something went wrong while building this Reel."}</p>
-        <Link href="/new" className="rounded-md bg-red-500 px-6 py-3.5 text-[17px] font-medium text-white">
+        <Link href="/new" className="rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white transition-colors hover:bg-cobalt-600">
           Try another photo
         </Link>
       </section>
