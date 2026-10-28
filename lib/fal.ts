@@ -49,8 +49,19 @@ export interface Sam3dObjectsOutput {
   artifacts_zip?: FalFile;
 }
 
-/** Uploads bytes to fal storage and returns a URL fal workers can read. */
-export async function uploadToFal(bytes: Buffer, contentType: string, name: string): Promise<string> {
-  const blob = new Blob([new Uint8Array(bytes)], { type: contentType });
-  return falClient().storage.upload(new File([blob], name, { type: contentType }));
+/**
+ * Uploads bytes to fal storage and returns a URL fal workers can read.
+ * Uploads are free, so a network failure is retried a few times with backoff.
+ * Callers should keep concurrency low: many parallel uploads hit connect timeouts.
+ */
+export async function uploadToFal(bytes: Buffer, contentType: string, name: string, attempts = 3): Promise<string> {
+  const file = new File([new Uint8Array(bytes)], name, { type: contentType });
+  for (let i = 1; ; i++) {
+    try {
+      return await falClient().storage.upload(file);
+    } catch (err) {
+      if (i >= attempts || (err as { status?: number }).status) throw err;
+      await new Promise((r) => setTimeout(r, 1000 * i));
+    }
+  }
 }

@@ -59,7 +59,11 @@ export function createLogger(scope: string): Logger {
 }
 
 export function errorMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
+  if (err instanceof Error) {
+    // undici's "fetch failed" hides the real reason (DNS, reset, TLS) in `cause`
+    const cause = (err as { cause?: { code?: string; message?: string } }).cause;
+    return cause ? `${err.message} (${cause.code ?? ""} ${cause.message ?? ""})`.replace(/\s+\)/, ")") : err.message;
+  }
   return typeof err === "string" ? err : JSON.stringify(err);
 }
 

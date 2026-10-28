@@ -236,7 +236,8 @@ async function run3d(
 
   const t0 = performance.now();
   const imageUrl = await uploadToFal(photo.bytes, "image/jpeg", `${slug}.jpg`);
-  const maskUrls = await Promise.all(maskBytes.map((b, i) => uploadToFal(b, "image/png", `${slug}-mask-${i}.png`)));
+  const uploads = pLimit(3);
+  const maskUrls = await Promise.all(maskBytes.map((b, i) => uploads(() => uploadToFal(b, "image/png", `${slug}-mask-${i}.png`))));
   const maskHashes = maskBytes.map((b) => hash(b));
   report.steps.upload = { ms: Math.round(performance.now() - t0), usd: 0 };
 

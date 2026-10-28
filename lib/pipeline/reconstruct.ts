@@ -12,7 +12,7 @@ import { paid, type JobBudget } from "../budget";
 import { cached, cachedBytes, hash } from "../cache";
 import { PRICES } from "../cost";
 import { SAM_3D_OBJECTS, falClient, type Sam3dObjectsInput, type Sam3dObjectsOutput } from "../fal";
-import { createLogger } from "../log";
+import { createLogger, errorMessage } from "../log";
 
 const log = createLogger("reconstruct");
 const PENDING_DIR = path.join(process.cwd(), ".cache", "models", "sam3d-pending");
@@ -107,11 +107,21 @@ export function glbUrls(out: Sam3dObjectsOutput): string[] {
   return out.model_glb ? [out.model_glb.url] : [];
 }
 
-export async function downloadGlb(url: string): Promise<Buffer> {
+/** Downloads are free, and fal's file host sometimes times out on connect, so retry with backoff. */
+export async function downloadGlb(url: string, attempts = 4): Promise<Buffer> {
   const { value } = await cachedBytes("glb", hash(url) + ".glb", async () => {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`GLB download failed ${res.status} for ${url}`);
-    return Buffer.from(await res.arrayBuffer());
+    for (let i = 1; ; i++) {
+      try {
+        const res = await fetch(url, { signal: AbortSignal.timeout(60_000) });
+        if (!res.ok) throw Object.assign(new Error(`GLB download failed ${res.status} for ${url}`), { status: res.status });
+        return Buffer.from(await res.arrayBuffer());
+      } catch (err) {
+        const status = (err as { status?: number }).status;
+        if (i >= attempts || (status !== undefined && status < 500)) throw err;
+        log.warn("GLB download retry", { attempt: i, error: errorMessage(err) });
+        await new Promise((r) => setTimeout(r, 2000 * i));
+      }
+    }
   });
   return value;
 }
