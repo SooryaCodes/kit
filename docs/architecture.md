@@ -31,13 +31,14 @@
 Supabase Postgres, migrations in `supabase/migrations/`.
 
 - `jobs`: photo, template, status, per-step timings, per-step cost
-- `items`: job, name, phrase, box, mask, crop, glb, status, fal request id, brand, model, price, link, confidence
+- `items`: job, name, phrase, box, mask, crop, glb, status, fal request id, brand, model, price, link, confidence, fallback
 - `reels`: job, mp4, cover, world, preset, share slug
 - `model_cache`: model responses keyed by input hash
 - `api_spend`: one row per paid model call (provider, model, USD, job)
 - `job_requests`: hashed client IPs for rate limiting
 
-Storage buckets: `photos` and `masks` are private; `glbs` (models and cutouts) and `reels` are public.
+Storage buckets: `photos`, `masks` and `crops` are private and read through 1 hour signed URLs made by the server; `glbs`, `reels` and `covers` are public, with uuid-based paths. Only the server (service role) can upload.
+Row level security is on for every table: the public can read jobs, items and reels by id; everything else is server only.
 Live progress: the build screen subscribes to `items` (and `jobs`) changes for its job over Supabase Realtime.
 
 ## Cost controls
