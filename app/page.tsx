@@ -1,5 +1,6 @@
 import { Closing, Footer } from "@/components/landing/closing";
-import { Hero, Nav } from "@/components/landing/hero";
+import { SiteHeader } from "@/components/app/site-header";
+import { Hero } from "@/components/landing/hero";
 import { Models } from "@/components/landing/models";
 import { Creators, CustomerView, Problem } from "@/components/landing/shop-sections";
 import { SmoothScroll } from "@/components/landing/smooth-scroll";
@@ -11,9 +12,9 @@ export default function Home() {
     <main className="relative overflow-x-clip bg-paper text-ink">
       <SmoothScroll />
       <div className="pointer-events-none absolute inset-0 bg-grid" aria-hidden />
-      <div className="relative bg-studio">
+      <SiteHeader />
+      <div className="relative -mt-16 bg-studio pt-16 md:-mt-20 md:pt-20">
         <div className="pointer-events-none absolute inset-0 bg-grid" aria-hidden />
-        <Nav />
         <Hero />
       </div>
       <Problem />

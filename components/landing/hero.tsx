@@ -111,30 +111,3 @@ export function Hero() {
     </section>
   );
 }
-
-export function Nav() {
-  return (
-    <header className="relative z-20 mx-auto flex h-20 max-w-[1320px] items-center justify-between px-5 text-[15px] md:px-8">
-      <Link href="/" className="font-display text-[34px] leading-none" aria-label="Kit, home">
-        Kit
-      </Link>
-      <nav className="hidden items-center gap-9 text-ink/70 md:flex" aria-label="Main">
-        <a href="#customer" className="transition-colors hover:text-ink">
-          What customers see
-        </a>
-        <a href="#how" className="transition-colors hover:text-ink">
-          How it works
-        </a>
-        <a href="#creators" className="transition-colors hover:text-ink">
-          For creators
-        </a>
-        <Link href="/dashboard" className="transition-colors hover:text-ink">
-          My shops
-        </Link>
-      </nav>
-      <Link href="/new?mode=shop" className="kit-press inline-flex h-11 items-center rounded-full bg-ink px-5 font-medium text-white hover:bg-ink-soft">
-        Make a shop link
-      </Link>
-    </header>
-  );
-}

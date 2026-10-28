@@ -5,30 +5,84 @@ import Link from "next/link";
 import { cut } from "./data";
 import { Reveal } from "./reveal";
 
-const QUESTIONS = ["What size is it?", "Will my laptop fit?", "Can you show it from the side?", "Price?"];
+/** An illustration of a seller's morning: the same few questions from different customers, none answered yet. */
+const INBOX = [
+  { name: "Riya", tint: "#dfe3ff", text: "What size is the tan one?", ago: "2m" },
+  { name: "Arjun", tint: "#e7e4de", text: "Will my 14 inch laptop fit?", ago: "6m" },
+  { name: "Neha", tint: "#c2caff", text: "Can you show the back?", ago: "11m" },
+  { name: "Fathima", tint: "#dedad3", text: "Price for the green one?", ago: "18m" },
+  { name: "Vishnu", tint: "#eef0ff", text: "Will my laptop fit in this?", ago: "24m" },
+  { name: "Ann", tint: "#e7e4de", text: "What size? Any side photo?", ago: "31m" },
+];
 
 export function Problem() {
   return (
     <Reveal as="section" id="problem" className="relative py-28 md:py-40" aria-label="The problem">
-      <div className="mx-auto flex max-w-[1100px] flex-col items-center px-5 text-center md:px-8">
-        <h2 data-r style={{ ["--i" as string]: 0 }} className="font-display text-[clamp(34px,5.6vw,88px)] leading-[0.92] tracking-[-0.02em]">
-          Every product post gets
-          <br />
-          <span className="italic">the same questions.</span>
-        </h2>
-        <div data-r style={{ ["--i" as string]: 1 }} className="mt-12 flex w-full max-w-[420px] flex-col gap-2.5 md:mt-16">
-          {QUESTIONS.map((q, i) => (
-            <p
-              key={q}
-              className={`w-fit max-w-[80%] rounded-[22px] px-5 py-3 text-left text-[17px] shadow-[0_10px_24px_-18px_rgb(40_30_20/.5)] ${i % 2 ? "self-end rounded-br-md bg-cobalt-500 text-white" : "self-start rounded-bl-md bg-card text-ink"}`}
-            >
-              {q}
-            </p>
-          ))}
+      <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+        <div className="text-center">
+          <h2 data-r style={{ ["--i" as string]: 0 }} className="font-display text-[clamp(34px,5.6vw,88px)] leading-[0.92] tracking-[-0.02em]">
+            Every product post gets
+            <br />
+            <span className="italic">the same questions.</span>
+          </h2>
+          <p data-r style={{ ["--i" as string]: 1 }} className="mx-auto mt-6 max-w-[36rem] text-[17px] leading-[1.55] text-ink-soft md:text-[19px]">
+            A flat photo can&rsquo;t show size or the back, so customers ask, one DM at a time. By the time the seller replies, most have moved on.
+          </p>
         </div>
-        <p data-r style={{ ["--i" as string]: 2 }} className="mt-12 max-w-[36rem] text-[17px] leading-[1.55] text-ink-soft md:mt-16 md:text-[19px]">
-          Small sellers on Instagram and WhatsApp answer them one DM at a time, all day. A flat photo can&rsquo;t show size or the back, and a studio 3D model costs thousands of rupees for a single product. So a lot of people ask, and then don&rsquo;t buy.
-        </p>
+
+        <div className="mt-14 grid items-start gap-10 md:mt-20 lg:grid-cols-2 lg:gap-16">
+          {/* the seller's inbox, before */}
+          <figure data-r style={{ ["--i" as string]: 2 }} className="mx-auto w-full max-w-[440px]">
+            <div data-ui className="overflow-hidden rounded-[32px] bg-card shadow-[0_40px_80px_-50px_rgb(40_30_20/.55)]">
+              <div className="flex items-center justify-between px-6 pb-3 pt-6">
+                <p className="text-[19px] font-semibold text-ink">Messages</p>
+                <span className="rounded-full bg-ink px-2.5 py-1 text-[12px] font-semibold text-white">23 unread</span>
+              </div>
+              <ul>
+                {INBOX.map((m) => (
+                  <li key={m.name} className="flex items-center gap-3 px-6 py-3">
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-full text-[16px] font-semibold text-ink-soft" style={{ background: m.tint }}>
+                      {m.name.charAt(0)}
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="text-[15px] font-semibold text-ink">{m.name}</span>
+                      <span className="truncate text-[15px] text-ink">{m.text}</span>
+                    </span>
+                    <span className="flex shrink-0 flex-col items-end gap-1.5">
+                      <span className="text-[12px] text-ink-muted">{m.ago}</span>
+                      <span className="size-2.5 rounded-full bg-cobalt-500" aria-label="unread" />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="px-6 pb-6 pt-2 text-[14px] text-ink-muted">You: Sending photos in a bit, so sorry for the wait&hellip;</p>
+            </div>
+            <figcaption className="mt-4 text-center text-[15px] text-ink-soft">A seller&rsquo;s morning today. Three questions, asked again and again.</figcaption>
+          </figure>
+
+          {/* the same question on a Kit product page, after */}
+          <figure data-r style={{ ["--i" as string]: 3 }} className="mx-auto w-full max-w-[440px]">
+            <div data-ui className="overflow-hidden rounded-[32px] bg-card shadow-[0_40px_80px_-50px_rgb(40_30_20/.55)]">
+              <div className="bg-studio flex items-center justify-center px-6 py-8">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={cut("shop", 1)} alt="The orange leather sling" className="shadow-object h-36 w-auto" />
+              </div>
+              <div className="flex flex-col gap-3 px-6 pb-6 pt-5">
+                <div className="flex items-baseline justify-between">
+                  <p className="font-display text-[30px] leading-none text-ink">Orange Leather Sling</p>
+                  <p className="text-[17px] text-ink-soft">₹1,450</p>
+                </div>
+                <p className="text-[14px] text-ink-muted">About 24 cm on its longest side. Shown at real size in your room.</p>
+                <p className="mt-1 self-end rounded-2xl rounded-br-md bg-ink px-4 py-2.5 text-[15px] text-white">Will my 14 inch laptop fit?</p>
+                <p className="self-start rounded-2xl rounded-bl-md bg-cobalt-50 px-4 py-2.5 text-[15px] text-ink">
+                  No. A 14-inch laptop is about 32 cm wide and this sling is 24 cm. It fits a phone, keys and cards.
+                </p>
+                <span className="mt-1 flex h-12 items-center justify-center rounded-full bg-cobalt-500 text-[16px] font-medium text-white">Order on WhatsApp</span>
+              </div>
+            </div>
+            <figcaption className="mt-4 text-center text-[15px] text-ink-soft">The same question on a Kit link, answered at once from the seller&rsquo;s own measurements.</figcaption>
+          </figure>
+        </div>
       </div>
     </Reveal>
   );
