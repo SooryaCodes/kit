@@ -7,8 +7,8 @@ const instrument = Instrument_Serif({ variable: "--font-instrument", subsets: ["
 const hanken = Hanken_Grotesk({ variable: "--font-hanken", subsets: ["latin"], weight: ["400", "500", "600"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Kit · Everything you carry, now in 3D",
-  description: "Photograph your bag, desk or outfit. Kit cuts out every item, rebuilds each one as a real 3D model and turns it into a Reel.",
+  title: "Kit · Your products, on their table",
+  description: "Snap one photo of your products and get a 3D shop link: customers see them in their room at real size, ask questions, and order on WhatsApp.",
 };
 
 export const viewport: Viewport = {

@@ -32,9 +32,12 @@ export const BAG_ITEMS: BagItem[] = [
 export const glb = (set: string, id: number) => `/showcase/${set}/${id}.glb`;
 export const cut = (set: string, id: number) => `/showcase/${set}/${id}.png`;
 
-/** Hero scatter around the headline. x/y are % of the stage, w is % of stage width, r is degrees. */
+/** Hero scatter around the headline: real products from the sample shop and the sneaker set.
+ * x/y are % of the stage, w is % of stage width, r is degrees. */
 export interface Placed {
   id: number;
+  /** showcase set the item comes from */
+  set: "shop" | "sneakers";
   x: number;
   y: number;
   w: number;
@@ -46,26 +49,26 @@ export interface Placed {
 }
 
 export const HERO_DESKTOP: Placed[] = [
-  { id: 0, x: 5, y: 33, w: 17, r: -8, d: 0.9, px: [566, 725] },
-  { id: 1, x: 75, y: 50, w: 20, r: 7, d: 0.8, px: [342, 417] },
-  { id: 2, x: 81, y: 5, w: 10.5, r: 12, d: 0.4, px: [211, 293] },
-  { id: 6, x: 15, y: 4, w: 11, r: -14, d: 0.5, px: [228, 161] },
-  { id: 12, x: 66, y: 77, w: 7, r: -10, d: 0.6, px: [167, 225] },
-  { id: 3, x: 30, y: 73, w: 6, r: 14, d: 0.7, px: [115, 205] },
-  { id: 14, x: 40, y: 2, w: 9, r: 18, d: 0.3, px: [294, 144] },
-  { id: 7, x: 3, y: 73, w: 9, r: 6, d: 0.5, px: [189, 180] },
-  { id: 13, x: 90, y: 31, w: 7, r: -6, d: 0.6, px: [156, 262] },
-  { id: 10, x: 63, y: 9, w: 9, r: -32, d: 0.2, px: [174, 42] },
+  { id: 1, set: "shop", x: 5, y: 30, w: 15, r: -9, d: 0.9, px: [220, 194] },
+  { id: 12, set: "sneakers", x: 77, y: 47, w: 9, r: 18, d: 0.8, px: [175, 305] },
+  { id: 4, set: "shop", x: 80, y: 6, w: 12, r: 10, d: 0.4, px: [228, 197] },
+  { id: 3, set: "shop", x: 15, y: 3, w: 11, r: -14, d: 0.5, px: [223, 199] },
+  { id: 7, set: "sneakers", x: 64, y: 74, w: 7, r: -28, d: 0.6, px: [154, 294] },
+  { id: 7, set: "shop", x: 28, y: 72, w: 11, r: 12, d: 0.7, px: [222, 193] },
+  { id: 10, set: "shop", x: 41, y: 1, w: 10, r: 8, d: 0.3, px: [232, 204] },
+  { id: 9, set: "shop", x: 3, y: 71, w: 10, r: 6, d: 0.5, px: [224, 181] },
+  { id: 0, set: "sneakers", x: 89, y: 30, w: 7, r: -8, d: 0.6, px: [187, 278] },
+  { id: 0, set: "shop", x: 62, y: 8, w: 10, r: -12, d: 0.2, px: [225, 197] },
 ];
 
 /** Phone: fewer, smaller items above and below the headline. */
 export const HERO_MOBILE: Placed[] = [
-  { id: 6, x: 4, y: 4, w: 30, r: -14, d: 0.5, px: [228, 161] },
-  { id: 10, x: 38, y: 7, w: 24, r: -24, d: 0.3, px: [174, 42] },
-  { id: 12, x: 70, y: 2, w: 21, r: 10, d: 0.6, px: [167, 225] },
-  { id: 0, x: 6, y: 79, w: 25, r: -8, d: 0.9, px: [566, 725] },
-  { id: 3, x: 43, y: 83, w: 11, r: 12, d: 0.7, px: [115, 205] },
-  { id: 2, x: 68, y: 80, w: 21, r: 9, d: 0.8, px: [211, 293] },
+  { id: 3, set: "shop", x: 3, y: 4, w: 28, r: -12, d: 0.5, px: [223, 199] },
+  { id: 12, set: "sneakers", x: 42, y: 3, w: 14, r: 20, d: 0.3, px: [175, 305] },
+  { id: 4, set: "shop", x: 68, y: 3, w: 27, r: 10, d: 0.6, px: [228, 197] },
+  { id: 1, set: "shop", x: 5, y: 80, w: 28, r: -8, d: 0.9, px: [220, 194] },
+  { id: 7, set: "sneakers", x: 44, y: 81, w: 12, r: -24, d: 0.7, px: [154, 294] },
+  { id: 7, set: "shop", x: 66, y: 81, w: 27, r: 9, d: 0.8, px: [222, 193] },
 ];
 
 /** The five templates, each shown with a real collection. */

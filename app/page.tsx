@@ -1,7 +1,7 @@
 import { Closing, Footer } from "@/components/landing/closing";
-import { Formats } from "@/components/landing/formats";
 import { Hero, Nav } from "@/components/landing/hero";
 import { Models } from "@/components/landing/models";
+import { Creators, CustomerView, Problem } from "@/components/landing/shop-sections";
 import { SmoothScroll } from "@/components/landing/smooth-scroll";
 import { Story } from "@/components/landing/story";
 import { Studio } from "@/components/landing/studio";
@@ -16,10 +16,12 @@ export default function Home() {
         <Nav />
         <Hero />
       </div>
+      <Problem />
       <Story />
-      <Formats />
-      <Studio />
+      <CustomerView />
       <Models />
+      <Creators />
+      <Studio />
       <Closing />
       <Footer />
     </main>

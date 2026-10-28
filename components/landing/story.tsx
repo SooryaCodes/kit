@@ -15,10 +15,10 @@ const StoryScene = dynamic(() => import("./story-scene"), { ssr: false });
 const BOUNDS = [0.04, 0.25, 0.43, 0.64, 1] as const;
 
 const STEPS = [
-  { model: "Muse Spark", title: "Muse Spark lists every item", text: "It reads the photo and names all fourteen things in the bag, down to the USB stick." },
+  { model: "Muse Spark Open", title: "Muse Spark lists every item", text: "It reads the photo and names all fourteen things in the bag, down to the USB stick." },
   { model: "SAM 3.1", title: "SAM 3.1 cuts each one out", text: "A clean mask for every item, cables and pen clips included." },
   { model: "SAM 3D Objects", title: "SAM 3D Objects rebuilds it in 3D", text: "Each cutout becomes a textured model you can turn, light and animate." },
-  { model: "Kit", title: "Kit turns it into a Reel", text: "Tidied into a grid, titled and labelled, then exported as a 9:16 MP4." },
+  { model: "Kit", title: "Kit makes your shop", text: "Laid out, named and labelled: one link to share, and a 9:16 Reel to post." },
 ];
 
 function stepFor(p: number) {
@@ -104,7 +104,7 @@ export function Story() {
       <div className="sticky top-0 h-svh overflow-hidden">
         <div ref={headRef} className="absolute inset-x-0 top-0 z-10 px-5 pt-[max(28px,5vh)] text-center">
           <h2 className="font-display text-[clamp(38px,5vw,76px)] leading-[0.92] tracking-[-0.02em]">
-            One photo in, <span className="italic">a Reel out.</span>
+            One photo in, <span className="italic">a shop out.</span>
           </h2>
         </div>
 
@@ -164,7 +164,7 @@ function StoryStill() {
   return (
     <section id="how" className="relative mx-auto max-w-[1100px] px-5 py-28 text-center md:px-8 md:py-40">
       <h2 className="font-display text-[clamp(38px,5vw,76px)] leading-[0.92] tracking-[-0.02em]">
-        One photo in, <span className="italic">a Reel out.</span>
+        One photo in, <span className="italic">a shop out.</span>
       </h2>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={BAG_PHOTO.src} alt="The sample flat-lay: a backpack and thirteen things from inside it on a white sheet" className="mx-auto mt-12 w-full max-w-[720px]" />

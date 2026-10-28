@@ -74,7 +74,7 @@ function Floater({ p, i, stage, pointer }: { p: Placed; i: number; stage: StageR
   return (
     <group ref={outer} position={base.pos}>
       <group rotation={[Math.PI / 2, 0, 0]}>
-        <ItemModel url={glb("bag", p.id)} size={base.longest} />
+        <ItemModel url={glb(p.set, p.id)} size={base.longest} />
       </group>
     </group>
   );
@@ -107,7 +107,7 @@ function Scene({ layout, stage, onReady }: { layout: Placed[]; stage: StageRect;
       <Lights />
       <Suspense fallback={null}>
         {layout.map((p, i) => (
-          <Floater key={p.id} p={p} i={i} stage={stage} pointer={pointer} />
+          <Floater key={`${p.set}-${p.id}`} p={p} i={i} stage={stage} pointer={pointer} />
         ))}
         <Ready onReady={onReady} />
       </Suspense>

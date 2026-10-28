@@ -138,7 +138,8 @@ export function ShopView({ shop, pageUrl, sample }: { shop: Shop; pageUrl: strin
   const close = useCallback(() => setOpen(null), []);
 
   useEffect(() => {
-    if (shop.published) track(shop.id, "view");
+    // embedded copies (the landing page, the editor preview) don't count as visits
+    if (shop.published && window.self === window.top) track(shop.id, "view");
   }, [shop.id, shop.published]);
 
   return (

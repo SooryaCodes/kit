@@ -1,6 +1,7 @@
 "use client";
 
-// Built on Meta's models: the chain from photo to Reel, each step shown by its real output for the sample bag.
+// Built on Meta's models: the chain from photo to shop link, each step shown by its real output for the sample bag,
+// then the three models that run the shop after it is published.
 
 import dynamic from "next/dynamic";
 import { useCallback, useRef, useState, type ReactNode } from "react";
@@ -56,10 +57,10 @@ export function Models() {
       <div className="mx-auto max-w-[1320px] px-5 md:px-8">
         <div className="text-center">
           <h2 data-r style={{ ["--i" as string]: 0 }} className="font-display text-[clamp(34px,5.6vw,88px)] leading-[0.92] tracking-[-0.02em]">
-            Four Meta models, <span className="italic">one chain.</span>
+            Six Meta models, <span className="italic">one chain.</span>
           </h2>
           <p data-r style={{ ["--i" as string]: 1 }} className="mx-auto mt-6 max-w-[34rem] text-[17px] leading-[1.5] text-ink-soft md:text-[19px]">
-            Kit is built on Meta&rsquo;s models. They do the seeing, cutting and building. Below are their real outputs for the sample bag.
+            Kit is built on Meta&rsquo;s models. They see, cut out and rebuild every product, then keep the shop running. Below are their real outputs for the sample bag.
           </p>
         </div>
 
@@ -75,8 +76,8 @@ export function Models() {
           />
           <Step
             i={1}
-            name="Muse Spark"
-            text="Reads the photo and lists every item in it, with a name for each."
+            name="Muse Spark Open"
+            text="Reads the photo and lists every item in it. Open weights, served on Baseten."
             picture={
               <div className="w-[86%] max-w-[230px] rotate-1 rounded-[6px] bg-card px-5 py-4 text-left shadow-[0_18px_30px_-18px_rgb(40_30_20/0.35)]">
                 <p className="text-[14px] font-semibold">14 items found</p>
@@ -108,26 +109,42 @@ export function Models() {
               </div>
             }
           />
-          <Step i={3} name="SAM 3D Objects" text="Rebuilds every cutout as a textured 3D model. These headphones are a 292 KB GLB." picture={<SpinPicture />} />
+          <Step i={3} name="SAM 3D Objects" text="Rebuilds every cutout as a textured 3D model. Meta open weights, served on fal." picture={<SpinPicture />} />
           <Step
             i={4}
             last
-            name="The Reel"
-            text="Paints a themed backdrop for the template. Kit animates the scene and exports the MP4."
+            name="Your shop link"
+            text="Every product in 3D, at real size in the customer's room, with order on WhatsApp."
             picture={
-              <div className="flex h-full w-[96px] flex-col items-center rounded-[16px] bg-cobalt-500 px-3 pt-4 text-white shadow-[0_24px_36px_-22px_rgb(14_22_96/0.6)] sm:w-[130px] md:w-[141px]">
-                <p className="font-display text-[14px] leading-none sm:text-[19px]">What&rsquo;s in my bag</p>
-                <div className="mt-2 grid min-h-0 flex-1 grid-cols-2 place-items-center gap-1 pb-3 sm:mt-3 sm:gap-1.5 sm:pb-4">
-                  {[6, 0, 12, 1, 3, 2].map((id) => (
+              <div className="flex h-full w-[104px] flex-col items-center rounded-[18px] border-[5px] border-ink bg-paper px-2 pt-3 shadow-[0_24px_36px_-22px_rgb(40_30_20/0.6)] sm:w-[136px] md:w-[146px]">
+                <p className="font-display text-[13px] leading-none sm:text-[17px]">Leather Pouch Shop</p>
+                <div className="mt-2 grid min-h-0 flex-1 grid-cols-2 place-items-center gap-1 sm:mt-3 sm:gap-1.5">
+                  {[1, 3, 4, 7].map((id) => (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img key={id} src={cut("bag", id)} alt="" className="max-h-[24px] w-auto max-w-[34px] object-contain sm:max-h-[42px] sm:max-w-[48px]" />
+                    <img key={id} src={cut("shop", id)} alt="" className="max-h-[26px] w-auto max-w-[40px] object-contain sm:max-h-[40px] sm:max-w-[54px]" />
                   ))}
                 </div>
+                <span className="mb-2 mt-1 w-full rounded-full bg-cobalt-500 py-1 text-center text-[8px] font-medium text-white sm:mb-3 sm:text-[10px]">Order on WhatsApp</span>
               </div>
             }
           />
         </ol>
+
+        <ul className="mt-20 grid gap-4 md:mt-28 md:grid-cols-3 md:gap-6">
+          {AFTER.map((m, i) => (
+            <li key={m.name} data-r style={{ ["--i" as string]: i + 2 }} className="flex flex-col items-center gap-3 rounded-[28px] bg-card px-7 py-9 text-center">
+              <p className="font-display text-[30px] leading-none md:text-[34px]">{m.name}</p>
+              <p className="max-w-[20rem] text-[15px] leading-[1.55] text-ink-soft md:text-[16px]">{m.text}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </Reveal>
   );
 }
+
+const AFTER = [
+  { name: "Muse Spark", text: "Names each product, estimates its real size for the seller to check, and searches shops online for a price range with sources." },
+  { name: "Muse Wonder", text: "Answers customers from the seller\u2019s own facts, and writes the seller a morning report with changes to approve." },
+  { name: "Muse Image", text: "Paints one backdrop for the shop. The product on it is the real cut-out, never redrawn." },
+];

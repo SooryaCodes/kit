@@ -1,6 +1,6 @@
 "use client";
 
-// First screen. The approved Studio hero: the headline sits on the paper, the real items float around it.
+// First screen. The approved Studio hero: the headline sits on the paper, real products float around it.
 // Static cutouts paint first (and stay for reduced motion or no WebGL); the live 3D scene fades in over them
 // once every model has loaded, in exactly the same places.
 
@@ -19,8 +19,8 @@ function Cutouts({ layout, className, hidden }: { layout: Placed[]; className: s
       {layout.map((p, i) => (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          key={p.id}
-          src={cut("bag", p.id)}
+          key={`${p.set}-${p.id}`}
+          src={cut(p.set, p.id)}
           alt=""
           className="kit-settle shadow-object absolute"
           style={{ left: `${p.x}%`, top: `${p.y}%`, width: `${p.w}%`, rotate: `${p.r}deg`, animationDelay: `${120 + i * 60}ms` }}
@@ -76,36 +76,36 @@ export function Hero() {
       <div className="relative z-10 mx-auto flex h-full max-w-[1320px] flex-col items-center justify-center px-5 text-center md:px-8">
         <h1 className="font-display text-[clamp(52px,9.4vw,148px)] leading-[0.88] tracking-[-0.025em]">
           <span className="kit-line">
-            <span className="kit-line-inner">Everything you carry,</span>
+            <span className="kit-line-inner">Your products,</span>
           </span>
           <span className="kit-line">
             <span className="kit-line-inner italic" style={{ animationDelay: "90ms" }}>
-              now in 3D.
+              on their table.
             </span>
           </span>
         </h1>
         <p className="kit-load mt-6 max-w-[34rem] text-[17px] leading-[1.5] text-ink/80 md:mt-8 md:text-[19px]" style={{ animationDelay: "260ms" }}>
-          Photograph your bag, desk or outfit. Kit cuts out every item, rebuilds each one as a real 3D model and turns it into a Reel.
+          Snap one photo. Every product becomes 3D. Share one link: customers place it in their room, ask questions, and order on WhatsApp.
         </p>
         <div className="kit-load mt-8 flex flex-col items-center gap-2 sm:flex-row sm:gap-3 md:mt-9" style={{ animationDelay: "360ms" }}>
           <Link
-            href="/new"
+            href="/new?mode=shop"
             className="kit-press inline-flex h-14 items-center rounded-full bg-cobalt-500 px-8 text-[17px] font-medium text-white hover:bg-cobalt-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cobalt-500"
           >
-            Make your Reel
+            Make your shop link
           </Link>
           <Link
-            href="/new?template=bag"
+            href="/k/sample-shop"
             className="kit-press group inline-flex h-14 items-center gap-2 rounded-full px-6 text-[17px] font-medium text-ink hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-cobalt-500"
           >
-            Try the sample bag
+            See a sample shop
             <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-1">
               →
             </span>
           </Link>
         </div>
         <p className="kit-load mt-5 text-[14px] text-ink-muted" style={{ animationDelay: "440ms" }}>
-          Free to try. No sign-up.
+          Free to try. No sign-up. Works with the phone camera you already have.
         </p>
       </div>
     </section>
@@ -119,18 +119,21 @@ export function Nav() {
         Kit
       </Link>
       <nav className="hidden items-center gap-9 text-ink/70 md:flex" aria-label="Main">
-        <a href="#formats" className="transition-colors hover:text-ink">
-          Templates
+        <a href="#customer" className="transition-colors hover:text-ink">
+          What customers see
         </a>
         <a href="#how" className="transition-colors hover:text-ink">
           How it works
         </a>
-        <Link href="/reels" className="transition-colors hover:text-ink">
-          My Reels
+        <a href="#creators" className="transition-colors hover:text-ink">
+          For creators
+        </a>
+        <Link href="/dashboard" className="transition-colors hover:text-ink">
+          My shops
         </Link>
       </nav>
-      <Link href="/new" className="kit-press inline-flex h-11 items-center rounded-full bg-ink px-5 font-medium text-white hover:bg-ink-soft">
-        Make a Reel
+      <Link href="/new?mode=shop" className="kit-press inline-flex h-11 items-center rounded-full bg-ink px-5 font-medium text-white hover:bg-ink-soft">
+        Make a shop link
       </Link>
     </header>
   );

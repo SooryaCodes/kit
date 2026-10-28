@@ -132,10 +132,10 @@ export function Studio() {
       <div className="mx-auto max-w-[1320px] px-5 md:px-8">
         <div className="text-center">
           <h2 data-r style={{ ["--i" as string]: 0 }} className="font-display text-[clamp(34px,5.6vw,88px)] leading-[0.92] tracking-[-0.02em]">
-            Then make it <span className="italic">yours.</span>
+            Plus a Reel <span className="italic">to post.</span>
           </h2>
           <p data-r style={{ ["--i" as string]: 1 }} className="mx-auto mt-6 max-w-[32rem] text-[17px] leading-[1.5] text-ink-soft md:text-[19px]">
-            Every Reel opens in the studio. Try it here on three things from the sample bag.
+            The same 3D products become a Reel that sends people to your link. Try the studio here on three things from the sample bag.
           </p>
         </div>
 

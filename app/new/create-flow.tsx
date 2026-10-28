@@ -5,7 +5,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { saveReel } from "@/lib/client/my-reels";
 import { TEMPLATE_LIST, type TemplateId } from "@/lib/templates";
 
-const SAMPLE = { url: "/showcase/bag/photo.jpg", template: "bag" as TemplateId };
+/** Sample photos that already have a finished run, so trying one replays it for free. */
+const SAMPLES = {
+  shop: { url: "/showcase/shop/photo.jpg", template: "seller" as TemplateId, label: "Try our sample shop photo", file: "sample-shop.jpg" },
+  bag: { url: "/showcase/bag/photo.jpg", template: "bag" as TemplateId, label: "Try our sample bag", file: "sample-bag.jpg" },
+};
 
 /** A real object from each kind of shoot, so every format reads at a glance. */
 const TILE_ART: Record<TemplateId, { src: string; w: string; r: number }[]> = {
@@ -75,11 +79,12 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
     }
   }
 
+  const sample = template === "seller" || template === "collection" ? SAMPLES.shop : SAMPLES.bag;
   async function trySample() {
     setBusy(true);
-    const blob = await fetch(SAMPLE.url).then((r) => r.blob());
-    setTemplate(SAMPLE.template);
-    await start(new File([blob], "sample-bag.jpg", { type: "image/jpeg" }), SAMPLE.template);
+    const blob = await fetch(sample.url).then((r) => r.blob());
+    setTemplate(sample.template);
+    await start(new File([blob], sample.file, { type: "image/jpeg" }), sample.template);
   }
 
   const current = TEMPLATE_LIST.find((t) => t.id === template)!;
@@ -191,7 +196,7 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
       <p className="mt-8 text-[16px] text-ink-muted">
         No photo handy?{" "}
         <button type="button" onClick={trySample} disabled={busy} className="font-medium text-cobalt-600 underline-offset-4 hover:underline">
-          Try our sample bag
+          {sample.label}
         </button>
       </p>
     </div>

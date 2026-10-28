@@ -16,26 +16,26 @@ const SHELF = [
 
 export function Closing() {
   return (
-    <Reveal as="section" className="relative overflow-hidden bg-studio" aria-label="Make your Reel">
+    <Reveal as="section" className="relative overflow-hidden bg-studio" aria-label="Make your shop link">
       <div className="pointer-events-none absolute inset-0 bg-grid" aria-hidden />
       <div className="relative mx-auto max-w-[1320px] px-5 pb-10 pt-28 text-center md:px-8 md:pt-40">
         <h2 data-r style={{ ["--i" as string]: 0 }} className="font-display text-[clamp(52px,8vw,132px)] leading-[0.88] tracking-[-0.025em]">
-          Empty your bag.
+          One photo.
           <br />
-          <span className="italic">Make the Reel.</span>
+          <span className="italic">Your whole shop.</span>
         </h2>
         <p data-r style={{ ["--i" as string]: 1 }} className="mx-auto mt-7 max-w-[30rem] text-[17px] leading-[1.5] text-ink-soft md:text-[19px]">
-          One photo is all it takes. Free, no sign-up.
+          Lay your products out, take one photo, share one link. Free, no sign-up.
         </p>
         <div data-r style={{ ["--i" as string]: 2 }} className="mt-9 flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-3">
           <Link
-            href="/new"
+            href="/new?mode=shop"
             className="kit-press inline-flex h-14 items-center rounded-full bg-cobalt-500 px-8 text-[17px] font-medium text-white hover:bg-cobalt-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cobalt-500"
           >
-            Make your Reel
+            Make your shop link
           </Link>
-          <Link href="/new?template=bag" className="kit-press group inline-flex h-14 items-center gap-2 rounded-full px-6 text-[17px] font-medium hover:bg-ink/5">
-            Try the sample bag
+          <Link href="/k/sample-shop" className="kit-press group inline-flex h-14 items-center gap-2 rounded-full px-6 text-[17px] font-medium hover:bg-ink/5">
+            See a sample shop
             <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-1">
               →
             </span>
