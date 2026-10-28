@@ -63,8 +63,8 @@ const JSON_SCHEMA = z.toJSONSchema(ItemList, { target: "draft-7" }) as Record<st
 
 const PROMPT = `You are an object grounding expert preparing a photo for 3D reconstruction.
 List every distinct physical item in this photo that a person owns or sells: things you could pick up.
-Do not list the surface or background (table, floor, bedsheet, wall), shadows, or people.
-List each separate object once. If there are several of the same kind (three pens), list each one separately with its own box.
+Do not list the surface or background (table, floor, bedsheet, wall, desk mat, rug, doormat, tray the items sit on), shadows, or people.
+List each separate object once. If there are more than 25 items, list only the 25 largest and most clearly visible ones. If there are several of the same kind (three pens), list each one separately with its own box.
 For "phrase", write a short noun phrase a segmentation model can match: the object noun plus at most two visual attributes such as colour or material. No brand names, no spatial words, no verbs.
 Boxes use a 0-1000 grid where (0,0) is the top-left and (1000,1000) the bottom-right of the image. Ensure the boxes accurately match each item and do not miss any objects.`;
 

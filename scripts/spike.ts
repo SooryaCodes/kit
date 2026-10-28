@@ -404,7 +404,17 @@ async function runPhoto(file: string, args: Args): Promise<PhotoReport> {
       report.dropped.push({ name: m.name, reason: `too small (${((m.area / (photo.width * photo.height)) * 100).toFixed(2)}% of photo)` });
       return false;
     });
-    const { kept, dropped } = dedupe(big);
+    // items the lister saw as cut off, whose mask also runs into the photo edge, are slivers
+    const whole = big.filter((m) => {
+      const b = m.match.bounds;
+      const touchesEdge = b.left <= 1 || b.top <= 1 || b.right >= photo.width - 1 || b.bottom >= photo.height - 1;
+      if (m.partial && touchesEdge) {
+        report.dropped.push({ name: m.name, reason: "cut off by the photo edge" });
+        return false;
+      }
+      return true;
+    });
+    const { kept, dropped } = dedupe(whole);
     for (const d of dropped) report.dropped.push({ name: d.mask.name, reason: `duplicate of ${d.overlapsWith} (IoU ${d.iou})` });
     // over the item cap: keep the largest items, they read best in 3D
     const bySize = [...kept].sort((a, b) => b.area - a.area);
