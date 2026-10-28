@@ -1,0 +1,71 @@
+{
+ "photo": "/showcase/products/photo.jpg",
+ "width": 1152,
+ "height": 1536,
+ "items": [
+  {
+   "id": 0,
+   "name": "Laura Mercier Translucent powder box",
+   "category": "beauty",
+   "areaPct": 3.42,
+   "glb": "/showcase/products/0.glb",
+   "crop": "/showcase/products/0.png"
+  },
+  {
+   "id": 1,
+   "name": "Laura Mercier loose powder jar",
+   "category": "beauty",
+   "areaPct": 1.84,
+   "glb": "/showcase/products/1.glb",
+   "crop": "/showcase/products/1.png"
+  },
+  {
+   "id": 3,
+   "name": "Givenchy L'Interdit perfume sample card",
+   "category": "beauty",
+   "areaPct": 3.32,
+   "glb": "/showcase/products/3.glb",
+   "crop": "/showcase/products/3.png"
+  },
+  {
+   "id": 4,
+   "name": "Makeup brush",
+   "category": "beauty",
+   "areaPct": 0.52,
+   "glb": "/showcase/products/4.glb",
+   "crop": "/showcase/products/4.png"
+  },
+  {
+   "id": 5,
+   "name": "YSL perfume bottle",
+   "category": "beauty",
+   "areaPct": 0.83,
+   "glb": "/showcase/products/5.glb",
+   "crop": "/showcase/products/5.png"
+  },
+  {
+   "id": 7,
+   "name": "YSL perfume bottle",
+   "category": "beauty",
+   "areaPct": 0.81,
+   "glb": "/showcase/products/7.glb",
+   "crop": "/showcase/products/7.png"
+  },
+  {
+   "id": 8,
+   "name": "e.l.f. concealer tube",
+   "category": "beauty",
+   "areaPct": 1.18,
+   "glb": "/showcase/products/8.glb",
+   "crop": "/showcase/products/8.png"
+  },
+  {
+   "id": 9,
+   "name": "e.l.f. eyeshadow palette",
+   "category": "beauty",
+   "areaPct": 1.67,
+   "glb": "/showcase/products/9.glb",
+   "crop": "/showcase/products/9.png"
+  }
+ ]
+}

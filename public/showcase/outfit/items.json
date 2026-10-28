@@ -1,0 +1,47 @@
+{
+ "photo": "/showcase/outfit/photo.jpg",
+ "width": 1536,
+ "height": 1536,
+ "items": [
+  {
+   "id": 1,
+   "name": "beige perforated flat shoe - top",
+   "category": "footwear",
+   "areaPct": 2.72,
+   "glb": "/showcase/outfit/1.glb",
+   "crop": "/showcase/outfit/1.png"
+  },
+  {
+   "id": 2,
+   "name": "beige perforated flat shoe - bottom",
+   "category": "footwear",
+   "areaPct": 2.79,
+   "glb": "/showcase/outfit/2.glb",
+   "crop": "/showcase/outfit/2.png"
+  },
+  {
+   "id": 3,
+   "name": "black glitter clutch",
+   "category": "bag",
+   "areaPct": 3.04,
+   "glb": "/showcase/outfit/3.glb",
+   "crop": "/showcase/outfit/3.png"
+  },
+  {
+   "id": 4,
+   "name": "black wristwatch",
+   "category": "accessory",
+   "areaPct": 0.62,
+   "glb": "/showcase/outfit/4.glb",
+   "crop": "/showcase/outfit/4.png"
+  },
+  {
+   "id": 5,
+   "name": "eyeshadow palette",
+   "category": "beauty",
+   "areaPct": 0.23,
+   "glb": "/showcase/outfit/5.glb",
+   "crop": "/showcase/outfit/5.png"
+  }
+ ]
+}

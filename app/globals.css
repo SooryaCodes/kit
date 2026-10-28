@@ -2,24 +2,30 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Kit: one red ramp, bone ground, near-black red ink. Display Unbounded, text Onest. */
+/* Kit · Studio. Seamless-paper neutrals, warm near-black ink, one cobalt ramp.
+   Display Instrument Serif (roman + italic), text Hanken Grotesk. */
 
 @theme inline {
-  --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-unbounded), var(--font-onest), sans-serif;
-  --font-heading: var(--font-display);
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-heading: var(--font-serif);
 
-  --color-red-50: #fdf3f2;
-  --color-red-100: #fbe3e0;
-  --color-red-200: #f5c2bc;
-  --color-red-300: #ec9188;
-  --color-red-500: #dc1928;
-  --color-red-600: #bd1a24;
-  --color-red-700: #952625;
-  --color-red-900: #4a1514;
-  --color-bone: #f6f1ee;
-  --color-ink: #2a1110;
-  --color-ink-muted: #6b524c;
+  --color-paper: #f4f2ee;
+  --color-paper-deep: #e7e4de;
+  --color-paper-shade: #dedad3;
+  --color-ink: #161514;
+  --color-ink-soft: #3b3834;
+  --color-ink-muted: #5c5852;
+  --color-ink-faint: #8a857d;
+
+  --color-cobalt-50: #eef0ff;
+  --color-cobalt-100: #dfe3ff;
+  --color-cobalt-200: #c2caff;
+  --color-cobalt-300: #9aa6ff;
+  --color-cobalt-500: #2b44ff;
+  --color-cobalt-600: #2236d6;
+  --color-cobalt-700: #1a2aa6;
+  --color-cobalt-900: #0e1660;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -53,58 +59,56 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* one radius for the whole product: square-ish, decided once */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-2xl: 16px;
-  --radius-3xl: 24px;
-  --radius-4xl: 32px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
+  --radius-4xl: 44px;
 
-  --text-display: clamp(3.25rem, 1rem + 9vw, 8.75rem);
+  --text-display: clamp(3.5rem, 1.2rem + 8.4vw, 9.25rem);
   --text-display--line-height: 0.88;
-  --text-display--letter-spacing: -0.03em;
-  --text-head: clamp(2rem, 1.3rem + 3.2vw, 4rem);
-  --text-head--line-height: 1;
-  --text-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
-  --text-lead--line-height: 1.35;
-  --text-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
-  --text-body--line-height: 1.55;
+  --text-display--letter-spacing: -0.025em;
+  --text-title: clamp(2.5rem, 1.4rem + 4.4vw, 5.5rem);
+  --text-title--line-height: 0.92;
+  --text-title--letter-spacing: -0.02em;
+  --text-lead: clamp(1.125rem, 1.02rem + 0.45vw, 1.375rem);
+  --text-lead--line-height: 1.5;
 }
 
 :root {
-  --background: #f6f1ee;
-  --foreground: #2a1110;
-  --card: #ffffff;
-  --card-foreground: #2a1110;
-  --popover: #ffffff;
-  --popover-foreground: #2a1110;
-  --primary: #dc1928;
+  --background: #f4f2ee;
+  --foreground: #161514;
+  --card: #fbfaf8;
+  --card-foreground: #161514;
+  --popover: #fbfaf8;
+  --popover-foreground: #161514;
+  --primary: #2b44ff;
   --primary-foreground: #ffffff;
-  --secondary: #fbe3e0;
-  --secondary-foreground: #4a1514;
-  --muted: #fdf3f2;
-  --muted-foreground: #6b524c;
-  --accent: #fbe3e0;
-  --accent-foreground: #4a1514;
-  --destructive: #952625;
-  --border: #ead9d5;
-  --input: #ead9d5;
-  --ring: #dc1928;
-  --chart-1: #dc1928;
-  --chart-2: #952625;
-  --chart-3: #ec9188;
-  --chart-4: #f5c2bc;
-  --chart-5: #4a1514;
-  --sidebar: #fdf3f2;
-  --sidebar-foreground: #2a1110;
-  --sidebar-primary: #dc1928;
+  --secondary: #e7e4de;
+  --secondary-foreground: #161514;
+  --muted: #ece9e4;
+  --muted-foreground: #5c5852;
+  --accent: #eef0ff;
+  --accent-foreground: #1a2aa6;
+  --destructive: #b42318;
+  --border: #dedad3;
+  --input: #dedad3;
+  --ring: #2b44ff;
+  --chart-1: #2b44ff;
+  --chart-2: #1a2aa6;
+  --chart-3: #9aa6ff;
+  --chart-4: #c2caff;
+  --chart-5: #0e1660;
+  --sidebar: #f4f2ee;
+  --sidebar-foreground: #161514;
+  --sidebar-primary: #2b44ff;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fbe3e0;
-  --sidebar-accent-foreground: #4a1514;
-  --sidebar-border: #ead9d5;
-  --sidebar-ring: #dc1928;
+  --sidebar-accent: #e7e4de;
+  --sidebar-accent-foreground: #161514;
+  --sidebar-border: #dedad3;
+  --sidebar-ring: #2b44ff;
 }
 
 @layer base {
@@ -116,37 +120,39 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-size: var(--text-body);
+    font-size: 17px;
     line-height: 1.55;
   }
   ::selection {
-    background: var(--color-red-500);
+    background: var(--color-cobalt-500);
     color: #fff;
   }
 }
 
+/* Editorial serif display: roman for statements, italic for the turn of phrase. */
 @utility font-display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -0.03em;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.025em;
 }
 
-/* the light low-opacity grid the whole product sits on */
+/* Seamless paper sweep: lighter where the light falls, deeper at the edges. */
+@utility bg-studio {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(120% 90% at 50% 38%, #f6f4f1 0%, #e9e6e0 68%, #dfdbd4 100%);
+}
+
+/* The light low-opacity grid the product sits on. */
 @utility bg-grid {
-  background-color: var(--background);
   background-image:
-    linear-gradient(to right, rgb(42 17 16 / 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(42 17 16 / 0.05) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, rgb(22 21 20 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(22 21 20 / 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-@utility bg-grid-on-red {
-  background-color: var(--color-red-500);
-  background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.07) 1px, transparent 1px);
-  background-size: 32px 32px;
+/* Objects resting on the paper: a contact shadow plus a soft cast shadow. */
+@utility shadow-object {
+  filter: drop-shadow(0 30px 28px rgb(40 30 20 / 0.2)) drop-shadow(0 6px 6px rgb(40 30 20 / 0.16));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -156,5 +162,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

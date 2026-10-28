@@ -1,0 +1,63 @@
+{
+ "photo": "/showcase/desk/photo.jpg",
+ "width": 1536,
+ "height": 961,
+ "items": [
+  {
+   "id": 0,
+   "name": "Zero to One book",
+   "category": "book",
+   "areaPct": 6.42,
+   "glb": "/showcase/desk/0.glb",
+   "crop": "/showcase/desk/0.png"
+  },
+  {
+   "id": 1,
+   "name": "Laptop with stickers",
+   "category": "electronics",
+   "areaPct": 14.08,
+   "glb": "/showcase/desk/1.glb",
+   "crop": "/showcase/desk/1.png"
+  },
+  {
+   "id": 2,
+   "name": "Wireless keyboard",
+   "category": "electronics",
+   "areaPct": 6.98,
+   "glb": "/showcase/desk/2.glb",
+   "crop": "/showcase/desk/2.png"
+  },
+  {
+   "id": 4,
+   "name": "Smartphone",
+   "category": "electronics",
+   "areaPct": 2.19,
+   "glb": "/showcase/desk/4.glb",
+   "crop": "/showcase/desk/4.png"
+  },
+  {
+   "id": 6,
+   "name": "Wireless mouse",
+   "category": "electronics",
+   "areaPct": 1.17,
+   "glb": "/showcase/desk/6.glb",
+   "crop": "/showcase/desk/6.png"
+  },
+  {
+   "id": 9,
+   "name": "Pen 1",
+   "category": "stationery",
+   "areaPct": 0.27,
+   "glb": "/showcase/desk/9.glb",
+   "crop": "/showcase/desk/9.png"
+  },
+  {
+   "id": 12,
+   "name": "Wallet with cards",
+   "category": "accessory",
+   "areaPct": 0.37,
+   "glb": "/showcase/desk/12.glb",
+   "crop": "/showcase/desk/12.png"
+  }
+ ]
+}

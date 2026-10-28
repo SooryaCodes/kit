@@ -1,0 +1,135 @@
+{
+ "photo": "/showcase/sneakers/photo.jpg",
+ "width": 1536,
+ "height": 1024,
+ "items": [
+  {
+   "id": 0,
+   "name": "beige chunky sneaker - right",
+   "category": "footwear",
+   "areaPct": 1.73,
+   "glb": "/showcase/sneakers/0.glb",
+   "crop": "/showcase/sneakers/0.png"
+  },
+  {
+   "id": 6,
+   "name": "white sneaker - lower right lower",
+   "category": "footwear",
+   "areaPct": 1.27,
+   "glb": "/showcase/sneakers/6.glb",
+   "crop": "/showcase/sneakers/6.png"
+  },
+  {
+   "id": 7,
+   "name": "white Nike sneaker - right",
+   "category": "footwear",
+   "areaPct": 1.57,
+   "glb": "/showcase/sneakers/7.glb",
+   "crop": "/showcase/sneakers/7.png"
+  },
+  {
+   "id": 8,
+   "name": "white Nike sneaker - left",
+   "category": "footwear",
+   "areaPct": 1.39,
+   "glb": "/showcase/sneakers/8.glb",
+   "crop": "/showcase/sneakers/8.png"
+  },
+  {
+   "id": 9,
+   "name": "white sneaker with black collar - left",
+   "category": "footwear",
+   "areaPct": 1.27,
+   "glb": "/showcase/sneakers/9.glb",
+   "crop": "/showcase/sneakers/9.png"
+  },
+  {
+   "id": 10,
+   "name": "white Fila sneaker - left bottom",
+   "category": "footwear",
+   "areaPct": 1.71,
+   "glb": "/showcase/sneakers/10.glb",
+   "crop": "/showcase/sneakers/10.png"
+  },
+  {
+   "id": 11,
+   "name": "white Fila sneaker - right bottom",
+   "category": "footwear",
+   "areaPct": 1.85,
+   "glb": "/showcase/sneakers/11.glb",
+   "crop": "/showcase/sneakers/11.png"
+  },
+  {
+   "id": 12,
+   "name": "white Adidas sneaker - left",
+   "category": "footwear",
+   "areaPct": 1.82,
+   "glb": "/showcase/sneakers/12.glb",
+   "crop": "/showcase/sneakers/12.png"
+  },
+  {
+   "id": 13,
+   "name": "white Adidas sneaker - right",
+   "category": "footwear",
+   "areaPct": 1.46,
+   "glb": "/showcase/sneakers/13.glb",
+   "crop": "/showcase/sneakers/13.png"
+  },
+  {
+   "id": 14,
+   "name": "white sneaker with black collar - right",
+   "category": "footwear",
+   "areaPct": 1.26,
+   "glb": "/showcase/sneakers/14.glb",
+   "crop": "/showcase/sneakers/14.png"
+  },
+  {
+   "id": 15,
+   "name": "white sneaker - center bottom right",
+   "category": "footwear",
+   "areaPct": 1.35,
+   "glb": "/showcase/sneakers/15.glb",
+   "crop": "/showcase/sneakers/15.png"
+  },
+  {
+   "id": 16,
+   "name": "white sneaker - lower right upper",
+   "category": "footwear",
+   "areaPct": 1.41,
+   "glb": "/showcase/sneakers/16.glb",
+   "crop": "/showcase/sneakers/16.png"
+  },
+  {
+   "id": 17,
+   "name": "white sneaker - center bottom left",
+   "category": "footwear",
+   "areaPct": 1.37,
+   "glb": "/showcase/sneakers/17.glb",
+   "crop": "/showcase/sneakers/17.png"
+  },
+  {
+   "id": 43,
+   "name": "purple and white sneaker - left",
+   "category": "footwear",
+   "areaPct": 1.31,
+   "glb": "/showcase/sneakers/43.glb",
+   "crop": "/showcase/sneakers/43.png"
+  },
+  {
+   "id": 44,
+   "name": "tan hiking boot - left",
+   "category": "footwear",
+   "areaPct": 1.46,
+   "glb": "/showcase/sneakers/44.glb",
+   "crop": "/showcase/sneakers/44.png"
+  },
+  {
+   "id": 45,
+   "name": "tan hiking boot - right",
+   "category": "footwear",
+   "areaPct": 1.52,
+   "glb": "/showcase/sneakers/45.glb",
+   "crop": "/showcase/sneakers/45.png"
+  }
+ ]
+}

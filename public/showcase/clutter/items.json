@@ -1,0 +1,103 @@
+{
+ "photo": "/showcase/clutter/photo.jpg",
+ "width": 1536,
+ "height": 1154,
+ "items": [
+  {
+   "id": 0,
+   "name": "Black TV remote control",
+   "category": "electronics",
+   "areaPct": 2.61,
+   "glb": "/showcase/clutter/0.glb",
+   "crop": "/showcase/clutter/0.png"
+  },
+  {
+   "id": 2,
+   "name": "Brown leather wallet",
+   "category": "bag",
+   "areaPct": 2.11,
+   "glb": "/showcase/clutter/2.glb",
+   "crop": "/showcase/clutter/2.png"
+  },
+  {
+   "id": 4,
+   "name": "White ceramic cup",
+   "category": "other",
+   "areaPct": 1.14,
+   "glb": "/showcase/clutter/4.glb",
+   "crop": "/showcase/clutter/4.png"
+  },
+  {
+   "id": 5,
+   "name": "Round tin container",
+   "category": "other",
+   "areaPct": 1.7,
+   "glb": "/showcase/clutter/5.glb",
+   "crop": "/showcase/clutter/5.png"
+  },
+  {
+   "id": 8,
+   "name": "Black Siemens phone",
+   "category": "electronics",
+   "areaPct": 1.08,
+   "glb": "/showcase/clutter/8.glb",
+   "crop": "/showcase/clutter/8.png"
+  },
+  {
+   "id": 10,
+   "name": "Samsung flip phone",
+   "category": "electronics",
+   "areaPct": 1.1,
+   "glb": "/showcase/clutter/10.glb",
+   "crop": "/showcase/clutter/10.png"
+  },
+  {
+   "id": 12,
+   "name": "Tan embossed wallet",
+   "category": "bag",
+   "areaPct": 1.54,
+   "glb": "/showcase/clutter/12.glb",
+   "crop": "/showcase/clutter/12.png"
+  },
+  {
+   "id": 13,
+   "name": "Patterned brown wallet",
+   "category": "bag",
+   "areaPct": 1.91,
+   "glb": "/showcase/clutter/13.glb",
+   "crop": "/showcase/clutter/13.png"
+  },
+  {
+   "id": 16,
+   "name": "White KFC MP3 player",
+   "category": "electronics",
+   "areaPct": 1.07,
+   "glb": "/showcase/clutter/16.glb",
+   "crop": "/showcase/clutter/16.png"
+  },
+  {
+   "id": 17,
+   "name": "Black shoe brush",
+   "category": "tool",
+   "areaPct": 2.7,
+   "glb": "/showcase/clutter/17.glb",
+   "crop": "/showcase/clutter/17.png"
+  },
+  {
+   "id": 19,
+   "name": "Brown leather pouch",
+   "category": "bag",
+   "areaPct": 3.06,
+   "glb": "/showcase/clutter/19.glb",
+   "crop": "/showcase/clutter/19.png"
+  },
+  {
+   "id": 26,
+   "name": "Silver Nokia phone",
+   "category": "electronics",
+   "areaPct": 1.32,
+   "glb": "/showcase/clutter/26.glb",
+   "crop": "/showcase/clutter/26.png"
+  }
+ ]
+}
