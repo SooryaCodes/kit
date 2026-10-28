@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { findShop, saveShop } from "@/lib/client/my-shops";
 import type { EditorPage, EditorProduct, PagePatch } from "@/lib/shop/editor";
+import type { PriceCheck } from "@/lib/shop/price";
 import { ShopManager } from "./shop-manager";
 
 type Load = { kind: "loading"; message: string } | { kind: "ready" } | { kind: "error"; message: string };
@@ -37,6 +38,7 @@ function ProductRow({
   count,
   onChange,
   onMove,
+  onCheckPrice,
 }: {
   product: EditorProduct;
   mode: "shop" | "creator";
@@ -44,8 +46,10 @@ function ProductRow({
   count: number;
   onChange: (patch: Partial<EditorProduct>) => void;
   onMove: (dir: -1 | 1) => void;
+  onCheckPrice: () => Promise<PriceCheck | null>;
 }) {
   const sizeCm = product.sizeM === null ? "" : String(Math.round(product.sizeM * 1000) / 10);
+  const [price, setPrice] = useState<{ state: "idle" | "checking" | "none" | "error"; check?: PriceCheck; message?: string }>({ state: "idle" });
   return (
     <li className={`flex flex-col gap-4 rounded-3xl bg-card p-5 transition-opacity ${product.hidden ? "opacity-55" : ""}`}>
       <div className="flex items-start gap-4">
@@ -100,6 +104,43 @@ function ProductRow({
             </Field>
           </div>
           <p className="-mt-2 text-[13px] text-ink-muted">Kit estimated the size. Measure and correct it: it sets the real size in &quot;See it in your room&quot;.</p>
+          <div className="-mt-1 flex flex-col gap-2 rounded-2xl bg-paper px-4 py-3">
+            {price.check ? (
+              <>
+                <p className="text-[14px] text-ink">
+                  Similar products sell for <strong>₹{price.check.low.toLocaleString("en-IN")} to ₹{price.check.high.toLocaleString("en-IN")}</strong> online. {price.check.note}
+                </p>
+                <ul className="flex flex-col gap-1">
+                  {price.check.sources.map((src) => (
+                    <li key={src.url} className="truncate text-[13px]">
+                      <a href={src.url} target="_blank" rel="noopener noreferrer" className="text-cobalt-600 underline underline-offset-4">
+                        {src.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <button
+                type="button"
+                disabled={price.state === "checking"}
+                onClick={async () => {
+                  setPrice({ state: "checking" });
+                  try {
+                    const check = await onCheckPrice();
+                    setPrice(check ? { state: "idle", check } : { state: "none" });
+                  } catch (err) {
+                    setPrice({ state: "error", message: err instanceof Error ? err.message : "Couldn't check prices." });
+                  }
+                }}
+                className="self-start text-[14px] font-medium text-cobalt-600 disabled:opacity-60"
+              >
+                {price.state === "checking" ? "Searching shops online…" : "Check prices online"}
+              </button>
+            )}
+            {price.state === "none" && <p className="text-[13px] text-ink-muted">Couldn&apos;t find enough real listings to suggest a range. Price it your way.</p>}
+            {price.state === "error" && <p className="text-[13px] text-ink-muted">{price.message}</p>}
+          </div>
           <Field label="Description">
             <textarea value={product.description ?? ""} onChange={(e) => onChange({ description: e.target.value.slice(0, 400) || null })} rows={2} className={`${input} resize-none`} />
           </Field>
@@ -280,7 +321,16 @@ export function ShopEditor({ jobId }: { jobId: string }) {
           </h2>
           <ul className="flex flex-col gap-3">
             {page.products.map((p, i) => (
-              <ProductRow key={p.id} product={p} mode={page.mode} index={i} count={page.products.length} onChange={(patch) => setProduct(p.id, patch)} onMove={(dir) => move(i, dir)} />
+              <ProductRow
+                key={p.id}
+                product={p}
+                mode={page.mode}
+                index={i}
+                count={page.products.length}
+                onChange={(patch) => setProduct(p.id, patch)}
+                onMove={(dir) => move(i, dir)}
+                onCheckPrice={async () => (await api<{ check: PriceCheck | null }>(`/api/pages/${page.id}/price`, token, { method: "POST", body: JSON.stringify({ itemId: p.id }) })).check}
+              />
             ))}
           </ul>
         </section>
