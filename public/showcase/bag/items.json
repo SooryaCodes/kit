@@ -1,0 +1,161 @@
+{
+ "photo": "/showcase/bag/photo.jpg",
+ "width": 1536,
+ "height": 1296,
+ "items": [
+  {
+   "id": 0,
+   "name": "Backpack",
+   "category": "bag",
+   "box": null,
+   "areaPct": 11.21,
+   "glb": "/showcase/bag/0.glb",
+   "crop": "/showcase/bag/0.png",
+   "reconstructMs": 29392,
+   "kb": 195
+  },
+  {
+   "id": 1,
+   "name": "Laptop with keyboard",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 5.36,
+   "glb": "/showcase/bag/1.glb",
+   "crop": "/showcase/bag/1.png",
+   "reconstructMs": 29392,
+   "kb": 181
+  },
+  {
+   "id": 2,
+   "name": "Notebook",
+   "category": "stationery",
+   "box": null,
+   "areaPct": 2.31,
+   "glb": "/showcase/bag/2.glb",
+   "crop": "/showcase/bag/2.png",
+   "reconstructMs": 29392,
+   "kb": 179
+  },
+  {
+   "id": 3,
+   "name": "Smartphone",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 0.83,
+   "glb": "/showcase/bag/3.glb",
+   "crop": "/showcase/bag/3.png",
+   "reconstructMs": 29392,
+   "kb": 170
+  },
+  {
+   "id": 6,
+   "name": "Headphones",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 1.08,
+   "glb": "/showcase/bag/6.glb",
+   "crop": "/showcase/bag/6.png",
+   "reconstructMs": 29392,
+   "kb": 292
+  },
+  {
+   "id": 7,
+   "name": "Cables pouch",
+   "category": "bag",
+   "box": null,
+   "areaPct": 1.02,
+   "glb": "/showcase/bag/7.glb",
+   "crop": "/showcase/bag/7.png",
+   "reconstructMs": 29392,
+   "kb": 184
+  },
+  {
+   "id": 8,
+   "name": "Power bank",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 0.77,
+   "glb": "/showcase/bag/8.glb",
+   "crop": "/showcase/bag/8.png",
+   "reconstructMs": 29392,
+   "kb": 171
+  },
+  {
+   "id": 9,
+   "name": "Pen 3",
+   "category": "stationery",
+   "box": null,
+   "areaPct": 0.12,
+   "glb": "/showcase/bag/9.glb",
+   "crop": "/showcase/bag/9.png",
+   "reconstructMs": 29392,
+   "kb": 70
+  },
+  {
+   "id": 10,
+   "name": "Pen 2",
+   "category": "stationery",
+   "box": null,
+   "areaPct": 0.13,
+   "glb": "/showcase/bag/10.glb",
+   "crop": "/showcase/bag/10.png",
+   "reconstructMs": 29392,
+   "kb": 94
+  },
+  {
+   "id": 11,
+   "name": "Pen 1",
+   "category": "stationery",
+   "box": null,
+   "areaPct": 0.11,
+   "glb": "/showcase/bag/11.glb",
+   "crop": "/showcase/bag/11.png",
+   "reconstructMs": 29392,
+   "kb": 88
+  },
+  {
+   "id": 12,
+   "name": "E-reader",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 1.37,
+   "glb": "/showcase/bag/12.glb",
+   "crop": "/showcase/bag/12.png",
+   "reconstructMs": 29392,
+   "kb": 177
+  },
+  {
+   "id": 13,
+   "name": "External hard drive",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 1.1,
+   "glb": "/showcase/bag/13.glb",
+   "crop": "/showcase/bag/13.png",
+   "reconstructMs": 29392,
+   "kb": 183
+  },
+  {
+   "id": 14,
+   "name": "Flexible tripod",
+   "category": "tool",
+   "box": null,
+   "areaPct": 0.48,
+   "glb": "/showcase/bag/14.glb",
+   "crop": "/showcase/bag/14.png",
+   "reconstructMs": 29392,
+   "kb": 194
+  },
+  {
+   "id": 15,
+   "name": "USB drive with lanyard",
+   "category": "electronics",
+   "box": null,
+   "areaPct": 0.3,
+   "glb": "/showcase/bag/15.glb",
+   "crop": "/showcase/bag/15.png",
+   "reconstructMs": 29392,
+   "kb": 187
+  }
+ ]
+}
