@@ -133,10 +133,16 @@ export function startOfUtcDay(d = new Date()): Date {
 
 /** Per-job spend tracker. Create one with startJob() before any paid call for that job. */
 export class JobBudget {
-  spent = 0;
+  spent: number;
   private inFlight = 0;
   readonly lines: Array<{ provider: Provider; model: string; usd: number; label?: string }> = [];
-  constructor(readonly jobId: string) {}
+  /** `spent` carries what earlier requests already spent on this job (from jobs.cost). */
+  constructor(
+    readonly jobId: string,
+    spent = 0,
+  ) {
+    this.spent = spent;
+  }
 
   /** Throws cap_items when a job would reconstruct more items than allowed. */
   assertItems(n: number): void {
@@ -180,6 +186,23 @@ export async function startJob(jobId: string, opts: { recordStart?: boolean } = 
   if (today >= c.MAX_JOBS_PER_DAY) throw new BudgetError("cap_jobs_per_day", `${today} jobs today, cap ${c.MAX_JOBS_PER_DAY}`);
   if (opts.recordStart !== false) await appendJsonl(JOBS_FILE, { job_id: jobId, created_at: new Date().toISOString() });
   return new JobBudget(jobId);
+}
+
+/** Continues a job in a later request (confirm, webhook): kill switch only, spend carried over. */
+export function resumeJob(jobId: string, spent: number): JobBudget {
+  if (config().AI_DISABLED) throw new BudgetError("ai_disabled", "AI_DISABLED is set");
+  return new JobBudget(jobId, spent);
+}
+
+/** USD recorded for one provider since a moment (used to pick fast or cheap 3D). */
+export async function spendSince(provider: Provider, since: Date): Promise<number> {
+  if (supabaseConfigured()) {
+    const { data, error } = await supabaseAdmin().from("api_spend").select("cost_usd").eq("provider", provider).gte("created_at", since.toISOString());
+    if (!error && data) return round(data.reduce((s, r) => s + Number(r.cost_usd), 0));
+    log.error("could not read api_spend, using local ledger", { error: error?.message });
+  }
+  const rows = await readJsonl<SpendEntry>(LEDGER_FILE);
+  return round(rows.filter((r) => r.provider === provider && new Date(r.created_at) >= since).reduce((s, r) => s + r.usd, 0));
 }
 
 // ── paid call wrapper ───────────────────────────────────────────────────────

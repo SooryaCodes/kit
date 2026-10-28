@@ -35,6 +35,10 @@ const Schema = z.object({
   MAX_JOBS_PER_DAY: count(40),
   MAX_JOBS_PER_IP_PER_HOUR: count(5),
   ADMIN_TOKEN: z.string().min(16).optional(),
+  // 3D mode: per-item "fast" calls until this much fal spend today, then one "cheap" combined call per photo
+  FAST_3D_DAILY_USD: usd(3),
+  // public https origin fal can POST webhooks to; unset (or localhost) means results are polled instead
+  NEXT_PUBLIC_APP_URL: z.url().optional(),
 
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 });
