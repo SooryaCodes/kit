@@ -58,8 +58,7 @@ export function StudioEditor({ job }: { job: JobView }) {
   const [exportDpr, setExportDpr] = useState<number | null>(null);
   const set = (patch: Partial<ReelSettings>) => setSettings((s) => ({ ...s, ...patch }));
 
-  const photo = job.photo ?? { width: 1536, height: 1296 };
-  const entries = useMemo(() => layoutItems(job.items, photo, settings), [job.items, photo, settings]);
+  const entries = useMemo(() => layoutItems(job.items, job.photo ?? { width: 1536, height: 1296 }, settings), [job.items, job.photo, settings]);
   const portrait = settings.format === "9:16";
   const busy = phase.kind === "render" || phase.kind === "upload";
 
