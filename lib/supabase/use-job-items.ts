@@ -3,19 +3,10 @@
 // Live item list for one job: initial fetch, then Supabase Realtime changes on items.
 
 import { useEffect, useState } from "react";
+import type { Tables } from "../database.types";
 import { supabaseBrowser } from "./client";
 
-export interface JobItem {
-  id: string;
-  job_id: string;
-  idx: number;
-  name: string;
-  status: "pending" | "segmented" | "reconstructing" | "ready" | "fallback" | "failed";
-  crop_url: string | null;
-  glb_url: string | null;
-  confidence: number | null;
-  [key: string]: unknown;
-}
+export type JobItem = Tables<"items">;
 
 export function useJobItems(jobId: string): { items: JobItem[]; error: string | null } {
   const [items, setItems] = useState<JobItem[]>([]);
