@@ -1,11 +1,8 @@
 // Service-role Supabase client. Server only: bypasses row level security.
 
+import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { config, secret } from "../env";
-
-if (typeof window !== "undefined") {
-  throw new Error("lib/supabase/server must not be imported from client code");
-}
 
 let client: SupabaseClient | undefined;
 

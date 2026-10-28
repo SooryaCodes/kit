@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "spike": "tsx scripts/spike.ts"
+    "spike": "tsx --conditions=react-server scripts/spike.ts",
+    "verify:supabase": "tsx --conditions=react-server scripts/verify-supabase.ts",
+    "test:budget": "tsx --conditions=react-server scripts/budget-selftest.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

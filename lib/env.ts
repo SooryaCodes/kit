@@ -2,11 +2,8 @@
 // Values come from .env.local locally and from the host's env settings in production.
 // Keys are never logged; errors name the variable, never its value.
 
+import "server-only";
 import { z } from "zod";
-
-if (typeof window !== "undefined") {
-  throw new Error("lib/env is server-only and must not be imported from client code");
-}
 
 const bool = z
   .enum(["true", "false", "1", "0", ""])
