@@ -165,3 +165,68 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Landing motion. Transform and opacity only; reduced motion keeps every finished state. */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@keyframes kit-line-rise {
+  from { transform: translateY(105%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes kit-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes kit-settle {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@utility kit-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+@utility kit-line-inner {
+  display: block;
+  animation: kit-line-rise 1s var(--ease-expo) both;
+}
+
+@utility kit-load {
+  animation: kit-fade-up 0.8s var(--ease-out) both;
+}
+
+@utility kit-settle {
+  animation: kit-settle 1.1s var(--ease-expo) both;
+}
+
+/* Section entrances: armed only after hydration and only below the fold, so nothing hides without script. */
+[data-armed] [data-r] {
+  opacity: 0;
+  transform: translateY(22px);
+}
+[data-armed][data-shown] [data-r] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s var(--ease-out), transform 0.9s var(--ease-expo);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+/* Pills: press and hover. */
+@utility kit-press {
+  transition: transform 140ms var(--ease-out), background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  &:hover { transform: translateY(-1px); }
+  &:active { transform: translateY(0) scale(0.97); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-armed] [data-r] { opacity: 1; transform: none; }
+}
