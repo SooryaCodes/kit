@@ -1,9 +1,12 @@
 // POST /api/jobs: multipart { photo, template } → creates the job and starts detection after responding.
+// A photo that already has a finished job replays it instead: no model calls, no caps.
 
 import { after, NextResponse } from "next/server";
 import { BudgetError } from "@/lib/budget";
 import { checkCanStart, createJob, runDetect } from "@/lib/jobs/detect";
+import { createReplayJob, findReplaySource, runReplayDetect } from "@/lib/jobs/replay";
 import { createLogger, errorMessage } from "@/lib/log";
+import { photoFromBuffer } from "@/lib/pipeline/photo";
 import { checkJobRateLimit, clientIp } from "@/lib/rate-limit";
 import { isTemplateId } from "@/lib/templates";
 
@@ -23,9 +26,18 @@ export async function POST(req: Request) {
     if (!photo.type.startsWith("image/")) return NextResponse.json({ error: "That file isn't a photo." }, { status: 415 });
     if (!isTemplateId(template)) return NextResponse.json({ error: "Pick a template." }, { status: 400 });
 
+    const prepared = await photoFromBuffer(Buffer.from(await photo.arrayBuffer()));
+    // a photo Kit has already finished (the sample bag, or the same picture again) replays for free
+    const source = await findReplaySource(prepared.hash);
+    if (source) {
+      const id = await createReplayJob(source, template);
+      after(() => runReplayDetect(id));
+      return NextResponse.json({ id });
+    }
+
     await checkCanStart();
     await checkJobRateLimit(clientIp(req.headers));
-    const { id, photo: prepared } = await createJob(Buffer.from(await photo.arrayBuffer()), template);
+    const id = await createJob(prepared, template);
     after(() => runDetect(id, prepared).catch(() => undefined));
     return NextResponse.json({ id });
   } catch (err) {

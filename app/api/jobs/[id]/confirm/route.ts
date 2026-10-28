@@ -1,9 +1,10 @@
 // POST /api/jobs/:id/confirm { keep: number[], renames?: { [idx]: name } } → submits the 3D jobs.
 
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { z } from "zod";
 import { BudgetError } from "@/lib/budget";
 import { submitReconstruction } from "@/lib/jobs/reconstruct";
+import { confirmReplay, replaySourceOf, runReplayBuild } from "@/lib/jobs/replay";
 import { createLogger, errorMessage } from "@/lib/log";
 
 export const runtime = "nodejs";
@@ -21,6 +22,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!body.success) return NextResponse.json({ error: "Pick at least one item." }, { status: 400 });
   try {
     const renames = Object.fromEntries(Object.entries(body.data.renames ?? {}).map(([k, v]) => [Number(k), v]));
+    if (await replaySourceOf(id)) {
+      const result = await confirmReplay(id, body.data.keep, renames);
+      after(() => runReplayBuild(id));
+      return NextResponse.json({ mode: "fast", ...result });
+    }
     const result = await submitReconstruction(id, body.data.keep, { renames });
     return NextResponse.json(result);
   } catch (err) {

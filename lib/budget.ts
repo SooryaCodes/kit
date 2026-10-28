@@ -116,7 +116,8 @@ async function jobsSince(since: Date): Promise<number> {
     const { count, error } = await supabaseAdmin()
       .from("jobs")
       .select("id", { count: "exact", head: true })
-      .gte("created_at", since.toISOString());
+      .gte("created_at", since.toISOString())
+      .is("cost->>replayOf", null); // replays of finished photos cost nothing
     if (!error && count !== null) return count;
     log.error("could not count jobs, using local ledger", { error: error?.message });
   }

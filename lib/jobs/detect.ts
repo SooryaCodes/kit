@@ -19,15 +19,14 @@ import { failJob, jobCostTotal, paths, recordJobCost } from "./shared";
 
 const log = createLogger("jobs:detect");
 
-export async function createJob(upload: Buffer, template: TemplateId): Promise<{ id: string; photo: Photo }> {
-  const photo = await photoFromBuffer(upload);
+export async function createJob(photo: Photo, template: TemplateId): Promise<string> {
   const db = supabaseAdmin();
   const { data: job, error } = await db.from("jobs").insert({ template, status: "uploaded", photo_hash: photo.hash }).select("id").single();
   if (error || !job) throw new Error(`could not create job: ${error?.message}`);
   await uploadFile("photos", paths.photo(job.id), photo.bytes, "image/jpeg");
   await db.from("jobs").update({ photo_path: paths.photo(job.id) }).eq("id", job.id);
   log.info("job created", { job: job.id, template, width: photo.width, height: photo.height });
-  return { id: job.id, photo };
+  return job.id;
 }
 
 /** The job row already exists, so it counts itself toward the daily cap. */
