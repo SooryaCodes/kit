@@ -232,7 +232,9 @@ export type Database = {
           job_id: string
           mp4_path: string | null
           preset: string | null
+          settings: Json
           share_slug: string | null
+          title: string | null
           world_path: string | null
         }
         Insert: {
@@ -242,7 +244,9 @@ export type Database = {
           job_id: string
           mp4_path?: string | null
           preset?: string | null
+          settings?: Json
           share_slug?: string | null
+          title?: string | null
           world_path?: string | null
         }
         Update: {
@@ -252,7 +256,9 @@ export type Database = {
           job_id?: string
           mp4_path?: string | null
           preset?: string | null
+          settings?: Json
           share_slug?: string | null
+          title?: string | null
           world_path?: string | null
         }
         Relationships: [
