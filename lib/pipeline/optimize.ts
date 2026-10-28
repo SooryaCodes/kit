@@ -1,9 +1,10 @@
 // Shrink a GLB for the web: dedup, weld, simplify to a triangle budget,
 // WebP textures at 512px, meshopt compression. Client decodes with MeshoptDecoder.
+// SAM 3D Objects GLBs ship without normals (lit materials render black), so we add them.
 
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
-import { dedup, getBounds, meshopt, prune, simplify, textureCompress, weld } from "@gltf-transform/functions";
+import { dedup, getBounds, meshopt, normals, prune, simplify, textureCompress, weld } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from "meshoptimizer";
 import sharp from "sharp";
 
@@ -59,6 +60,7 @@ export async function optimizeGlb(input: Buffer, targetTriangles = 5000): Promis
     dedup(),
     weld(),
     simplify({ simplifier: MeshoptSimplifier, ratio, error: 0.002 }),
+    normals({ overwrite: false }),
     textureCompress({ encoder: sharp, targetFormat: "webp", resize: [512, 512], quality: 85 }),
     prune(),
     meshopt({ encoder: MeshoptEncoder, level: "medium" }),
