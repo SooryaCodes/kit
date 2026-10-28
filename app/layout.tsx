@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Onest, Unbounded } from "next/font/google";
 import "./globals.css";
+import "./motion.css";
 
 const unbounded = Unbounded({ variable: "--font-unbounded", subsets: ["latin"], weight: ["800"], display: "swap" });
 const onest = Onest({ variable: "--font-onest", subsets: ["latin"], weight: ["400", "500", "600"], display: "swap" });
