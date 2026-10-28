@@ -19,6 +19,7 @@
     "@gltf-transform/core": "^4.5.1",
     "@gltf-transform/extensions": "^4.5.1",
     "@gltf-transform/functions": "^4.5.1",
+    "@google/model-viewer": "4.4.0",
     "@meta-sam/parser": "^0.1.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
