@@ -46,8 +46,52 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          created_at: string
+          id: number
+          item_id: string | null
+          page_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          item_id?: string | null
+          page_id: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          item_id?: string | null
+          page_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       items: {
         Row: {
+          description: string | null
+          display_order: number | null
+          hidden: boolean
+          real_size_m: number | null
+          styled_image_path: string | null
           box: Json | null
           brand: string | null
           category: string | null
@@ -72,6 +116,11 @@ export type Database = {
           user_edited: boolean
         }
         Insert: {
+          description?: string | null
+          display_order?: number | null
+          hidden?: boolean
+          real_size_m?: number | null
+          styled_image_path?: string | null
           box?: Json | null
           brand?: string | null
           category?: string | null
@@ -96,6 +145,11 @@ export type Database = {
           user_edited?: boolean
         }
         Update: {
+          description?: string | null
+          display_order?: number | null
+          hidden?: boolean
+          real_size_m?: number | null
+          styled_image_path?: string | null
           box?: Json | null
           brand?: string | null
           category?: string | null
@@ -223,6 +277,88 @@ export type Database = {
           response?: Json
         }
         Relationships: []
+      }
+      page_secrets: {
+        Row: {
+          edit_token_hash: string
+          page_id: string
+        }
+        Insert: {
+          edit_token_hash: string
+          page_id: string
+        }
+        Update: {
+          edit_token_hash?: string
+          page_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_secrets_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: true
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          affiliate_tag: string | null
+          avatar_path: string | null
+          created_at: string
+          handle: string | null
+          id: string
+          job_id: string
+          mode: string
+          og_image_path: string | null
+          published: boolean
+          slug: string
+          theme: string
+          title: string
+          updated_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          affiliate_tag?: string | null
+          avatar_path?: string | null
+          created_at?: string
+          handle?: string | null
+          id?: string
+          job_id: string
+          mode?: string
+          og_image_path?: string | null
+          published?: boolean
+          slug: string
+          theme?: string
+          title: string
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          affiliate_tag?: string | null
+          avatar_path?: string | null
+          created_at?: string
+          handle?: string | null
+          id?: string
+          job_id?: string
+          mode?: string
+          og_image_path?: string | null
+          published?: boolean
+          slug?: string
+          theme?: string
+          title?: string
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reels: {
         Row: {
