@@ -1,20 +1,33 @@
 "use client";
 
-import { Bounds, OrbitControls, useGLTF, View } from "@react-three/drei";
+import { Bounds, OrbitControls, PerspectiveCamera, useGLTF, View } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
 import type { Quality, Ratings, SpikeItem, SpikePhoto, SpikeReport } from "./types";
 
 type Variant = "optimized" | "raw" | "single";
 
-function Model({ url }: { url: string }) {
+function Model({ url, unlit }: { url: string; unlit: boolean }) {
   const { scene } = useGLTF(url);
-  // useGLTF caches by URL; a three.js object has one parent, so each view needs its own copy
-  const copy = useMemo(() => scene.clone(true), [scene]);
+  // useGLTF caches by URL; a three.js object has one parent, so each view needs its own copy.
+  // Unlit shows the photo-baked texture as captured, without our lights on top.
+  const copy = useMemo(() => {
+    const root = scene.clone(true);
+    if (unlit) {
+      root.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        const src = mesh.material as THREE.MeshStandardMaterial;
+        mesh.material = new THREE.MeshBasicMaterial({ map: src.map ?? null, color: src.map ? 0xffffff : src.color, side: THREE.DoubleSide });
+      });
+    }
+    return root;
+  }, [scene, unlit]);
   return <primitive object={copy} />;
 }
 
-function ItemView({ item, variant, spin }: { item: SpikeItem; variant: Variant; spin: boolean }) {
+function ItemView({ item, variant, spin, unlit }: { item: SpikeItem; variant: Variant; spin: boolean; unlit: boolean }) {
   const url = variant === "raw" ? item.glbRaw : variant === "single" ? (item.glbPerItem ?? item.glb) : item.glb;
   if (!url) {
     return (
@@ -25,12 +38,14 @@ function ItemView({ item, variant, spin }: { item: SpikeItem; variant: Variant; 
   }
   return (
     <View className="h-56 w-full rounded-lg bg-gradient-to-b from-white to-blue-50">
+      {/* SAM 3D keeps the photo's camera frame: for top-down shots the photographed face points up */}
+      <PerspectiveCamera makeDefault position={[0, 2.4, 1.6]} fov={35} />
       <ambientLight intensity={1.4} />
       <directionalLight position={[3, 5, 4]} intensity={1.6} />
       <directionalLight position={[-4, 2, -3]} intensity={0.6} />
       <Suspense fallback={null}>
         <Bounds fit clip observe margin={1.25}>
-          <Model url={url} />
+          <Model url={url} unlit={unlit} />
         </Bounds>
       </Suspense>
       <OrbitControls makeDefault autoRotate={spin} autoRotateSpeed={2} />
@@ -49,6 +64,7 @@ function ItemCard(props: {
   item: SpikeItem;
   variant: Variant;
   spin: boolean;
+  unlit: boolean;
   rating?: Quality;
   onRate: (q: Quality) => void;
 }) {
@@ -56,7 +72,7 @@ function ItemCard(props: {
   const kb = (b?: number) => (b ? `${Math.round(b / 1024)} KB` : "?");
   return (
     <div className="rounded-xl border border-neutral-200 bg-white/90 p-2 shadow-sm">
-      <ItemView item={item} variant={props.variant} spin={props.spin} />
+      <ItemView item={item} variant={props.variant} spin={props.spin} unlit={props.unlit} />
       <div className="mt-2 flex gap-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.crop} alt="" className="h-14 w-14 shrink-0 rounded bg-[repeating-conic-gradient(#eee_0_25%,#fff_0_50%)] bg-[length:10px_10px] object-contain" />
@@ -91,7 +107,7 @@ function ItemCard(props: {
   );
 }
 
-function PhotoSection(props: { photo: SpikePhoto; variant: Variant; spin: boolean; ratings: Ratings; onRate: (key: string, q: Quality) => void }) {
+function PhotoSection(props: { photo: SpikePhoto; variant: Variant; spin: boolean; unlit: boolean; ratings: Ratings; onRate: (key: string, q: Quality) => void }) {
   const { photo, ratings } = props;
   const rated = photo.items.filter((i) => ratings[`${photo.slug}/${i.index}`]);
   const good = rated.filter((i) => ratings[`${photo.slug}/${i.index}`] === "good").length;
@@ -149,6 +165,7 @@ function PhotoSection(props: { photo: SpikePhoto; variant: Variant; spin: boolea
               item={item}
               variant={props.variant}
               spin={props.spin}
+              unlit={props.unlit}
               rating={ratings[`${photo.slug}/${item.index}`]}
               onRate={(q) => props.onRate(`${photo.slug}/${item.index}`, q)}
             />
@@ -163,6 +180,7 @@ export function SpikeViewer({ report, initialRatings }: { report: SpikeReport; i
   const container = useRef<HTMLDivElement>(null!);
   const [variant, setVariant] = useState<Variant>("optimized");
   const [spin, setSpin] = useState(true);
+  const [unlit, setUnlit] = useState(true);
   const [ratings, setRatings] = useState<Ratings>(initialRatings);
   const s = report.summary;
   const allRated = Object.values(ratings);
@@ -194,11 +212,14 @@ export function SpikeViewer({ report, initialRatings }: { report: SpikeReport; i
           <button onClick={() => setSpin((x) => !x)} className={`rounded-md px-3 py-1 ${spin ? "bg-blue-100 text-blue-900" : "text-neutral-600"}`}>
             spin
           </button>
+          <button onClick={() => setUnlit((x) => !x)} className={`rounded-md px-3 py-1 ${unlit ? "bg-blue-100 text-blue-900" : "text-neutral-600"}`}>
+            unlit
+          </button>
         </div>
       </header>
 
       {report.reports.map((photo) => (
-        <PhotoSection key={photo.slug} photo={photo} variant={variant} spin={spin} ratings={ratings} onRate={rate} />
+        <PhotoSection key={photo.slug} photo={photo} variant={variant} spin={spin} unlit={unlit} ratings={ratings} onRate={rate} />
       ))}
 
       <Canvas eventSource={container} className="!pointer-events-none !fixed !inset-0" camera={{ position: [0, 0, 3], fov: 40 }}>
