@@ -41,3 +41,6 @@ pnpm-debug.log*
 # Spike output (generated locally)
 /public/spike/
 /spike-report.json
+
+# Design tool working files
+/.taste-skill/
