@@ -20,3 +20,12 @@ export function formatPrice(price: number, currency: string): string {
 export function isInAppBrowser(userAgent: string): boolean {
   return /Instagram|FBAN|FBAV|FB_IAB|WhatsApp|Line\//i.test(userAgent);
 }
+
+export type ReferenceKind = "phone" | "a4" | "laptop";
+
+/** The everyday object a product is shown beside in its size picture, with its real dimensions. */
+export function referenceFor(sizeM: number): { kind: ReferenceKind; label: string; widthCm: number; heightCm: number } {
+  if (sizeM <= 0.18) return { kind: "phone", label: "a phone", widthCm: 7.1, heightCm: 14.7 };
+  if (sizeM <= 0.34) return { kind: "a4", label: "an A4 sheet", widthCm: 21, heightCm: 29.7 };
+  return { kind: "laptop", label: "a 14-inch laptop", widthCm: 32.3, heightCm: 22.5 };
+}

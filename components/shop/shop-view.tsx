@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { formatPrice, formatSize, isInAppBrowser, whatsappOrderUrl } from "@/lib/shop/links";
+import { formatPrice, formatSize, isInAppBrowser, referenceFor, whatsappOrderUrl } from "@/lib/shop/links";
 import type { SampleNote } from "@/lib/shop/samples";
 import type { Shop, ShopProduct } from "@/lib/shop/shops";
 import { track } from "@/lib/shop/track";
@@ -103,9 +103,14 @@ function ProductSheet({ shop, product, pageUrl, onClose }: { shop: Shop; product
             </p>
           )}
           {product.description && <p className="max-w-[40ch] text-[16px] text-ink">{product.description}</p>}
-          {product.sizeImageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.sizeImageUrl} alt={`${product.name} next to everyday objects, to scale`} className="w-full rounded-2xl" />
+          {product.sizeImageUrl && product.sizeM !== null && (
+            <figure className="flex w-full flex-col gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={product.sizeImageUrl} alt={`${product.name} next to ${referenceFor(product.sizeM).label}, to scale`} className="w-full rounded-2xl" />
+              <figcaption className="text-[13px] text-ink-muted">
+                To scale: {formatSize(product.sizeM)} next to {referenceFor(product.sizeM).label}. Each mark on the bar is 1 cm.
+              </figcaption>
+            </figure>
           )}
           {shop.published && <AskBox slug={shop.slug} product={product} onOrderMessage={setOrderMessage} />}
           {inApp && product.arUrl && (

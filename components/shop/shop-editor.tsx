@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { findShop, saveShop } from "@/lib/client/my-shops";
 import type { EditorPage, EditorProduct, PagePatch } from "@/lib/shop/editor";
+import { ShopManager } from "./shop-manager";
 
 type Load = { kind: "loading"; message: string } | { kind: "ready" } | { kind: "error"; message: string };
 
@@ -223,6 +224,17 @@ export function ShopEditor({ jobId }: { jobId: string }) {
           </h1>
           <p className="max-w-[44ch] text-[17px] text-ink-muted">Check each product, add prices, then publish. You get one link for your bio, WhatsApp and status.</p>
         </div>
+
+        {page.published && token && (
+          <ShopManager
+            pageId={page.id}
+            token={token}
+            onApplied={async () => {
+              setPage(await api<EditorPage>(`/api/pages/${page.id}`, token));
+              setPreviewKey((k) => k + 1);
+            }}
+          />
+        )}
 
         <section className="flex flex-col gap-4 rounded-3xl bg-card p-6">
           <div className="grid gap-4 sm:grid-cols-2">
