@@ -253,12 +253,17 @@ function Build({ job }: { job: JobView }) {
       </div>
 
       {all ? (
-        <Link href={`/j/${job.id}/studio`} className="rounded-full bg-cobalt-500 px-8 py-4 text-[18px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97]">
-          Make it a Reel
-        </Link>
+        <div className="flex flex-col items-center gap-2">
+          <Link href={`/j/${job.id}/shop`} className="rounded-full bg-cobalt-500 px-8 py-4 text-[18px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97]">
+            Make your shop link
+          </Link>
+          <Link href={`/j/${job.id}/studio`} className="rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-muted transition-colors hover:text-ink">
+            Or make a Reel
+          </Link>
+        </div>
       ) : (
         <p className="max-w-md text-[15px] text-ink-muted">
-          SAM 3D Objects rebuilds each item as a textured 3D model. They appear one by one as they finish. You can leave this page; your Reel keeps building.
+          SAM 3D Objects rebuilds each item as a textured 3D model. They appear one by one as they finish. You can leave this page; your products keep building.
         </p>
       )}
 

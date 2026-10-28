@@ -27,10 +27,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title, description, openGraph: { title, description, images: image ? [{ url: image }] : [] } };
 }
 
-export default async function ShopPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ShopPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ preview?: string }> }) {
   const { slug } = await params;
+  const { preview } = await searchParams;
   if (!SLUG.test(slug)) notFound();
-  const shop = await getShop(slug);
+  // the editor previews a draft with its edit token; everyone else sees published pages only
+  const shop = await getShop(slug, { previewToken: preview });
   if (!shop) notFound();
   return <ShopView shop={shop} pageUrl={await pageUrl(slug)} />;
 }

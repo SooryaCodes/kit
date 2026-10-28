@@ -2,7 +2,7 @@
 
 /** wa.me link with the order message prefilled. Digits only in the path, as WhatsApp requires. */
 export function whatsappOrderUrl(number: string, product: { name: string; price: number | null; currency: string }, pageUrl: string): string {
-  const price = product.price === null ? "" : ` (${product.currency}${product.price})`;
+  const price = product.price === null ? "" : ` (${formatPrice(product.price, product.currency)})`;
   const text = `Hi, I'd like ${product.name}${price} from ${pageUrl}`;
   return `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
 }

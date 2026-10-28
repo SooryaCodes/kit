@@ -48,11 +48,16 @@ export function newEditToken(): string {
   return randomBytes(24).toString("base64url");
 }
 
-/** The shop for a slug, or null. Unpublished shops are returned only when `includeDraft` is set (editor preview). */
-export async function getShop(slug: string, opts: { includeDraft?: boolean } = {}): Promise<Shop | null> {
+/** The shop for a slug, or null. A draft is returned only with its edit token (the editor's preview). */
+export async function getShop(slug: string, opts: { previewToken?: string } = {}): Promise<Shop | null> {
   const db = supabaseAdmin();
   const { data: page } = await db.from("pages").select("*").eq("slug", slug).maybeSingle();
-  if (!page || (!page.published && !opts.includeDraft)) return null;
+  if (!page) return null;
+  if (!page.published) {
+    if (!opts.previewToken) return null;
+    const { data: secret } = await db.from("page_secrets").select("edit_token_hash").eq("page_id", page.id).maybeSingle();
+    if (secret?.edit_token_hash !== hashToken(opts.previewToken)) return null;
+  }
 
   const { data: items } = await db
     .from("items")
@@ -77,7 +82,7 @@ export async function getShop(slug: string, opts: { includeDraft?: boolean } = {
         cutoutUrl: i.crop_path ? await signedUrl("crops", i.crop_path, SIX_HOURS) : null,
         styledUrl: i.styled_image_path ? publicUrl("covers", i.styled_image_path) : null,
         glbUrl: publicUrl("glbs", i.glb_path!),
-        arUrl: i.real_size_m ? `/api/ar/${i.id}` : null,
+        arUrl: page.published && i.real_size_m ? `/api/ar/${i.id}` : null,
       })),
   );
 

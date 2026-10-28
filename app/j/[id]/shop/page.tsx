@@ -1,0 +1,25 @@
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+import { AppHeader } from "@/components/app/app-header";
+import { ShopEditor } from "@/components/shop/shop-editor";
+import { getJobView } from "@/lib/jobs/view";
+
+export const metadata: Metadata = { title: "Your shop page · Kit" };
+export const dynamic = "force-dynamic";
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export default async function ShopEditorPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (!UUID.test(id)) notFound();
+  const job = await getJobView(id);
+  if (!job) notFound();
+  if (job.status !== "ready") redirect(`/j/${id}`);
+  return (
+    <main className="bg-studio relative isolate min-h-svh">
+      <div className="bg-grid pointer-events-none fixed inset-0 -z-10" aria-hidden />
+      <AppHeader />
+      <ShopEditor jobId={id} />
+    </main>
+  );
+}
