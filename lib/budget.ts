@@ -85,7 +85,7 @@ export async function spendByProvider(): Promise<Record<Provider, number>> {
   if (supabaseConfigured()) {
     const { data, error } = await supabaseAdmin().rpc("spend_by_provider");
     if (!error && Array.isArray(data)) {
-      for (const row of data as Array<{ provider: Provider; usd: number }>) totals[row.provider] = Number(row.usd);
+      for (const row of data as Array<{ provider: Provider; cost_usd: number }>) totals[row.provider] = Number(row.cost_usd);
       return totals;
     }
     log.error("could not read api_spend, using local ledger", { error: error?.message });
@@ -98,7 +98,9 @@ async function recordSpend(entry: SpendEntry): Promise<void> {
   // the local ledger is always written; it is the source of truth when Supabase is down
   await appendJsonl(LEDGER_FILE, entry);
   if (supabaseConfigured()) {
-    const { error } = await supabaseAdmin().from("api_spend").insert(entry);
+    const { error } = await supabaseAdmin()
+      .from("api_spend")
+      .insert({ provider: entry.provider, model: entry.model, cost_usd: entry.usd, job_id: entry.job_id, label: entry.label, created_at: entry.created_at });
     if (error) log.error("api_spend insert failed (kept in local ledger)", { error: error.message });
   }
 }
