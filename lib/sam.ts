@@ -101,6 +101,8 @@ async function segment(image: SamImage, text: string, label: string, job?: JobBu
   const key = hash(META_MODELS.sam, image.hash, text);
   const { value, hit } = await cached("sam", key, () =>
     paid({ provider: "meta", model: META_MODELS.sam, estimateUsd: PRICES["sam-3.1-image"], job, label: `sam ${label}` }, () => run(image, text)),
+    // shared store: serverless /tmp is wiped per instance, and identical masks keep the 3D cache keys stable
+    { store: "db" },
   );
   const ms = Math.round(performance.now() - start);
   log.info("segmented", { prompt: label, matches: value.length, ms, cached: hit });
