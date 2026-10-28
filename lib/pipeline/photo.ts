@@ -12,7 +12,10 @@ export interface Photo extends SamImage {
 }
 
 export async function loadPhoto(file: string, maxSide = 1536): Promise<Photo> {
-  const input = await readFile(file);
+  return photoFromBuffer(await readFile(file), maxSide, file);
+}
+
+export async function photoFromBuffer(input: Buffer, maxSide = 1536, label = "upload"): Promise<Photo> {
   const meta = await sharp(input).rotate().metadata();
   const bytes = await sharp(input)
     .rotate()
@@ -20,7 +23,7 @@ export async function loadPhoto(file: string, maxSide = 1536): Promise<Photo> {
     .jpeg({ quality: 90 })
     .toBuffer();
   const out = await sharp(bytes).metadata();
-  if (!out.width || !out.height) throw new Error(`Could not read size of ${file}`);
+  if (!out.width || !out.height) throw new Error(`Could not read size of ${label}`);
   return {
     bytes,
     width: out.width,
