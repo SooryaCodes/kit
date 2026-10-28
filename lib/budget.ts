@@ -10,6 +10,7 @@
 
 import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { CACHE_ROOT } from "./cache";
 import { round } from "./cost";
 import { config } from "./env";
 import { createLogger, errorMessage } from "./log";
@@ -60,8 +61,8 @@ export interface SpendEntry {
 
 // ── ledger store ────────────────────────────────────────────────────────────
 
-const LEDGER_FILE = path.join(process.cwd(), ".cache", "spend.jsonl");
-const JOBS_FILE = path.join(process.cwd(), ".cache", "jobs.jsonl");
+const LEDGER_FILE = path.join(CACHE_ROOT, "spend.jsonl");
+const JOBS_FILE = path.join(CACHE_ROOT, "jobs.jsonl");
 
 async function readJsonl<T>(file: string): Promise<T[]> {
   try {
@@ -75,9 +76,14 @@ async function readJsonl<T>(file: string): Promise<T[]> {
   }
 }
 
+/** Best-effort: on serverless the local ledger is a per-instance scratch copy; api_spend is the record. */
 async function appendJsonl(file: string, row: unknown): Promise<void> {
-  await mkdir(path.dirname(file), { recursive: true });
-  await appendFile(file, JSON.stringify(row) + "\n");
+  try {
+    await mkdir(path.dirname(file), { recursive: true });
+    await appendFile(file, JSON.stringify(row) + "\n");
+  } catch (err) {
+    log.warn("local ledger write failed", { file, error: errorMessage(err) });
+  }
 }
 
 export async function spendByProvider(): Promise<Record<Provider, number>> {

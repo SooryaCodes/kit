@@ -196,7 +196,7 @@ export async function listItems(photo: Photo, job?: JobBudget, prefer: Lister = 
     const model = lister === "open" ? basetenModel() : META_MODELS.spark;
     try {
       const key = hash("list-items-v1", model, PROMPT, photo.hash);
-      const { value, hit } = await cached("list-items", key, () => listWith(lister, photo, job));
+      const { value, hit } = await cached("list-items", key, () => listWith(lister, photo, job), { store: "db" });
       const items = value.list.items.map((it) => ({ ...it, pixelBox: toPixels(it.box, photo.width, photo.height) }));
       log.info("listed", { model, items: items.length, usd: value.usd, attempts: value.attempts, cached: hit });
       return { items, model, usd: hit ? 0 : value.usd, cached: hit, attempts: value.attempts, usage: value.usage };

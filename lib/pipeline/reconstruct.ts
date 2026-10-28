@@ -9,13 +9,13 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { paid, type JobBudget } from "../budget";
-import { cached, cachedBytes, hash } from "../cache";
+import { CACHE_ROOT, cached, cachedBytes, hash } from "../cache";
 import { PRICES } from "../cost";
 import { SAM_3D_OBJECTS, falClient, type Sam3dObjectsInput, type Sam3dObjectsOutput } from "../fal";
 import { createLogger, errorMessage } from "../log";
 
 const log = createLogger("reconstruct");
-const PENDING_DIR = path.join(process.cwd(), ".cache", "models", "sam3d-pending");
+const PENDING_DIR = path.join(CACHE_ROOT, "models", "sam3d-pending");
 
 export interface ReconstructOptions {
   textured: boolean;
@@ -39,8 +39,12 @@ async function readPending(key: string): Promise<string | undefined> {
 }
 
 async function writePending(key: string, requestId: string): Promise<void> {
-  await mkdir(PENDING_DIR, { recursive: true });
-  await writeFile(path.join(PENDING_DIR, `${key}.json`), JSON.stringify({ requestId, at: new Date().toISOString() }));
+  try {
+    await mkdir(PENDING_DIR, { recursive: true });
+    await writeFile(path.join(PENDING_DIR, `${key}.json`), JSON.stringify({ requestId, at: new Date().toISOString() }));
+  } catch (err) {
+    log.warn("pending marker write failed", { error: errorMessage(err) });
+  }
 }
 
 /** `cacheKeyParts` must identify the image and masks by content, not by their (expiring) URLs. */
