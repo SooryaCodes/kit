@@ -474,6 +474,26 @@ async function runPhoto(file: string, args: Args): Promise<PhotoReport> {
   return report;
 }
 
+async function writeReport(reports: PhotoReport[], args: Args) {
+  const items = reports.flatMap((r) => r.items);
+  const withGlb = items.filter((i) => i.glb);
+  const totalUsd = round(reports.reduce((s, r) => s + r.totalUsd, 0));
+  const summary = {
+    runAt: new Date().toISOString(),
+    settings: args,
+    photos: reports.length,
+    items: items.length,
+    glbs: withGlb.length,
+    totalUsd,
+    usdPerItem: items.length ? round(totalUsd / items.length) : 0,
+    usdPerPhoto: round(totalUsd / reports.length),
+    avgSecondsPerPhoto: Math.round(reports.reduce((s, r) => s + r.totalMs, 0) / reports.length / 100) / 10,
+  };
+  await writeFile(path.join(OUT_DIR, "report.json"), JSON.stringify({ summary, reports }, null, 2));
+  await copyFile(path.join(OUT_DIR, "report.json"), path.join(process.cwd(), "spike-report.json"));
+  return summary;
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const files = (await readdir(PHOTOS_DIR))
@@ -490,6 +510,8 @@ async function main() {
   for (const f of files) {
     const r = await runPhoto(f, args);
     reports.push(r);
+    // write after every photo so /spike shows results while a long run continues
+    await writeReport(reports, args);
     // a provider or daily cap will refuse every later photo too; stop instead of hammering it
     if (r.status === "budget_exceeded" && !/cap_job|cap_items/.test(r.error ?? "")) {
       log.error("stopping run: budget guard refused", { error: r.error });
@@ -497,24 +519,7 @@ async function main() {
     }
   }
 
-  const items = reports.flatMap((r) => r.items);
-  const withGlb = items.filter((i) => i.glb);
-  const totalUsd = round(reports.reduce((s, r) => s + r.totalUsd, 0));
-  const summary = {
-    runAt: new Date().toISOString(),
-    settings: args,
-    photos: reports.length,
-    items: items.length,
-    glbs: withGlb.length,
-    totalUsd,
-    usdPerItem: items.length ? round(totalUsd / items.length) : 0,
-    usdPerPhoto: round(totalUsd / reports.length),
-    avgSecondsPerPhoto: Math.round(reports.reduce((s, r) => s + r.totalMs, 0) / reports.length / 100) / 10,
-  };
-  const out = { summary, reports };
-  const json = JSON.stringify(out, null, 2);
-  await writeFile(path.join(OUT_DIR, "report.json"), json);
-  await copyFile(path.join(OUT_DIR, "report.json"), path.join(process.cwd(), "spike-report.json"));
+  const summary = await writeReport(reports, args);
   log.info("spike done", summary);
   log.info("budget after run", await spendSummary());
 }
