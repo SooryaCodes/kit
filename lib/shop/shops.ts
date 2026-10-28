@@ -19,6 +19,10 @@ export interface ShopProduct {
   sizeM: number | null;
   /** buy link for creator pages */
   link: string | null;
+  /** short offer badge the seller approved, like "₹50 off" */
+  offer: string | null;
+  /** true-size picture next to everyday objects */
+  sizeImageUrl: string | null;
   cutoutUrl: string | null;
   styledUrl: string | null;
   glbUrl: string;
@@ -61,7 +65,7 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
 
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, currency, description, real_size_m, link, crop_path, styled_image_path, glb_path, display_order, hidden, status")
+    .select("id, idx, name, price, currency, description, real_size_m, link, offer_label, size_image_path, crop_path, styled_image_path, glb_path, display_order, hidden, status")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .eq("hidden", false)
@@ -79,6 +83,8 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
         description: i.description,
         sizeM: i.real_size_m === null ? null : Number(i.real_size_m),
         link: i.link,
+        offer: i.offer_label,
+        sizeImageUrl: i.size_image_path ? publicUrl("covers", i.size_image_path) : null,
         cutoutUrl: i.crop_path ? await signedUrl("crops", i.crop_path, SIX_HOURS) : null,
         styledUrl: i.styled_image_path ? publicUrl("covers", i.styled_image_path) : null,
         glbUrl: publicUrl("glbs", i.glb_path!),

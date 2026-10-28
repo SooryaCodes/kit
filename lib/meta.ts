@@ -8,6 +8,7 @@ import { config, secret } from "./env";
 // which must never happen with users' photos; lib/budget.ts refuses them.
 export const META_MODELS = {
   spark: "muse-spark-1.3",
+  wonder: "muse-wonder-1.0",
   sam: "sam-3.1",
   image: "muse-image-1.0",
 } as const;

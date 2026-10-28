@@ -9,6 +9,7 @@ import { formatPrice, formatSize, isInAppBrowser, whatsappOrderUrl } from "@/lib
 import type { SampleNote } from "@/lib/shop/samples";
 import type { Shop, ShopProduct } from "@/lib/shop/shops";
 import { track } from "@/lib/shop/track";
+import { AskBox } from "./ask-box";
 import { ProductModel } from "./product-model";
 
 function Avatar({ shop }: { shop: Shop }) {
@@ -38,6 +39,7 @@ function ProductCard({ product, onOpen }: { product: ShopProduct; onOpen: () => 
           />
         )}
         <span className="absolute bottom-3 right-3 rounded-full bg-card/90 px-2.5 py-1 text-[12px] font-semibold text-ink-soft">3D</span>
+        {product.offer && <span className="absolute left-3 top-3 rounded-full bg-cobalt-500 px-2.5 py-1 text-[12px] font-semibold text-white">{product.offer}</span>}
       </div>
       <div className="flex flex-col gap-0.5">
         <span className="text-[16px] font-medium leading-snug text-ink">{product.name}</span>
@@ -49,6 +51,7 @@ function ProductCard({ product, onOpen }: { product: ShopProduct; onOpen: () => 
 
 function ProductSheet({ shop, product, pageUrl, onClose }: { shop: Shop; product: ShopProduct; pageUrl: string; onClose: () => void }) {
   const [inApp, setInApp] = useState(false);
+  const [orderMessage, setOrderMessage] = useState<string | undefined>();
   useEffect(() => setInApp(isInAppBrowser(navigator.userAgent)), []);
   const onArStart = useCallback(() => track(shop.id, "open_ar", product.id), [shop.id, product.id]);
 
@@ -64,7 +67,7 @@ function ProductSheet({ shop, product, pageUrl, onClose }: { shop: Shop; product
 
   const order =
     shop.mode === "shop" && shop.whatsapp
-      ? { href: whatsappOrderUrl(shop.whatsapp, product, pageUrl), label: "Order on WhatsApp" }
+      ? { href: whatsappOrderUrl(shop.whatsapp, product, pageUrl, orderMessage), label: "Order on WhatsApp" }
       : product.link
         ? { href: product.link, label: "Buy" }
         : null;
@@ -87,7 +90,12 @@ function ProductSheet({ shop, product, pageUrl, onClose }: { shop: Shop; product
         <div className="flex flex-col items-center gap-4 px-6 pt-6 text-center">
           <div className="flex flex-col gap-1">
             <h2 className="font-display text-[40px] leading-[0.95] text-ink">{product.name}</h2>
-            {product.price !== null && <p className="text-[19px] text-ink-soft">{formatPrice(product.price, product.currency)}</p>}
+            {product.price !== null && (
+              <p className="text-[19px] text-ink-soft">
+                {formatPrice(product.price, product.currency)}
+                {product.offer && <span className="ml-2 rounded-full bg-cobalt-500 px-2.5 py-0.5 align-middle text-[13px] font-semibold text-white">{product.offer}</span>}
+              </p>
+            )}
           </div>
           {product.sizeM !== null && (
             <p className="text-[15px] text-ink-muted">
@@ -95,6 +103,11 @@ function ProductSheet({ shop, product, pageUrl, onClose }: { shop: Shop; product
             </p>
           )}
           {product.description && <p className="max-w-[40ch] text-[16px] text-ink">{product.description}</p>}
+          {product.sizeImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={product.sizeImageUrl} alt={`${product.name} next to everyday objects, to scale`} className="w-full rounded-2xl" />
+          )}
+          {shop.published && <AskBox slug={shop.slug} product={product} onOrderMessage={setOrderMessage} />}
           {inApp && product.arUrl && (
             <p className="rounded-2xl bg-paper px-4 py-3 text-[14px] text-ink-muted">To see it in your room, open this page in Safari or Chrome.</p>
           )}

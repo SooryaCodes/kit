@@ -16,6 +16,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_actions: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          id: string
+          item_id: string | null
+          kind: string
+          page_id: string
+          payload: Json
+          reason: string
+          report_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          item_id?: string | null
+          kind: string
+          page_id: string
+          payload?: Json
+          reason: string
+          report_id?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          item_id?: string | null
+          kind?: string
+          page_id?: string
+          payload?: Json
+          reason?: string
+          report_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_actions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_actions_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_actions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "agent_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_reports: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          id: string
+          metrics: Json
+          page_id: string
+          summary: string
+        }
+        Insert: {
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          metrics?: Json
+          page_id: string
+          summary: string
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          metrics?: Json
+          page_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_reports_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_spend: {
         Row: {
           cost_usd: number
@@ -45,6 +141,51 @@ export type Database = {
           provider?: string
         }
         Relationships: []
+      }
+      conversations: {
+        Row: {
+          answer: string
+          created_at: string
+          id: number
+          item_id: string | null
+          page_id: string
+          question: string
+          visitor_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: never
+          item_id?: string | null
+          page_id: string
+          question: string
+          visitor_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: never
+          item_id?: string | null
+          page_id?: string
+          question?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
@@ -87,6 +228,8 @@ export type Database = {
       }
       items: {
         Row: {
+          offer_label: string | null
+          size_image_path: string | null
           description: string | null
           display_order: number | null
           hidden: boolean
@@ -116,6 +259,8 @@ export type Database = {
           user_edited: boolean
         }
         Insert: {
+          offer_label?: string | null
+          size_image_path?: string | null
           description?: string | null
           display_order?: number | null
           hidden?: boolean
@@ -145,6 +290,8 @@ export type Database = {
           user_edited?: boolean
         }
         Update: {
+          offer_label?: string | null
+          size_image_path?: string | null
           description?: string | null
           display_order?: number | null
           hidden?: boolean
