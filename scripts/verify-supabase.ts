@@ -62,8 +62,12 @@ async function main() {
         })
         .subscribe(async (status) => {
           if (status === "SUBSCRIBED") {
-            const { error } = await admin.from("items").update({ status: "ready" }).eq("id", item.id);
-            if (error) reject(error);
+            // the change listener attaches a moment after SUBSCRIBED, so write a few times until one lands
+            for (let i = 0; i < 5; i++) {
+              await new Promise((r) => setTimeout(r, 1500));
+              const { error } = await admin.from("items").update({ status: i % 2 ? "segmented" : "ready" }).eq("id", item.id);
+              if (error) return reject(error);
+            }
           }
           if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") reject(new Error(`realtime ${status}`));
         });
