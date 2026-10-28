@@ -11,7 +11,7 @@ export interface Template {
   /** default Reel title */
   title: string;
   animation: AnimationPreset;
-  /** default background colour from the red ramp */
+  /** default background colour: Studio paper, ink or cobalt */
   background: string;
   /** Muse Image prompt for the themed world behind the items */
   worldPrompt: string;
@@ -28,7 +28,7 @@ export const TEMPLATES: Record<TemplateId, Template> = {
     prompt: "Empty your bag and lay everything out flat, from above.",
     title: "What's in my bag",
     animation: "fly-in",
-    background: "#dc1928",
+    background: "#e7e4de",
     worldPrompt: "a clean studio tabletop seen from above, soft daylight, minimal",
     labels: "name-brand",
   },
@@ -38,7 +38,7 @@ export const TEMPLATES: Record<TemplateId, Template> = {
     prompt: "Shoot your desk from above or at a slight angle, in good light.",
     title: "My desk setup",
     animation: "orbit",
-    background: "#952625",
+    background: "#161514",
     worldPrompt: "a calm minimal workspace backdrop, warm window light",
     labels: "name-brand",
   },
@@ -48,7 +48,7 @@ export const TEMPLATES: Record<TemplateId, Template> = {
     prompt: "Lay out the outfit: clothes, shoes and accessories, flat, from above.",
     title: "Today's fit",
     animation: "fly-in",
-    background: "#f5c2bc",
+    background: "#f4f2ee",
     worldPrompt: "a soft fashion editorial backdrop, paper texture, daylight",
     labels: "name-brand",
   },
@@ -58,7 +58,7 @@ export const TEMPLATES: Record<TemplateId, Template> = {
     prompt: "Line up your collection with a little space between each piece.",
     title: "The collection",
     animation: "knolling",
-    background: "#4a1514",
+    background: "#2b44ff",
     worldPrompt: "a museum display shelf backdrop, gallery lighting",
     labels: "name",
   },
@@ -68,7 +68,7 @@ export const TEMPLATES: Record<TemplateId, Template> = {
     prompt: "Arrange the products you sell on a plain surface, from above.",
     title: "New drop",
     animation: "knolling",
-    background: "#fdf3f2",
+    background: "#fbfaf8",
     worldPrompt: "a bright product studio backdrop, seamless paper",
     labels: "name-price",
   },
