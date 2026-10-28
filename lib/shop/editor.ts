@@ -11,6 +11,7 @@ import { supabaseAdmin } from "../supabase/server";
 import { downloadFile, publicUrl, signedUrl } from "../supabase/storage";
 import { arModelUrl } from "./ar";
 import { describeProducts } from "./details";
+import { makeStyledShot } from "./images";
 import { hashToken, newEditToken } from "./shops";
 
 const log = createLogger("shop:editor");
@@ -221,17 +222,28 @@ export async function updatePage(pageId: string, token: string | null, patch: Pa
   return getEditorPage(pageId, token);
 }
 
-/** Builds every real-size AR model ahead of the first visitor, so "See it in your room" opens at once. */
-export async function warmArModels(pageId: string): Promise<void> {
+/**
+ * Gets a published page ready for visitors: every real-size AR model built ahead of the first tap, and a
+ * styled photo for each product (the real cut-out on the shop's Muse Image backdrop) for the product cards.
+ */
+export async function preparePage(pageId: string): Promise<void> {
   const db = supabaseAdmin();
   const { data: page } = await db.from("pages").select("job_id").eq("id", pageId).single();
   if (!page) return;
-  const { data: items } = await db.from("items").select("id, glb_path, real_size_m").eq("job_id", page.job_id).eq("hidden", false).eq("status", "ready");
+  const { data: items } = await db
+    .from("items")
+    .select("id, glb_path, real_size_m, crop_path, styled_image_path")
+    .eq("job_id", page.job_id)
+    .eq("hidden", false)
+    .eq("status", "ready");
   for (const item of items ?? []) {
     try {
-      await arModelUrl(item);
+      await arModelUrl({ ...item, real_size_m: item.real_size_m === null ? null : Number(item.real_size_m) });
+      if (!item.styled_image_path && item.crop_path) {
+        await db.from("items").update({ styled_image_path: await makeStyledShot(pageId, item) }).eq("id", item.id);
+      }
     } catch (err) {
-      log.warn("ar warm-up failed", { item: item.id, error: errorMessage(err) });
+      log.warn("page preparation failed for an item", { item: item.id, error: errorMessage(err) });
     }
   }
 }
