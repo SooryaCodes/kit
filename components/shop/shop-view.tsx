@@ -6,6 +6,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { formatPrice, formatSize, isInAppBrowser, whatsappOrderUrl } from "@/lib/shop/links";
+import type { SampleNote } from "@/lib/shop/samples";
 import type { Shop, ShopProduct } from "@/lib/shop/shops";
 import { track } from "@/lib/shop/track";
 import { ProductModel } from "./product-model";
@@ -114,7 +115,7 @@ function ProductSheet({ shop, product, pageUrl, onClose }: { shop: Shop; product
   );
 }
 
-export function ShopView({ shop, pageUrl }: { shop: Shop; pageUrl: string }) {
+export function ShopView({ shop, pageUrl, sample }: { shop: Shop; pageUrl: string; sample?: SampleNote }) {
   const [open, setOpen] = useState<ShopProduct | null>(null);
   const close = useCallback(() => setOpen(null), []);
 
@@ -147,6 +148,15 @@ export function ShopView({ shop, pageUrl }: { shop: Shop; pageUrl: string }) {
         ))}
       </section>
 
+      {sample && (
+        <p className="mx-auto -mt-8 mb-12 max-w-[40ch] px-5 text-center text-[14px] text-ink-muted">
+          This is a sample shop, so orders don&apos;t reach anyone.{" "}
+          <a href={sample.creditUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+            {sample.credit}
+          </a>
+          .
+        </p>
+      )}
       <footer className="flex flex-col items-center gap-2 pb-14 text-center text-[14px] text-ink-faint">
         <Link href="/" className="font-display text-[26px] leading-none text-ink">
           Kit

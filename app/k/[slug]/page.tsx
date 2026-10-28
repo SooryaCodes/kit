@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { ShopView } from "@/components/shop/shop-view";
+import { SAMPLE_SHOPS } from "@/lib/shop/samples";
 import { getShop } from "@/lib/shop/shops";
 
 export const dynamic = "force-dynamic";
@@ -34,5 +35,5 @@ export default async function ShopPage({ params, searchParams }: { params: Promi
   // the editor previews a draft with its edit token; everyone else sees published pages only
   const shop = await getShop(slug, { previewToken: preview });
   if (!shop) notFound();
-  return <ShopView shop={shop} pageUrl={await pageUrl(slug)} />;
+  return <ShopView shop={shop} pageUrl={await pageUrl(slug)} sample={SAMPLE_SHOPS[slug]} />;
 }

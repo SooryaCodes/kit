@@ -14,7 +14,7 @@ const log = createLogger("shop:details");
 
 const PROMPT = `You are helping a small seller list the products in this photo.
 For each numbered product below (its position is given as a box on a 0 to 1000 grid of the photo), return:
-- name: a short shop name a buyer would search for, 2 to 5 words. Include a brand or model only if you can read it in the photo. Never invent one. Never use position words (top, bottom, left, middle); products that look alike get the same name.
+- name: a short shop name a buyer would search for, 2 to 5 words. Include a brand or model only if you can read it in the photo. Never invent one. Use Title Case. Never use position words (top, bottom, left, middle). When products differ only in colour, start the name with the colour ("Tan Leather Sling Bag").
 - description: one sentence, at most 18 words, about the product itself: material, colour, features. Never mention the photo, the background, where it lies or how it is placed. No claims you cannot see (no "waterproof", "genuine leather" unless printed on it).
 - size_cm: your best estimate of the product's longest side in centimetres, from what the product is and its size relative to the others.
 - size_confidence: "high" when the product has a standard size (phone, A4 notebook, shoe), "medium" for typical sizes, "low" when it could vary a lot.
@@ -71,7 +71,7 @@ export async function describeProducts(
       return `${i.idx}. ${i.name} [${g(i.box.left, photo.width)}, ${g(i.box.top, photo.height)}, ${g(i.box.right, photo.width)}, ${g(i.box.bottom, photo.height)}]`;
     })
     .join("\n");
-  const key = hash("shop-details-v2", META_MODELS.spark, PROMPT, photo.hash, list);
+  const key = hash("shop-details-v3", META_MODELS.spark, PROMPT, photo.hash, list);
 
   const { value, hit } = await cached(
     "shop-details",
