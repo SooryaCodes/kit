@@ -71,7 +71,7 @@ export function InsightsTab({ page, token, onApplied, onGoShare }: { page: Edito
             <Figure value={metrics.pageViews} label="Visits" />
             <Figure value={totals.open3d} label="Opened in 3D" />
             <Figure value={totals.ar} label="Placed in a room" />
-            <Figure value={totals.asks} label="Questions" />
+            <Figure value={metrics.questions ?? totals.asks} label="Questions" />
             <Figure value={totals.orders} label="Order taps" />
           </div>
         )}

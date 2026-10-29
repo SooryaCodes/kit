@@ -34,6 +34,8 @@ export interface ProductMetrics {
 export interface ShopMetrics {
   days: number;
   pageViews: number;
+  /** every question, including ones asked about the shop rather than one product */
+  questions: number;
   products: ProductMetrics[];
 }
 
@@ -142,8 +144,10 @@ export async function shopMetrics(pageId: string, days = 7): Promise<ShopMetrics
   ]);
   const by = new Map<string, ProductMetrics>((items ?? []).map((i) => [i.id, { itemId: i.id, name: i.name, views: 0, open3d: 0, openAr: 0, questions: 0, orders: 0 }]));
   let pageViews = 0;
+  let questions = 0;
   for (const e of events ?? []) {
     if (e.type === "view") pageViews++;
+    if (e.type === "ask") questions++;
     const m = e.item_id ? by.get(e.item_id) : undefined;
     if (!m) continue;
     if (e.type === "open_3d") {
@@ -153,7 +157,7 @@ export async function shopMetrics(pageId: string, days = 7): Promise<ShopMetrics
     else if (e.type === "ask") m.questions++;
     else if (e.type === "buy") m.orders++;
   }
-  return { days, pageViews, products: [...by.values()] };
+  return { days, pageViews, questions, products: [...by.values()] };
 }
 
 export async function recentQuestions(pageId: string, limit: number) {
