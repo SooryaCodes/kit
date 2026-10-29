@@ -15,7 +15,7 @@ export function useJob(id: string) {
   const load = useCallback(async () => {
     try {
       const res = await fetch(`/api/jobs/${id}`, { cache: "no-store" });
-      if (res.status === 404) return setError("This Reel doesn't exist.");
+      if (res.status === 404) return setError("We couldn't find these products.");
       if (!res.ok) throw new Error(`load failed ${res.status}`);
       setJob((await res.json()) as JobView);
     } catch {

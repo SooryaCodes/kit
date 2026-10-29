@@ -77,7 +77,7 @@ function ActionCard({ action, onDecide }: { action: AgentAction; onDecide: (deci
   );
 }
 
-export function ShopManager({ pageId, token, onApplied }: { pageId: string; token: string; onApplied: () => void }) {
+export function ShopManager({ pageId, token, onApplied, showStats = true }: { pageId: string; token: string; onApplied: () => void; showStats?: boolean }) {
   const [report, setReport] = useState<Report | null>(null);
   const [metrics, setMetrics] = useState<ShopMetrics | null>(null);
   const [state, setState] = useState<"loading" | "idle" | "writing">("loading");
@@ -134,7 +134,7 @@ export function ShopManager({ pageId, token, onApplied }: { pageId: string; toke
         <p className="max-w-[46ch] text-[15px] text-ink-muted">Reads what customers did and asked, then suggests changes. Nothing changes until you approve it.</p>
       </div>
 
-      {metrics && totals && (
+      {showStats && metrics && totals && (
         <div className="grid grid-cols-5 gap-2">
           <Stat label="Visits" value={metrics.pageViews} />
           <Stat label="3D opens" value={totals.open3d} />

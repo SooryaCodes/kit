@@ -1,18 +1,8 @@
-import type { Metadata } from "next";
-import { AppHeader } from "@/components/app/app-header";
-import { JobScreen } from "./job-screen";
+// Finding and building products now happen inside the studio.
 
-export const metadata: Metadata = { title: "Your Reel · Kit" };
+import { redirect } from "next/navigation";
 
-export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function JobRedirect({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return (
-    <main className="bg-studio relative isolate min-h-svh">
-      <div className="bg-grid pointer-events-none fixed inset-0 -z-10" aria-hidden />
-      <AppHeader />
-      <div className="mx-auto w-full max-w-4xl px-4 pb-24 pt-8 text-center sm:px-6 sm:pt-12">
-        <JobScreen id={id} />
-      </div>
-    </main>
-  );
+  redirect(`/studio/${id}`);
 }

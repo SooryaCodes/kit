@@ -96,6 +96,7 @@ export interface EditorProduct {
   description: string | null;
   sizeM: number | null;
   link: string | null;
+  offer: string | null;
   hidden: boolean;
   order: number;
   cutoutUrl: string | null;
@@ -121,7 +122,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
   if (!page) throw new EditError(404, "page not found");
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, description, real_size_m, link, hidden, display_order, crop_path, glb_path")
+    .select("id, idx, name, price, description, real_size_m, link, offer_label, hidden, display_order, crop_path, glb_path")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .order("display_order", { ascending: true, nullsFirst: false })
@@ -143,6 +144,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
         description: i.description,
         sizeM: i.real_size_m === null ? null : Number(i.real_size_m),
         link: i.link,
+        offer: i.offer_label,
         hidden: i.hidden,
         order: i.display_order ?? n,
         cutoutUrl: i.crop_path ? await signedUrl("crops", i.crop_path, 6 * 60 * 60) : null,
@@ -175,6 +177,7 @@ export const PagePatch = z.object({
         description: z.string().trim().max(400).nullable(),
         sizeM: z.number().positive().max(9.99).nullable(),
         link: z.string().trim().url().max(500).nullable(),
+        offer: z.string().trim().max(40).nullable().optional(),
         hidden: z.boolean(),
         order: z.number().int().min(0),
       }),
@@ -214,7 +217,18 @@ export async function updatePage(pageId: string, token: string | null, patch: Pa
         .map((p) =>
           db
             .from("items")
-            .update({ name: p.name, price: p.price, currency: "₹", description: p.description, real_size_m: p.sizeM, link: p.link, hidden: p.hidden, display_order: p.order, user_edited: true })
+            .update({
+              name: p.name,
+              price: p.price,
+              currency: "₹",
+              description: p.description,
+              real_size_m: p.sizeM,
+              link: p.link,
+              ...(p.offer !== undefined ? { offer_label: p.offer || null } : {}),
+              hidden: p.hidden,
+              display_order: p.order,
+              user_edited: true,
+            })
             .eq("id", p.id),
         ),
     );

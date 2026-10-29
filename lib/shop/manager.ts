@@ -156,7 +156,7 @@ export async function shopMetrics(pageId: string, days = 7): Promise<ShopMetrics
   return { days, pageViews, products: [...by.values()] };
 }
 
-async function recentQuestions(pageId: string, limit: number) {
+export async function recentQuestions(pageId: string, limit: number) {
   const { data } = await supabaseAdmin()
     .from("conversations")
     .select("question, answer, created_at, items(name)")

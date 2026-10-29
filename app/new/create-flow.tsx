@@ -70,9 +70,9 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
       body.set("template", tpl);
       const res = await fetch("/api/jobs", { method: "POST", body });
       const data = (await res.json()) as { id?: string; error?: string };
-      if (!res.ok || !data.id) throw new Error(data.error ?? "We couldn't start this Reel. Please try again.");
+      if (!res.ok || !data.id) throw new Error(data.error ?? "We couldn't read this photo. Please try again.");
       saveReel({ id: data.id, template: tpl, createdAt: new Date().toISOString() });
-      router.push(`/j/${data.id}`);
+      router.push(`/studio/${data.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setBusy(false);

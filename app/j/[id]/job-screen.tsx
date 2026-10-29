@@ -43,7 +43,7 @@ const WORKING_COPY: Record<string, [string, string]> = {
   segmenting: ["Cutting", "them out"],
 };
 
-function Working({ job }: { job: JobView }) {
+export function Working({ job }: { job: JobView }) {
   const [a, b] = WORKING_COPY[job.status] ?? WORKING_COPY.listing!;
   return (
     <section className="flex flex-col items-center gap-8">
@@ -58,7 +58,7 @@ function Working({ job }: { job: JobView }) {
   );
 }
 
-function Detect({ job }: { job: JobView }) {
+export function Detect({ job }: { job: JobView }) {
   const [keep, setKeep] = useState<Set<number>>(() => new Set(job.items.map((i) => i.idx)));
   const [names, setNames] = useState<Record<number, string>>({});
   const [busy, setBusy] = useState(false);
@@ -92,7 +92,7 @@ function Detect({ job }: { job: JobView }) {
         <h1 className="font-display text-title">
           Found {job.items.length} <span className="italic">things</span>
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lead text-ink-muted">Tap anything you don&apos;t want in your Reel. Rename items below.</p>
+        <p className="mx-auto mt-4 max-w-xl text-lead text-ink-muted">Tap anything that isn&apos;t for sale. Rename items below.</p>
       </div>
 
       <PhotoStage job={job} dim={0.6}>
@@ -127,7 +127,7 @@ function Detect({ job }: { job: JobView }) {
                 type="button"
                 onClick={() => toggle(item.idx)}
                 aria-pressed={on}
-                aria-label={on ? "Remove from Reel" : "Add to Reel"}
+                aria-label={on ? "Leave out" : "Include"}
                 className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold transition-colors ${on ? "bg-cobalt-500 text-white" : "bg-paper-deep text-transparent"}`}
               >
                 ✓
@@ -213,7 +213,7 @@ function ItemSlot({ item, rect }: { item: JobItemView; rect: Rect }) {
   );
 }
 
-function Build({ job }: { job: JobView }) {
+export function Build({ job }: { job: JobView }) {
   const container = useRef<HTMLDivElement>(null!);
   const done = job.items.filter((i) => i.status === "ready" || i.status === "fallback").length;
   const all = job.status === "ready";
@@ -253,14 +253,9 @@ function Build({ job }: { job: JobView }) {
       </div>
 
       {all ? (
-        <div className="flex flex-col items-center gap-2">
-          <Link href={`/j/${job.id}/shop`} className="rounded-full bg-cobalt-500 px-8 py-4 text-[18px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97]">
-            Make your shop link
-          </Link>
-          <Link href={`/j/${job.id}/studio`} className="rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-muted transition-colors hover:text-ink">
-            Or make a Reel
-          </Link>
-        </div>
+        <Link href={`/studio/${job.id}`} className="rounded-full bg-cobalt-500 px-8 py-4 text-[18px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97]">
+          Open your studio
+        </Link>
       ) : (
         <p className="max-w-md text-[15px] text-ink-muted">
           SAM 3D Objects rebuilds each item as a textured 3D model. They appear one by one as they finish. You can leave this page; your products keep building.
@@ -278,7 +273,7 @@ export function JobScreen({ id }: { id: string }) {
   const { job, error } = useJob(id);
 
   if (!job) {
-    return <p className="py-32 text-center text-lead text-ink-muted">{error ?? "Loading your Reel…"}</p>;
+    return <p className="py-32 text-center text-lead text-ink-muted">{error ?? "Loading your products…"}</p>;
   }
   if (job.status === "failed" || job.status === "budget_exceeded") {
     return (
@@ -286,7 +281,7 @@ export function JobScreen({ id }: { id: string }) {
         <h1 className="font-display text-title">
           That didn&apos;t <span className="italic">work</span>
         </h1>
-        <p className="max-w-md text-lead text-ink-muted">{job.userMessage ?? "Something went wrong while building this Reel."}</p>
+        <p className="max-w-md text-lead text-ink-muted">{job.userMessage ?? "Something went wrong while building your products."}</p>
         <Link href="/new" className="rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white transition-colors hover:bg-cobalt-600">
           Try another photo
         </Link>

@@ -34,7 +34,7 @@ export function ShopsList() {
               <Link href={`/k/${s.slug}`} target="_blank" className="rounded-full px-4 py-2.5 text-[15px] font-medium text-ink-muted hover:text-ink">
                 View
               </Link>
-              <Link href={`/j/${s.jobId}/shop`} className="rounded-full bg-ink px-5 py-2.5 text-[15px] font-medium text-white">
+              <Link href={`/studio/${s.jobId}`} className="rounded-full bg-ink px-5 py-2.5 text-[15px] font-medium text-white">
                 Edit
               </Link>
             </div>

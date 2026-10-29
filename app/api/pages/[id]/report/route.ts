@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { BudgetError } from "@/lib/budget";
 import { createLogger, errorMessage } from "@/lib/log";
 import { EditError } from "@/lib/shop/editor";
-import { latestReport, runMorningReport, shopMetrics } from "@/lib/shop/manager";
+import { latestReport, recentQuestions, runMorningReport, shopMetrics } from "@/lib/shop/manager";
 import { checkToken } from "@/lib/shop/editor";
 
 export const runtime = "nodejs";
@@ -28,8 +28,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const token = req.headers.get("x-kit-edit");
     await checkToken(id, token);
-    const [report, metrics] = await Promise.all([latestReport(id, token), shopMetrics(id, 7)]);
-    return NextResponse.json({ report, metrics });
+    const [report, metrics, questions] = await Promise.all([latestReport(id, token), shopMetrics(id, 7), recentQuestions(id, 8)]);
+    return NextResponse.json({ report, metrics, questions });
   } catch (err) {
     return fail(err, id);
   }
