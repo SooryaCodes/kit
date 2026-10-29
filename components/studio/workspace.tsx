@@ -184,12 +184,12 @@ export function Workspace({ job }: { job: JobView }) {
         <Link href="/dashboard" className="flex size-9 items-center justify-center rounded-full text-[20px] text-ink-soft transition-colors hover:bg-ink/5" aria-label="Back to My shops">
           ‹
         </Link>
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2 lg:flex-none">
           <input
             value={page.title}
             onChange={(e) => setShop({ title: e.target.value.slice(0, 60) })}
             size={Math.max(6, page.title.length)}
-            className="font-display min-w-0 max-w-[60vw] rounded-lg bg-transparent px-1.5 py-1 text-[24px] leading-none text-ink outline-none hover:bg-ink/5 focus:bg-card focus:ring-2 focus:ring-cobalt-500 lg:max-w-[28ch]"
+            className="font-display min-w-0 max-w-full rounded-lg bg-transparent px-1.5 py-1 text-[24px] leading-none text-ink outline-none hover:bg-ink/5 focus:bg-card focus:ring-2 focus:ring-cobalt-500 lg:max-w-[28ch]"
             aria-label="Shop name"
           />
           <span className={`shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold ${page.published ? "bg-cobalt-50 text-cobalt-700" : "bg-paper-deep text-ink-soft"}`}>{page.published ? "Live" : "Draft"}</span>
@@ -210,7 +210,7 @@ export function Workspace({ job }: { job: JobView }) {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+        <div className="flex shrink-0 items-center gap-2 lg:ml-0">
           <span className={`hidden text-[13px] md:inline ${save === "error" ? "text-destructive" : "text-ink-muted"}`} aria-live="polite">
             {saveLabel}
           </span>

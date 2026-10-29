@@ -215,57 +215,53 @@ export function ProductsTab({
   if (!selected) return <p className="p-10 text-center text-ink-muted">No products in this photo.</p>;
 
   return (
-    <div className="grid h-full grid-rows-[auto_1fr] overflow-y-auto lg:grid-cols-[288px_minmax(0,1fr)_360px] lg:grid-rows-1 lg:overflow-hidden">
-      {/* the list */}
-      <aside className="flex min-h-0 flex-col lg:border-r lg:border-paper-deep">
+    <div className="h-full overflow-y-auto lg:grid lg:grid-cols-[288px_minmax(0,1fr)_360px] lg:overflow-hidden">
+      {/* the list: a strip of thumbnails on a phone, a column on a wide screen */}
+      <aside className="flex min-h-0 flex-col lg:overflow-hidden lg:border-r lg:border-paper-deep">
         <div className="px-4 pb-2 pt-4">
           <h1 className="text-[16px] font-semibold text-ink">
             {page.products.length} products <span className="font-normal text-ink-muted">· {shown} on the page</span>
           </h1>
           <p className={`mt-1 text-[13px] ${issues.length ? "text-cobalt-700" : "text-ink-muted"}`}>{issues[0] ?? "Every product has a price and a size. Ready to share."}</p>
         </div>
-        <ul className="flex gap-1 overflow-x-auto px-2 pb-3 lg:flex-col lg:overflow-y-auto lg:overflow-x-visible lg:pb-4 [&>li]:w-64 [&>li]:shrink-0 lg:[&>li]:w-auto">
+        <ul className="flex gap-1 overflow-x-auto px-2 pb-3 lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-visible lg:pb-4 [&>li]:w-60 [&>li]:shrink-0 lg:[&>li]:w-auto">
           {page.products.map((p) => (
             <Row key={p.id} p={p} selected={p.id === selected.id} onSelect={() => setSelectedId(p.id)} />
           ))}
         </ul>
       </aside>
 
-      <div className="flex flex-col lg:contents">
-        {/* the stage */}
-        <section className="flex min-h-0 flex-col lg:overflow-y-auto" aria-label="3D preview">
-          <div className="bg-studio relative mx-2 mt-1 flex flex-1 flex-col rounded-xl lg:mx-0 lg:mt-0 lg:rounded-none">
-            <div className="bg-grid pointer-events-none absolute inset-0 rounded-xl lg:rounded-none" aria-hidden />
-            <div className="relative flex items-center justify-between px-4 pt-3 text-[13px] text-ink-muted">
-              <span>Drag to turn. This is the model customers see.</span>
-              <span className="flex gap-1">
-                <button type="button" onClick={() => move(-1)} disabled={index <= 0} className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
-                  Move up
-                </button>
-                <button type="button" onClick={() => move(1)} disabled={index >= page.products.length - 1} className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
-                  Move down
-                </button>
-              </span>
-            </div>
-            <div className="relative mx-auto w-full max-w-[560px] flex-1 px-4">
-              {selected.glbUrl ? (
-                <ProductModel key={selected.id} src={selected.glbUrl} arSrc={null} alt={selected.name} poster={selected.cutoutUrl} />
-              ) : (
-                <p className="py-20 text-center text-ink-muted">This product has no 3D model.</p>
-              )}
-            </div>
-            <div className="relative px-4 pb-5">
-              <RealSize p={selected} />
-            </div>
-          </div>
-        </section>
+      {/* the stage */}
+      <section className="bg-studio relative mx-2 flex flex-col rounded-xl lg:mx-0 lg:min-h-0 lg:overflow-y-auto lg:rounded-none" aria-label="3D preview">
+        <div className="bg-grid pointer-events-none absolute inset-0 rounded-xl lg:rounded-none" aria-hidden />
+        <div className="relative flex items-center justify-between gap-2 px-4 pt-3 text-[13px] text-ink-muted">
+          <span>Drag to turn. This is the model customers see.</span>
+          <span className="flex shrink-0 gap-1">
+            <button type="button" onClick={() => move(-1)} disabled={index <= 0} className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
+              Up
+            </button>
+            <button type="button" onClick={() => move(1)} disabled={index >= page.products.length - 1} className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
+              Down
+            </button>
+          </span>
+        </div>
+        <div className="relative mx-auto w-full max-w-[340px] px-4 lg:flex lg:max-w-[560px] lg:flex-1 lg:items-center">
+          {selected.glbUrl ? (
+            <ProductModel key={selected.id} src={selected.glbUrl} arSrc={null} alt={selected.name} poster={selected.cutoutUrl} />
+          ) : (
+            <p className="py-20 text-center text-ink-muted">This product has no 3D model.</p>
+          )}
+        </div>
+        <div className="relative px-4 pb-5">
+          <RealSize p={selected} />
+        </div>
+      </section>
 
-        {/* the details */}
-        <aside className="px-4 py-5 lg:overflow-y-auto lg:border-l lg:border-paper-deep" aria-label="Product details">
-          <h2 className="font-display mb-4 text-[30px] leading-none text-ink">{selected.name}</h2>
-          <Inspector p={selected} mode={page.mode} pageId={page.id} token={token} demo={demo} onChange={(patch) => onProduct(selected.id, patch)} />
-        </aside>
-      </div>
+      {/* the details */}
+      <aside className="px-4 py-5 lg:min-h-0 lg:overflow-y-auto lg:border-l lg:border-paper-deep" aria-label="Product details">
+        <h2 className="font-display mb-4 text-[30px] leading-none text-ink">{selected.name}</h2>
+        <Inspector p={selected} mode={page.mode} pageId={page.id} token={token} demo={demo} onChange={(patch) => onProduct(selected.id, patch)} />
+      </aside>
     </div>
   );
 }
