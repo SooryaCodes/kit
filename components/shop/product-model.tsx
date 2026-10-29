@@ -17,7 +17,12 @@ declare module "react" {
 }
 
 let loading: Promise<unknown> | undefined;
-const loadModelViewer = () => (loading ??= import("@google/model-viewer"));
+// Kit's models are meshopt-compressed; model-viewer loads its decoder from a script that defines MeshoptDecoder
+const MESHOPT_DECODER = "/vendor/meshopt_decoder-1.3.0.js";
+const loadModelViewer = () =>
+  (loading ??= import("@google/model-viewer").then(({ ModelViewerElement }) => {
+    (ModelViewerElement as unknown as { meshoptDecoderLocation: string }).meshoptDecoderLocation = MESHOPT_DECODER;
+  }));
 
 export function ProductModel({
   src,

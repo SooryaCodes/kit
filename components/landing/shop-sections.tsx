@@ -167,3 +167,23 @@ export function Creators() {
     </Reveal>
   );
 }
+
+export function SellerStudio({ children }: { children: React.ReactNode }) {
+  return (
+    <Reveal as="section" id="studio" className="relative py-28 md:py-40" aria-label="The seller's studio">
+      <div className="mx-auto max-w-[1320px] px-5 md:px-8">
+        <div className="text-center">
+          <h2 data-r style={{ ["--i" as string]: 0 }} className="font-display text-[clamp(34px,5.6vw,88px)] leading-[0.92] tracking-[-0.02em]">
+            Your side: <span className="italic">one studio.</span>
+          </h2>
+          <p data-r style={{ ["--i" as string]: 1 }} className="mx-auto mt-6 max-w-[36rem] text-[17px] leading-[1.5] text-ink-soft md:text-[19px]">
+            Muse Spark names every product and estimates its size. You check the price and the size, then publish. This is the real studio on the sample shop: pick a bag, turn it, edit it.
+          </p>
+        </div>
+        <div data-r style={{ ["--i" as string]: 2 }} className="mt-14 md:mt-20">
+          {children}
+        </div>
+      </div>
+    </Reveal>
+  );
+}

@@ -76,7 +76,7 @@ function RealSize({ p }: { p: EditorProduct }) {
   );
 }
 
-function Inspector({ p, mode, pageId, token, onChange }: { p: EditorProduct; mode: EditorPage["mode"]; pageId: string; token: string; onChange: (patch: Partial<EditorProduct>) => void }) {
+function Inspector({ p, mode, pageId, token, demo, onChange }: { p: EditorProduct; mode: EditorPage["mode"]; pageId: string; token: string; demo?: boolean; onChange: (patch: Partial<EditorProduct>) => void }) {
   const [price, setPrice] = useState<{ state: "idle" | "checking" | "none" | "error"; check?: PriceCheck; message?: string }>({ state: "idle" });
   useEffect(() => setPrice({ state: "idle" }), [p.id]);
   const sizeCm = p.sizeM === null ? "" : String(Math.round(p.sizeM * 1000) / 10);
@@ -119,7 +119,7 @@ function Inspector({ p, mode, pageId, token, onChange }: { p: EditorProduct; mod
       </div>
       <p className="-mt-3 text-[13px] text-ink-muted">Muse Spark estimated the size from the photo. Measure it once: it sets the real size customers see.</p>
 
-      <div className="flex flex-col gap-2 rounded-xl bg-paper px-3.5 py-3">
+      <div className={`flex flex-col gap-2 rounded-xl bg-paper px-3.5 py-3 ${demo ? "hidden" : ""}`}>
         {price.check ? (
           <>
             <p className="text-[14px] text-ink">
@@ -188,11 +188,14 @@ export function ProductsTab({
   issues,
   onProduct,
   onReorder,
+  demo,
 }: {
   page: EditorPage;
   token: string;
   issues: string[];
   published: boolean;
+  /** the landing page's copy: edits stay in the browser, nothing that needs an edit key is shown */
+  demo?: boolean;
   onProduct: (id: string, patch: Partial<EditorProduct>) => void;
   onReorder: (products: EditorProduct[]) => void;
 }) {
@@ -260,7 +263,7 @@ export function ProductsTab({
         {/* the details */}
         <aside className="px-4 py-5 lg:overflow-y-auto lg:border-l lg:border-paper-deep" aria-label="Product details">
           <h2 className="font-display mb-4 text-[30px] leading-none text-ink">{selected.name}</h2>
-          <Inspector p={selected} mode={page.mode} pageId={page.id} token={token} onChange={(patch) => onProduct(selected.id, patch)} />
+          <Inspector p={selected} mode={page.mode} pageId={page.id} token={token} demo={demo} onChange={(patch) => onProduct(selected.id, patch)} />
         </aside>
       </div>
     </div>
