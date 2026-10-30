@@ -9,10 +9,10 @@ import { KitModel, StudioLights } from "@/components/three/kit-model";
 import type { JobItemView, JobView } from "@/lib/jobs/view";
 import { useJob } from "./use-job";
 
-type Rect = { left: string; top: string; width: string; height: string };
+export type Rect = { left: string; top: string; width: string; height: string };
 
 /** Where an item's cutout sits on the photo, in percent (same padding as the server's cropPng). */
-function cropRect(item: JobItemView, photo: { width: number; height: number }): Rect | null {
+export function cropRect(item: JobItemView, photo: { width: number; height: number }): Rect | null {
   const b = item.box;
   if (!b) return null;
   const p = Math.round(Math.max(b.right - b.left, b.bottom - b.top) * 0.06);
@@ -24,7 +24,7 @@ function cropRect(item: JobItemView, photo: { width: number; height: number }): 
   return { left: pct(left, photo.width), top: pct(top, photo.height), width: pct(right - left, photo.width), height: pct(bottom - top, photo.height) };
 }
 
-function PhotoStage({ job, dim, children }: { job: JobView; dim: number; children?: React.ReactNode }) {
+export function PhotoStage({ job, dim, children }: { job: JobView; dim: number; children?: React.ReactNode }) {
   const ratio = job.photo ? job.photo.width / job.photo.height : 4 / 3;
   return (
     <div className="relative mx-auto w-full overflow-hidden rounded-3xl bg-paper-deep" style={{ aspectRatio: ratio, maxWidth: `min(100%, calc(68svh * ${ratio}))` }}>
@@ -185,7 +185,7 @@ function PopIn({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ItemSlot({ item, rect }: { item: JobItemView; rect: Rect }) {
+export function ItemSlot({ item, rect }: { item: JobItemView; rect: Rect }) {
   const ready = item.status === "ready" && item.glbUrl;
   return (
     <div className="absolute" style={rect}>
@@ -262,7 +262,7 @@ export function Build({ job }: { job: JobView }) {
         </p>
       )}
 
-      <Canvas eventSource={container} className="!pointer-events-none !fixed !inset-0" dpr={[1, 2]}>
+      <Canvas eventSource={container} style={{ position: "fixed", inset: 0, pointerEvents: "none" }} dpr={[1, 2]}>
         <View.Port />
       </Canvas>
     </section>

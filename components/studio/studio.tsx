@@ -4,57 +4,50 @@
 // the outlines, items lifting into 3D); once every product is ready it becomes the workspace.
 
 import Link from "next/link";
-import { Build, Detect, Working } from "@/app/j/[id]/job-screen";
 import { useJob } from "@/app/j/[id]/use-job";
+import { useEffect, useRef, useState } from "react";
+import { Building, Confirm, Finding } from "./making";
+import { MakingFrame } from "./making-frame";
 import { Workspace } from "./workspace";
-
-const STEPS = ["Photo", "Products", "3D", "Shop"] as const;
 
 function stepOf(status: string): number {
   if (status === "awaiting_confirm") return 1;
   if (status === "reconstructing") return 2;
   if (status === "ready") return 3;
-  return 0;
+  return 1;
 }
 
-/** The making steps, framed like the studio: a quiet bar with where you are, the work on the paper. */
-function Making({ children, step }: { children: React.ReactNode; step: number }) {
-  return (
-    <main className="bg-studio relative isolate min-h-svh">
-      <div className="bg-grid pointer-events-none fixed inset-0 -z-10" aria-hidden />
-      <header className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-5 md:px-8">
-        <Link href="/" className="font-display text-[30px] leading-none text-ink" aria-label="Kit, home">
-          Kit
-        </Link>
-        <ol className="flex items-center gap-1 text-[14px] sm:gap-2" aria-label="Progress">
-          {STEPS.map((s, i) => (
-            <li key={s} aria-current={i === step ? "step" : undefined} className={`rounded-full px-3 py-1.5 font-medium transition-colors ${i === step ? "bg-ink text-white" : i < step ? "text-ink" : "text-ink-faint"}`}>
-              {s}
-            </li>
-          ))}
-        </ol>
-        <Link href="/dashboard" className="hidden text-[15px] font-medium text-ink-muted hover:text-ink sm:block">
-          My shops
-        </Link>
-      </header>
-      <div className="mx-auto w-full max-w-4xl px-4 pb-24 pt-6 text-center sm:px-6 sm:pt-10">{children}</div>
-    </main>
-  );
-}
+const Making = ({ step, children }: { step: number; children: React.ReactNode }) => (
+  <MakingFrame step={step} wide>
+    {children}
+  </MakingFrame>
+);
 
 export function Studio({ id }: { id: string }) {
   const { job, error } = useJob(id);
+  // when the last product finishes while the seller watches, hold on "All in 3D" for a moment before the workspace
+  const watched = useRef(false);
+  const [holding, setHolding] = useState(false);
+  useEffect(() => {
+    if (job?.status === "reconstructing") watched.current = true;
+    if (job?.status === "ready" && watched.current) {
+      watched.current = false;
+      setHolding(true);
+      const t = setTimeout(() => setHolding(false), 2200);
+      return () => clearTimeout(t);
+    }
+  }, [job?.status]);
 
   if (!job) {
     return (
-      <Making step={0}>
+      <Making step={1}>
         <p className="py-32 text-lead text-ink-muted">{error ?? "Opening your studio…"}</p>
       </Making>
     );
   }
   if (job.status === "failed" || job.status === "budget_exceeded") {
     return (
-      <Making step={0}>
+      <Making step={1}>
         <section className="flex flex-col items-center gap-6 py-16">
           <h1 className="font-display text-title">
             That didn&apos;t <span className="italic">work</span>
@@ -67,11 +60,11 @@ export function Studio({ id }: { id: string }) {
       </Making>
     );
   }
-  if (job.status === "ready") return <Workspace job={job} />;
-  const step = stepOf(job.status);
+  if (job.status === "ready" && !holding) return <Workspace job={job} />;
+  const step = stepOf(job.status === "ready" ? "reconstructing" : job.status);
   return (
     <Making step={step}>
-      {job.status === "awaiting_confirm" ? <Detect job={job} /> : job.status === "reconstructing" ? <Build job={job} /> : <Working job={job} />}
+      {job.status === "awaiting_confirm" ? <Confirm job={job} /> : job.status === "reconstructing" || job.status === "ready" ? <Building job={job} done={job.status === "ready"} /> : <Finding job={job} />}
     </Making>
   );
 }

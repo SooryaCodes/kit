@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppHeader } from "@/components/app/app-header";
+import { MakingFrame } from "@/components/studio/making-frame";
 import { isTemplateId } from "@/lib/templates";
 import { CreateFlow } from "./create-flow";
 
@@ -7,13 +7,11 @@ export const metadata: Metadata = { title: "Make your shop link · Kit" };
 
 export default async function NewPage({ searchParams }: { searchParams: Promise<{ template?: string; mode?: string }> }) {
   const { template, mode } = await searchParams;
-  // sellers start on the product format, creators on "what's in my bag"
+  // sellers start on "for sale", creators on "things I recommend"
   const fallback = mode === "creator" ? "bag" : "seller";
   return (
-    <main className="bg-studio relative isolate min-h-svh">
-      <div className="bg-grid pointer-events-none fixed inset-0 -z-10" aria-hidden />
-      <AppHeader action={false} />
+    <MakingFrame step={0} wide>
       <CreateFlow initialTemplate={isTemplateId(template) ? template : fallback} />
-    </main>
+    </MakingFrame>
   );
 }

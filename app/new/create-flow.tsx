@@ -1,47 +1,34 @@
 "use client";
 
+// The first step: one photo of the products. A large drop zone (camera on phones), what makes a good photo,
+// whether the page sells or recommends, and two sample photos that replay a finished run for free.
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { saveReel } from "@/lib/client/my-reels";
-import { TEMPLATE_LIST, type TemplateId } from "@/lib/templates";
+import type { TemplateId } from "@/lib/templates";
+
+type Mode = "shop" | "creator";
 
 /** Sample photos that already have a finished run, so trying one replays it for free. */
-const SAMPLES = {
-  shop: { url: "/showcase/shop/photo.jpg", template: "seller" as TemplateId, label: "Try our sample shop photo", file: "sample-shop.jpg" },
-  bag: { url: "/showcase/bag/photo.jpg", template: "bag" as TemplateId, label: "Try our sample bag", file: "sample-bag.jpg" },
-};
+const SAMPLES = [
+  { id: "shop", url: "/showcase/shop/photo.jpg", template: "seller" as TemplateId, file: "sample-shop.jpg", title: "A leather goods shelf", note: "12 slings, front view" },
+  { id: "bag", url: "/showcase/bag/photo.jpg", template: "bag" as TemplateId, file: "sample-bag.jpg", title: "What's in a bag", note: "14 things, flat lay" },
+];
 
-/** A real object from each kind of shoot, so every format reads at a glance. */
-const TILE_ART: Record<TemplateId, { src: string; w: string; r: number }[]> = {
-  bag: [
-    { src: "/showcase/bag/0.png", w: "46%", r: -6 },
-    { src: "/showcase/bag/3.png", w: "16%", r: 12 },
-  ],
-  desk: [
-    { src: "/showcase/desk/1.png", w: "56%", r: -4 },
-    { src: "/showcase/desk/6.png", w: "18%", r: 10 },
-  ],
-  fit: [
-    { src: "/showcase/outfit/3.png", w: "44%", r: -8 },
-    { src: "/showcase/outfit/1.png", w: "30%", r: 14 },
-  ],
-  collection: [
-    { src: "/showcase/sneakers/0.png", w: "40%", r: -10 },
-    { src: "/showcase/sneakers/10.png", w: "36%", r: 8 },
-  ],
-  seller: [
-    { src: "/showcase/products/3.png", w: "40%", r: -6 },
-    { src: "/showcase/products/9.png", w: "30%", r: 10 },
-  ],
-};
+const TIPS = [
+  { title: "Lay them out", text: "On a bed, table or floor with a plain cover. Flat from above, or standing in a row from the front." },
+  { title: "Leave a little space", text: "A finger's width between products, so each one is cut out cleanly." },
+  { title: "Use daylight", text: "Near a window, no flash. Solid products come out best; glass and thin straps are harder." },
+];
 
 export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId }) {
   const router = useRouter();
-  const [template, setTemplate] = useState<TemplateId>(initialTemplate);
+  const [mode, setMode] = useState<Mode>(initialTemplate === "seller" || initialTemplate === "collection" ? "shop" : "creator");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pickRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -61,144 +48,159 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
     setFile(f);
   }, []);
 
-  async function start(photo: File, tpl: TemplateId) {
-    setBusy(true);
+  async function start(photo: File, template: TemplateId, label: string) {
+    setBusy(label);
     setError(null);
     try {
       const body = new FormData();
       body.set("photo", photo);
-      body.set("template", tpl);
+      body.set("template", template);
       const res = await fetch("/api/jobs", { method: "POST", body });
       const data = (await res.json()) as { id?: string; error?: string };
       if (!res.ok || !data.id) throw new Error(data.error ?? "We couldn't read this photo. Please try again.");
-      saveReel({ id: data.id, template: tpl, createdAt: new Date().toISOString() });
+      saveReel({ id: data.id, template, createdAt: new Date().toISOString() });
       router.push(`/studio/${data.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
-      setBusy(false);
+      setBusy(null);
     }
   }
 
-  const sample = template === "seller" || template === "collection" ? SAMPLES.shop : SAMPLES.bag;
-  async function trySample() {
-    setBusy(true);
-    const blob = await fetch(sample.url).then((r) => r.blob());
-    setTemplate(sample.template);
-    await start(new File([blob], sample.file, { type: "image/jpeg" }), sample.template);
+  async function trySample(s: (typeof SAMPLES)[number]) {
+    setBusy(s.id);
+    const blob = await fetch(s.url).then((r) => r.blob());
+    await start(new File([blob], s.file, { type: "image/jpeg" }), s.template, s.id);
   }
 
-  const current = TEMPLATE_LIST.find((t) => t.id === template)!;
+  const template: TemplateId = mode === "shop" ? "seller" : "bag";
 
   return (
-    <div className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-6 text-center sm:px-8 sm:pt-10">
-      <h1 className="font-display text-title text-ink">
-        What are we <span className="italic">shooting?</span>
-      </h1>
-      <p className="mx-auto mt-5 max-w-xl text-lead text-ink-muted">Pick a format and add one photo. Kit finds every item and builds each one in 3D.</p>
-
-      <fieldset className="mt-12" disabled={busy}>
-        <legend className="sr-only">Format</legend>
-        <div className="flex snap-x gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-5 sm:overflow-visible">
-          {TEMPLATE_LIST.map((t) => {
-            const on = t.id === template;
-            return (
-              <label
-                key={t.id}
-                className={`group relative flex w-[42vw] shrink-0 snap-center cursor-pointer flex-col rounded-2xl p-2 text-left transition-[background-color,box-shadow,transform] duration-300 sm:w-auto ${
-                  on ? "bg-card shadow-[0_0_0_2px_var(--color-cobalt-500)]" : "bg-card/60 hover:-translate-y-0.5 hover:bg-card"
-                }`}
-              >
-                <input type="radio" name="template" value={t.id} checked={on} onChange={() => setTemplate(t.id)} className="sr-only" />
-                <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-paper-deep/70">
-                  {TILE_ART[t.id].map((a, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      key={a.src}
-                      src={a.src}
-                      alt=""
-                      className="shadow-object absolute top-1/2 transition-transform duration-500 group-hover:scale-[1.04]"
-                      style={{ width: a.w, left: i === 0 ? "14%" : "62%", transform: `translateY(-50%) rotate(${a.r}deg)` }}
-                    />
-                  ))}
-                </span>
-                <span className="px-2 pb-1.5 pt-3 text-[15px] font-medium text-ink">{t.name}</span>
-              </label>
-            );
-          })}
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-12">
+      <section className="flex flex-col gap-6" aria-labelledby="photo-h">
+        <div className="text-center lg:text-left">
+          <h1 id="photo-h" className="font-display text-[clamp(44px,5.2vw,76px)] leading-[0.92] tracking-[-0.02em] text-ink">
+            One photo of <span className="italic">your products.</span>
+          </h1>
+          <p className="mt-4 max-w-[34rem] text-[17px] leading-[1.5] text-ink-soft max-lg:mx-auto md:text-[19px]">
+            Kit finds every product in it, cuts each one out and rebuilds it in 3D. About a minute.
+          </p>
         </div>
-      </fieldset>
 
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          choose(e.dataTransfer.files[0]);
-        }}
-        className={`mx-auto mt-6 max-w-[760px] rounded-3xl p-6 transition-colors duration-300 sm:p-10 ${dragging ? "bg-cobalt-50 shadow-[0_0_0_2px_var(--color-cobalt-500)]" : "bg-card"}`}
-      >
-        {preview ? (
-          <div className="flex flex-col items-center gap-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview} alt="Your photo" className="max-h-[44vh] w-auto rounded-2xl object-contain" />
-            <div className="flex flex-wrap justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => file && start(file, template)}
-                disabled={busy}
-                className="rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97] disabled:opacity-60"
-              >
-                {busy ? "Uploading…" : "Find my items"}
-              </button>
-              <button type="button" onClick={() => setFile(null)} disabled={busy} className="rounded-full px-6 py-4 text-[17px] font-medium text-ink-muted transition-colors hover:text-ink">
-                Choose another
-              </button>
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            choose(e.dataTransfer.files[0]);
+          }}
+          className={`relative flex min-h-[420px] flex-col items-center justify-center overflow-hidden rounded-3xl p-6 transition-colors duration-300 ${dragging ? "bg-cobalt-50 ring-2 ring-cobalt-500" : "bg-card ring-1 ring-paper-shade"}`}
+        >
+          {preview ? (
+            <div className="flex w-full flex-col items-center gap-5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={preview} alt="Your photo" className="max-h-[52vh] w-auto rounded-2xl object-contain" />
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => file && start(file, template, "upload")}
+                  disabled={busy !== null}
+                  className="kit-press rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white hover:bg-cobalt-600 disabled:opacity-60"
+                >
+                  {busy === "upload" ? "Uploading…" : "Find my products"}
+                </button>
+                <button type="button" onClick={() => setFile(null)} disabled={busy !== null} className="rounded-full px-6 py-4 text-[17px] font-medium text-ink-muted hover:text-ink">
+                  Choose another
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-3 py-4">
-            <p className="font-display text-[clamp(28px,2.4vw,40px)] leading-tight text-ink">
-              Drop your <span className="italic">{current.name.toLowerCase()}</span> photo
-            </p>
-            <p className="max-w-md text-[16px] text-ink-muted">{current.prompt} Good light, a plain surface and a little space between things work best.</p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => pickRef.current?.click()}
-                className="rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white transition-[transform,background-color] hover:bg-cobalt-600 active:scale-[0.97]"
-              >
-                Choose a photo
-              </button>
-              <button
-                type="button"
-                onClick={() => cameraRef.current?.click()}
-                className="rounded-full bg-ink px-6 py-4 text-[17px] font-medium text-white transition-transform active:scale-[0.97] sm:hidden"
-              >
-                Take a photo
-              </button>
+          ) : (
+            <div className="flex flex-col items-center gap-4 text-center">
+              <p className="font-display text-[clamp(30px,2.6vw,40px)] leading-tight text-ink">Drop your photo here</p>
+              <p className="max-w-sm text-[16px] text-ink-muted">JPEG or PNG from your phone, up to 15 MB.</p>
+              <div className="mt-2 flex flex-wrap justify-center gap-2">
+                <button type="button" onClick={() => cameraRef.current?.click()} className="kit-press rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white hover:bg-cobalt-600 lg:hidden">
+                  Take a photo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => pickRef.current?.click()}
+                  className="kit-press rounded-full bg-ink px-7 py-4 text-[17px] font-medium text-white hover:bg-ink-soft lg:bg-cobalt-500 lg:hover:bg-cobalt-600"
+                >
+                  Choose a photo
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+          <input ref={pickRef} type="file" accept="image/*" className="sr-only" onChange={(e) => choose(e.target.files?.[0])} />
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => choose(e.target.files?.[0])} />
+        </div>
+
+        {error && (
+          <p role="alert" className="text-center text-[15px] font-medium text-destructive">
+            {error}
+          </p>
         )}
-        <input ref={pickRef} type="file" accept="image/*" className="sr-only" onChange={(e) => choose(e.target.files?.[0])} />
-        <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => choose(e.target.files?.[0])} />
-      </div>
+      </section>
 
-      {error && (
-        <p role="alert" className="mt-4 text-[15px] font-medium text-destructive">
-          {error}
-        </p>
-      )}
+      <aside className="flex flex-col gap-8 lg:pt-4">
+        <section aria-labelledby="mode-h" className="flex flex-col gap-3">
+          <h2 id="mode-h" className="text-[16px] font-semibold text-ink">
+            These products are
+          </h2>
+          <div className="flex gap-1 rounded-full bg-paper-deep p-1" role="radiogroup" aria-label="Page type">
+            {(["shop", "creator"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="radio"
+                aria-checked={mode === m}
+                onClick={() => setMode(m)}
+                className={`flex-1 rounded-full px-3 py-2.5 text-[15px] font-medium transition-colors ${mode === m ? "bg-card text-ink" : "text-ink-muted hover:text-ink"}`}
+              >
+                {m === "shop" ? "For sale" : "Things I recommend"}
+              </button>
+            ))}
+          </div>
+          <p className="text-[14px] text-ink-muted">{mode === "shop" ? "Customers order on WhatsApp." : "Followers buy through your own links."}</p>
+        </section>
 
-      <p className="mt-8 text-[16px] text-ink-muted">
-        No photo handy?{" "}
-        <button type="button" onClick={trySample} disabled={busy} className="font-medium text-cobalt-600 underline-offset-4 hover:underline">
-          {sample.label}
-        </button>
-      </p>
+        <section aria-labelledby="tips-h" className="flex flex-col gap-4">
+          <h2 id="tips-h" className="text-[16px] font-semibold text-ink">
+            For the best 3D
+          </h2>
+          <ul className="flex flex-col gap-4">
+            {TIPS.map((t) => (
+              <li key={t.title}>
+                <p className="text-[15px] font-medium text-ink">{t.title}</p>
+                <p className="text-[14px] leading-[1.5] text-ink-soft">{t.text}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="sample-h" className="flex flex-col gap-3">
+          <h2 id="sample-h" className="text-[16px] font-semibold text-ink">
+            No photo yet? Try one of ours
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {SAMPLES.map((s) => (
+              <button key={s.id} type="button" onClick={() => trySample(s)} disabled={busy !== null} className="group flex flex-col gap-2 text-left disabled:opacity-60">
+                <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-paper-deep">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={s.url} alt="" className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+                  {busy === s.id && <span className="absolute inset-0 flex items-center justify-center bg-ink/40 text-[14px] font-medium text-white">Opening…</span>}
+                </span>
+                <span className="text-[14px] font-medium leading-tight text-ink">{s.title}</span>
+                <span className="-mt-1.5 text-[13px] text-ink-muted">{s.note}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </aside>
     </div>
   );
 }
