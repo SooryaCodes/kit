@@ -33,7 +33,7 @@ export function Problem() {
         <div className="mt-14 grid items-start gap-10 md:mt-20 lg:grid-cols-2 lg:gap-16">
           {/* the seller's inbox, before */}
           <figure data-r style={{ ["--i" as string]: 2 }} className="mx-auto w-full max-w-[440px]">
-            <div data-ui className="overflow-hidden rounded-[32px] bg-card shadow-[0_40px_80px_-50px_rgb(40_30_20/.55)]">
+            <div data-ui className="overflow-hidden rounded-[32px] bg-card ring-1 ring-paper-shade">
               <div className="flex items-center justify-between px-6 pb-3 pt-6">
                 <p className="text-[19px] font-semibold text-ink">Messages</p>
                 <span className="rounded-full bg-ink px-2.5 py-1 text-[12px] font-semibold text-white">23 unread</span>
@@ -62,7 +62,7 @@ export function Problem() {
 
           {/* the same question on a Kit product page, after */}
           <figure data-r style={{ ["--i" as string]: 3 }} className="mx-auto w-full max-w-[440px]">
-            <div data-ui className="overflow-hidden rounded-[32px] bg-card shadow-[0_40px_80px_-50px_rgb(40_30_20/.55)]">
+            <div data-ui className="overflow-hidden rounded-[32px] bg-card ring-1 ring-paper-shade">
               <div className="bg-studio flex items-center justify-center px-6 py-8">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={cut("shop", 1)} alt="The orange leather sling" className="shadow-object h-36 w-auto" />
@@ -109,7 +109,7 @@ export function CustomerView() {
           </p>
         </div>
         <div className="mt-14 grid items-center gap-12 md:mt-20 lg:grid-cols-2 lg:gap-16">
-          <div data-r style={{ ["--i" as string]: 2 }} className="mx-auto h-[640px] w-[320px] overflow-hidden rounded-[46px] border-[10px] border-ink bg-paper shadow-[0_50px_90px_-50px_rgb(40_30_20/.6)] sm:h-[700px] sm:w-[350px]">
+          <div data-r style={{ ["--i" as string]: 2 }} className="mx-auto h-[640px] w-[320px] overflow-hidden rounded-[46px] border-[10px] border-ink bg-paper  sm:h-[700px] sm:w-[350px]">
             <iframe src="/k/sample-shop" title="The sample shop, live" loading="lazy" className="size-full" />
           </div>
           <ol className="flex flex-col gap-8">

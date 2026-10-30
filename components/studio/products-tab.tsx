@@ -219,9 +219,9 @@ export function ProductsTab({
       {/* the list: a strip of thumbnails on a phone, a column on a wide screen */}
       <aside className="flex min-h-0 flex-col lg:overflow-hidden lg:border-r lg:border-paper-deep">
         <div className="px-4 pb-2 pt-4">
-          <h1 className="text-[16px] font-semibold text-ink">
+          <h2 className="text-[16px] font-semibold text-ink">
             {page.products.length} products <span className="font-normal text-ink-muted">· {shown} on the page</span>
-          </h1>
+          </h2>
           <p className={`mt-1 text-[13px] ${issues.length ? "text-cobalt-700" : "text-ink-muted"}`}>{issues[0] ?? "Every product has a price and a size. Ready to share."}</p>
         </div>
         <ul className="flex gap-1 overflow-x-auto px-2 pb-3 lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-visible lg:pb-4 [&>li]:w-60 [&>li]:shrink-0 lg:[&>li]:w-auto">

@@ -179,6 +179,7 @@ export function Workspace({ job }: { job: JobView }) {
 
   return (
     <main className="flex h-svh flex-col bg-paper text-ink">
+      <h1 className="sr-only">{page.title} studio</h1>
       {/* the frame: one bar on the paper, no rule under it */}
       <header className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2 sm:px-4 lg:h-14 lg:flex-nowrap lg:py-0">
         <Link href="/dashboard" className="flex size-9 items-center justify-center rounded-full text-[20px] text-ink-soft transition-colors hover:bg-ink/5" aria-label="Back to My shops">
@@ -240,9 +241,9 @@ export function Workspace({ job }: { job: JobView }) {
           {tab === "insights" && <InsightsTab page={page} token={token} onApplied={reload} onGoShare={() => setTab("shop")} />}
           {tab === "reel" && (
             <div className="flex h-full flex-col items-center justify-center gap-5 px-6 text-center">
-              <h1 className="font-display text-[clamp(36px,4vw,56px)] leading-[0.95]">
+              <h2 className="font-display text-[clamp(36px,4vw,56px)] leading-[0.95]">
                 A Reel of <span className="italic">these products</span>
-              </h1>
+              </h2>
               <p className="max-w-[40ch] text-[16px] text-ink-soft">The same 3D products, animated into a 1080 × 1920 video you can post. Made in your browser, free.</p>
               <Link href={`/j/${job.id}/studio`} className="kit-press inline-flex h-12 items-center rounded-full bg-ink px-6 text-[16px] font-medium text-white">
                 Open the Reel maker

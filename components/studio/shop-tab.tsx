@@ -36,9 +36,9 @@ export function ShopTab({
     <div className="grid h-full overflow-y-auto lg:grid-cols-[420px_minmax(0,1fr)] lg:overflow-hidden">
       <div className="flex flex-col gap-6 px-5 py-6 lg:overflow-y-auto lg:border-r lg:border-paper-deep">
         <section className="flex flex-col gap-4" aria-labelledby="share-h">
-          <h1 id="share-h" className="text-[16px] font-semibold text-ink">
+          <h2 id="share-h" className="text-[16px] font-semibold text-ink">
             Your link
-          </h1>
+          </h2>
           {page.published ? (
             <>
               <div className="flex items-center gap-2 rounded-xl bg-paper p-1.5 pl-3.5">

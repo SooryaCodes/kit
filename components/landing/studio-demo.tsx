@@ -15,7 +15,7 @@ export function StudioDemo({ initial }: { initial: EditorPage }) {
   const onReorder = useCallback((products: EditorProduct[]) => setPage((p) => ({ ...p, products })), []);
 
   return (
-    <div data-ui className="flex h-[860px] flex-col overflow-hidden rounded-[28px] bg-paper text-left shadow-[0_60px_120px_-60px_rgb(40_30_20/.55)] lg:h-[720px]">
+    <div className="flex h-[860px] flex-col overflow-hidden rounded-[28px] bg-paper text-left ring-1 ring-paper-shade lg:h-[720px]">
       <div className="flex shrink-0 items-center gap-3 px-4 py-2.5">
         <span className="font-display text-[22px] leading-none text-ink">{page.title}</span>
         <span className="rounded-full bg-cobalt-50 px-2.5 py-1 text-[12px] font-semibold text-cobalt-700">Live</span>

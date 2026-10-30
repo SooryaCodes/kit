@@ -57,7 +57,7 @@ export function InsightsTab({ page, token, onApplied, onGoShare }: { page: Edito
     <div className="grid h-full overflow-y-auto lg:grid-cols-[minmax(0,1fr)_440px] lg:overflow-hidden">
       <div className="flex flex-col gap-8 px-5 py-6 lg:overflow-y-auto">
         <div>
-          <h1 className="text-[16px] font-semibold text-ink">The last 7 days</h1>
+          <h2 className="text-[16px] font-semibold text-ink">The last 7 days</h2>
           <p className="mt-1 text-[15px] text-ink">{error ?? finding ?? "Loading…"}</p>
           {!page.published && (
             <button type="button" onClick={onGoShare} className="mt-2 text-[14px] font-medium text-cobalt-700">

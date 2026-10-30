@@ -49,16 +49,16 @@ export interface Placed {
 }
 
 export const HERO_DESKTOP: Placed[] = [
-  { id: 1, set: "shop", x: 5, y: 30, w: 15, r: -9, d: 0.9, px: [220, 194] },
-  { id: 12, set: "sneakers", x: 77, y: 47, w: 9, r: 18, d: 0.8, px: [175, 305] },
-  { id: 4, set: "shop", x: 80, y: 6, w: 12, r: 10, d: 0.4, px: [228, 197] },
-  { id: 3, set: "shop", x: 15, y: 3, w: 11, r: -14, d: 0.5, px: [223, 199] },
-  { id: 7, set: "sneakers", x: 64, y: 74, w: 7, r: -28, d: 0.6, px: [154, 294] },
-  { id: 7, set: "shop", x: 28, y: 72, w: 11, r: 12, d: 0.7, px: [222, 193] },
-  { id: 10, set: "shop", x: 41, y: 1, w: 10, r: 8, d: 0.3, px: [232, 204] },
-  { id: 9, set: "shop", x: 3, y: 71, w: 10, r: 6, d: 0.5, px: [224, 181] },
-  { id: 0, set: "sneakers", x: 89, y: 30, w: 7, r: -8, d: 0.6, px: [187, 278] },
-  { id: 0, set: "shop", x: 62, y: 8, w: 10, r: -12, d: 0.2, px: [225, 197] },
+  { id: 1, set: "shop", x: 3, y: 33, w: 14, r: -9, d: 0.9, px: [220, 194] },
+  { id: 3, set: "shop", x: 12, y: 4, w: 10, r: -14, d: 0.5, px: [223, 199] },
+  { id: 10, set: "shop", x: 33, y: 1, w: 8, r: 8, d: 0.3, px: [232, 204] },
+  { id: 0, set: "shop", x: 58, y: 3, w: 8, r: -12, d: 0.2, px: [225, 197] },
+  { id: 4, set: "shop", x: 78, y: 7, w: 11, r: 10, d: 0.4, px: [228, 197] },
+  { id: 0, set: "sneakers", x: 89, y: 33, w: 6, r: -8, d: 0.6, px: [187, 278] },
+  { id: 12, set: "sneakers", x: 81, y: 57, w: 6.5, r: 18, d: 0.8, px: [175, 305] },
+  { id: 9, set: "shop", x: 3, y: 68, w: 10, r: 6, d: 0.5, px: [224, 181] },
+  { id: 7, set: "shop", x: 15, y: 84, w: 9, r: 12, d: 0.7, px: [222, 193] },
+  { id: 7, set: "sneakers", x: 88, y: 79, w: 5.5, r: -28, d: 0.6, px: [154, 294] },
 ];
 
 /** Phone: fewer, smaller items above and below the headline. */
