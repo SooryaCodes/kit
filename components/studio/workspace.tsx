@@ -14,6 +14,7 @@ import type { JobView } from "@/lib/jobs/view";
 import type { EditorPage, EditorProduct, PagePatch } from "@/lib/shop/editor";
 import { InsightsTab } from "./insights-tab";
 import { ProductsTab } from "./products-tab";
+import { LiveDialog } from "./share";
 import { ShopTab } from "./shop-tab";
 
 export type Tab = "products" | "shop" | "insights" | "reel";
@@ -55,6 +56,7 @@ export function Workspace({ job }: { job: JobView }) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
+  const [justLive, setJustLive] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latest = useRef<EditorPage | null>(null);
   const started = useRef(false);
@@ -142,9 +144,11 @@ export function Workspace({ job }: { job: JobView }) {
 
   async function publish() {
     if (timer.current) clearTimeout(timer.current);
+    const wasLive = latest.current?.published ?? false;
     setPublishing(true);
     await persist(true);
     setPublishing(false);
+    if (!wasLive && latest.current?.published) setJustLive(true);
   }
 
   const issues = useMemo(() => {
@@ -233,11 +237,27 @@ export function Workspace({ job }: { job: JobView }) {
         </div>
       </header>
 
+      {justLive && <LiveDialog link={`${window.location.origin}/k/${page.slug}`} title={page.title} onClose={() => setJustLive(false)} />}
+
       {/* the sheet: inset from the right and bottom edges, one edge, no shadow */}
       <div className="min-h-0 flex-1 px-2 pb-2 sm:pl-2 sm:pr-2">
         <div className="h-full overflow-hidden rounded-2xl border border-paper-shade bg-card">
           {tab === "products" && <ProductsTab page={page} token={token} issues={issues} published={page.published} onProduct={setProduct} onReorder={(products) => update((p) => ({ ...p, products }))} />}
-          {tab === "shop" && <ShopTab page={page} token={token} previewKey={previewKey} issues={issues} onShop={setShop} onPublish={publish} publishing={publishing} />}
+          {tab === "shop" && (
+            <ShopTab
+              page={page}
+              token={token}
+              previewKey={previewKey}
+              issues={issues}
+              onShop={setShop}
+              onPublish={publish}
+              onUnpublish={async () => {
+                if (timer.current) clearTimeout(timer.current);
+                await persist(false);
+              }}
+              publishing={publishing}
+            />
+          )}
           {tab === "insights" && <InsightsTab page={page} token={token} onApplied={reload} onGoShare={() => setTab("shop")} />}
           {tab === "reel" && (
             <div className="flex h-full flex-col items-center justify-center gap-5 px-6 text-center">

@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import type { EditorPage } from "@/lib/shop/editor";
+import { CopyLink, QrCode, whatsappShareUrl } from "./share";
 
 const field = "w-full rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none placeholder:text-ink-faint focus:bg-card focus:ring-2 focus:ring-cobalt-500";
 
@@ -15,6 +16,7 @@ export function ShopTab({
   issues,
   onShop,
   onPublish,
+  onUnpublish,
   publishing,
 }: {
   page: EditorPage;
@@ -23,14 +25,13 @@ export function ShopTab({
   issues: string[];
   onShop: (patch: Partial<EditorPage>) => void;
   onPublish: () => void;
+  onUnpublish: () => Promise<void>;
   publishing: boolean;
 }) {
   const [origin, setOrigin] = useState("");
-  const [copied, setCopied] = useState(false);
   useEffect(() => setOrigin(window.location.origin), []);
   const link = `${origin}/k/${page.slug}`;
   const preview = page.published ? `/k/${page.slug}` : `/k/${page.slug}?preview=${encodeURIComponent(token)}`;
-  const share = `https://wa.me/?text=${encodeURIComponent(`See every product in 3D, place it in your room, and order on WhatsApp: ${link}`)}`;
 
   return (
     <div className="grid h-full overflow-y-auto lg:grid-cols-[420px_minmax(0,1fr)] lg:overflow-hidden">
@@ -41,29 +42,29 @@ export function ShopTab({
           </h2>
           {page.published ? (
             <>
-              <div className="flex items-center gap-2 rounded-xl bg-paper p-1.5 pl-3.5">
-                <span className="min-w-0 flex-1 truncate text-[15px] text-ink">{link.replace(/^https?:\/\//, "")}</span>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(link);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1600);
-                  }}
-                  className="h-9 rounded-lg bg-ink px-3.5 text-[14px] font-medium text-white"
-                >
-                  {copied ? "Copied" : "Copy"}
-                </button>
-              </div>
+              <CopyLink link={link} />
               <div className="flex flex-wrap gap-2">
-                <a href={share} target="_blank" rel="noopener noreferrer" className="rounded-full bg-paper-deep px-4 py-2 text-[14px] font-medium text-ink hover:bg-paper-shade">
+                <a href={whatsappShareUrl(link)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-paper-deep px-4 py-2 text-[14px] font-medium text-ink hover:bg-paper-shade">
                   Share on WhatsApp
                 </a>
                 <a href={`/k/${page.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-full bg-paper-deep px-4 py-2 text-[14px] font-medium text-ink hover:bg-paper-shade">
                   Open the page
                 </a>
               </div>
+              <div className="flex items-center gap-4 rounded-xl bg-paper p-3">
+                {origin && <QrCode url={link} size={96} />}
+                <p className="text-[14px] leading-[1.45] text-ink-soft">Scan with your phone to try &ldquo;See it in your room&rdquo; yourself.</p>
+              </div>
               <p className="text-[14px] text-ink-muted">Put it in your Instagram bio and your WhatsApp status. Customers need nothing installed.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm("Take this page down? The link will stop working until you publish again.")) void onUnpublish();
+                }}
+                className="self-start text-[14px] font-medium text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+              >
+                Take the page down
+              </button>
             </>
           ) : (
             <div className="flex flex-col gap-3 rounded-xl bg-paper p-4">
