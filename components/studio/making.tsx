@@ -170,8 +170,10 @@ export function Building({ job, done: finished }: { job: JobView; done?: boolean
   const rects = useMemo(() => (job.photo ? job.items.map((i) => cropRect(i, job.photo!)) : []), [job.items, job.photo]);
   const [elapsed, setElapsed] = useState(0);
   useEffect(() => {
-    const start = job.timings.reconstructSubmittedAt ?? Date.now();
-    const t = setInterval(() => setElapsed(Math.round((Date.now() - start) / 1000)), 1000);
+    // the server's clock and this device's can disagree, so count from when this screen saw the build, never below zero
+    const submitted = job.timings.reconstructSubmittedAt;
+    const start = submitted && Math.abs(Date.now() - submitted) < 10 * 60 * 1000 ? Math.min(submitted, Date.now()) : Date.now();
+    const t = setInterval(() => setElapsed(Math.max(0, Math.round((Date.now() - start) / 1000))), 1000);
     return () => clearInterval(t);
   }, [job.timings.reconstructSubmittedAt]);
   const all = finished || job.status === "ready";
