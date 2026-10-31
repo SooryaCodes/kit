@@ -13,6 +13,7 @@ import { arModelUrl } from "./ar";
 import { describeProducts } from "./details";
 import { makeStyledShot } from "./images";
 import { hashToken, newEditToken, shopInfoOf, type ShopInfo } from "./shops";
+import { cellFor, isShopifySource } from "./shopify";
 
 const log = createLogger("shop:editor");
 
@@ -25,13 +26,16 @@ export class EditError extends Error {
   }
 }
 
+const SYMBOLS: Record<string, string> = { INR: "₹", USD: "$", EUR: "€", GBP: "£", AUD: "A$", CAD: "C$", SGD: "S$", AED: "AED " };
+const currencySymbol = (code: string) => SYMBOLS[code] ?? `${code} `;
+
 const ALPHABET = "abcdefghijkmnpqrstuvwxyz23456789";
 const randomSlug = () => `shop-${Array.from(randomBytes(5), (b) => ALPHABET[b % ALPHABET.length]).join("")}`;
 
 /** Creates the draft page for a finished job and suggests product details. Returns the edit token once. */
 export async function createDraftPage(jobId: string): Promise<{ pageId: string; slug: string; token: string }> {
   const db = supabaseAdmin();
-  const { data: job } = await db.from("jobs").select("id, status, photo_path, cost").eq("id", jobId).maybeSingle();
+  const { data: job } = await db.from("jobs").select("id, status, photo_path, cost, source").eq("id", jobId).maybeSingle();
   if (!job) throw new EditError(404, "job not found");
   if (job.status !== "ready") throw new EditError(409, "the 3D build is not finished yet");
   const { data: existing } = await db.from("pages").select("id").eq("job_id", jobId).maybeSingle();
@@ -39,12 +43,31 @@ export async function createDraftPage(jobId: string): Promise<{ pageId: string; 
 
   // suggestions first, so the editor opens with names, descriptions and sizes filled in
   const { data: items } = await db.from("items").select("id, idx, name, box, user_edited").eq("job_id", jobId).eq("status", "ready").order("idx");
+  const shopify = isShopifySource(job.source) ? job.source : null;
   if (items?.length && job.photo_path) {
     try {
       const photo = await photoFromBuffer(await downloadFile("photos", job.photo_path));
+      type Box = { left: number; top: number; right: number; bottom: number };
+      // imported from a store: each grid cell is one product; the biggest thing found in a cell is that product
+      const cellOf = new Map<string, NonNullable<ReturnType<typeof cellFor>>>();
+      const extra = new Set<string>();
+      if (shopify) {
+        const best = new Map<number, { id: string; area: number }>();
+        for (const i of items) {
+          const box = i.box as Box;
+          const cell = cellFor(shopify, box, photo.width);
+          if (!cell) continue;
+          cellOf.set(i.id, cell);
+          const key = shopify.cells.indexOf(cell);
+          const area = (box.right - box.left) * (box.bottom - box.top);
+          const prev = best.get(key);
+          if (prev) extra.add(area > prev.area ? prev.id : i.id);
+          if (!prev || area > prev.area) best.set(key, { id: i.id, area });
+        }
+      }
       const details = await describeProducts(
         photo,
-        items.map((i) => ({ idx: i.idx, name: i.name, box: i.box as { left: number; top: number; right: number; bottom: number } })),
+        items.map((i) => ({ idx: i.idx, name: (!extra.has(i.id) && cellOf.get(i.id)?.product.title) || i.name, box: i.box as Box })),
         resumeJob(jobId, 0),
       );
       const { products: described, view } = details;
@@ -52,6 +75,7 @@ export async function createDraftPage(jobId: string): Promise<{ pageId: string; 
       await Promise.all(
         items.map((i, order) => {
           const d = byIdx.get(i.idx);
+          const store = extra.has(i.id) ? null : cellOf.get(i.id)?.product;
           return db
             .from("items")
             .update({
@@ -60,6 +84,11 @@ export async function createDraftPage(jobId: string): Promise<{ pageId: string; 
               real_size_m: d ? Math.round(d.size_cm) / 100 : null,
               ar_pose: view === "front" ? "upright" : "flat",
               display_order: order,
+              // the store's own name, price, description and product link win over guesses from the photo
+              ...(store
+                ? { ...(i.user_edited ? {} : { name: store.title }), price: store.price, currency: currencySymbol(shopify!.store.currency), description: store.description || d?.description || null, link: store.url }
+                : {}),
+              ...(shopify && !store ? { hidden: true } : {}),
             })
             .eq("id", i.id);
         }),
@@ -73,7 +102,11 @@ export async function createDraftPage(jobId: string): Promise<{ pageId: string; 
   const token = newEditToken();
   for (let attempt = 0; attempt < 3; attempt++) {
     const slug = randomSlug();
-    const { data: page, error } = await db.from("pages").insert({ job_id: jobId, slug, title: "My shop", mode: "shop" }).select("id, slug").single();
+    const { data: page, error } = await db
+      .from("pages")
+      .insert({ job_id: jobId, slug, title: shopify?.store.name.slice(0, 60) ?? "My shop", mode: "shop", city: shopify?.store.city?.slice(0, 40) ?? null })
+      .select("id, slug")
+      .single();
     if (error?.code === "23505") continue;
     if (error || !page) throw new Error(`could not create page: ${error?.message}`);
     await db.from("page_secrets").insert({ page_id: page.id, edit_token_hash: hashToken(token) });

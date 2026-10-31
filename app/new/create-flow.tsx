@@ -29,6 +29,7 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
   const [preview, setPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const [store, setStore] = useState("");
   const [error, setError] = useState<string | null>(null);
   const pickRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -59,6 +60,22 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
       const data = (await res.json()) as { id?: string; error?: string };
       if (!res.ok || !data.id) throw new Error(data.error ?? "We couldn't read this photo. Please try again.");
       saveReel({ id: data.id, template, createdAt: new Date().toISOString() });
+      router.push(`/studio/${data.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setBusy(null);
+    }
+  }
+
+  async function importStore(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy("shopify");
+    setError(null);
+    try {
+      const res = await fetch("/api/import/shopify", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ url: store }) });
+      const data = (await res.json()) as { id?: string; error?: string };
+      if (!res.ok || !data.id) throw new Error(data.error ?? "We couldn't import that store. Please try again.");
+      saveReel({ id: data.id, template: "seller", createdAt: new Date().toISOString() });
       router.push(`/studio/${data.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -183,6 +200,30 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
               </li>
             ))}
           </ul>
+        </section>
+
+        <section aria-labelledby="shopify-h" className="flex flex-col gap-3">
+          <div>
+            <h2 id="shopify-h" className="text-[16px] font-semibold text-ink">
+              Already on Shopify?
+            </h2>
+            <p className="mt-1 text-[14px] text-ink-muted">Kit takes your first twelve products, with their names, prices and links, and builds each one in 3D.</p>
+          </div>
+          <form onSubmit={importStore} className="flex gap-2">
+            <input
+              value={store}
+              onChange={(e) => setStore(e.target.value)}
+              placeholder="yourstore.com"
+              inputMode="url"
+              autoCapitalize="none"
+              autoCorrect="off"
+              aria-label="Your Shopify store address"
+              className="min-w-0 flex-1 rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none placeholder:text-ink-faint focus:bg-card focus:ring-2 focus:ring-cobalt-500"
+            />
+            <button type="submit" disabled={busy !== null || !store.trim()} className="kit-press shrink-0 rounded-xl bg-ink px-4 text-[15px] font-medium text-white disabled:opacity-60">
+              {busy === "shopify" ? "Reading…" : "Import"}
+            </button>
+          </form>
         </section>
 
         <section aria-labelledby="sample-h" className="flex flex-col gap-3">

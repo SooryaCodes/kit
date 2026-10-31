@@ -379,6 +379,7 @@ export type Database = {
           id: string
           photo_hash: string | null
           photo_path: string | null
+          source: Json | null
           status: Database["public"]["Enums"]["job_status"]
           template: string | null
           timings: Json
@@ -392,6 +393,7 @@ export type Database = {
           id?: string
           photo_hash?: string | null
           photo_path?: string | null
+          source?: Json | null
           status?: Database["public"]["Enums"]["job_status"]
           template?: string | null
           timings?: Json
@@ -405,6 +407,7 @@ export type Database = {
           id?: string
           photo_hash?: string | null
           photo_path?: string | null
+          source?: Json | null
           status?: Database["public"]["Enums"]["job_status"]
           template?: string | null
           timings?: Json
