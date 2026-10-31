@@ -8,12 +8,13 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { QrCode } from "@/components/studio/share";
-import { formatPrice, formatSize, isInAppBrowser, referenceFor, whatsappOrderUrl } from "@/lib/shop/links";
+import { formatPrice, formatSize, referenceFor, whatsappOrderUrl } from "@/lib/shop/links";
 import type { SampleNote } from "@/lib/shop/samples";
 import type { Shop, ShopProduct } from "@/lib/shop/shops";
 import { track } from "@/lib/shop/track";
 import { AskBox } from "./ask-box";
 import { ProductModel } from "./product-model";
+import { ShopRoomButton } from "./shop-room";
 
 type View = "3d" | "photo" | "size";
 
@@ -102,13 +103,11 @@ function ProductSheet({
   onStep: (dir: -1 | 1) => void;
 }) {
   const [view, setView] = useState<View>("3d");
-  const [inApp, setInApp] = useState(false);
   const [phone, setPhone] = useState(true);
   const [orderMessage, setOrderMessage] = useState<string | undefined>();
   const onArStart = useCallback(() => track(shop.id, "open_ar", product.id), [shop.id, product.id]);
 
   useEffect(() => {
-    setInApp(isInAppBrowser(navigator.userAgent));
     setPhone(isPhone());
   }, []);
   useEffect(() => {
@@ -209,7 +208,6 @@ function ProductSheet({
                 <p className="text-[14px] leading-[1.45] text-ink-soft">Scan with your phone to see it in your room, at real size.</p>
               </div>
             )}
-            {product.arUrl && phone && inApp && <p className="rounded-2xl bg-paper px-4 py-3 text-[14px] text-ink-muted">To see it in your room, open this page in Safari or Chrome.</p>}
           </div>
 
           {/* what it is, questions */}
@@ -323,6 +321,9 @@ export function ShopView({ shop, pageUrl, sample }: { shop: Shop; pageUrl: strin
             {shared ? "Link copied" : "Share this shop"}
           </button>
         </div>
+        {shop.published && shop.products.filter((p) => p.arUrl).length >= 2 && (
+          <ShopRoomButton slug={shop.slug} count={shop.products.filter((p) => p.arUrl).length} pageUrl={pageUrl} onStart={() => track(shop.id, "open_ar")} />
+        )}
       </header>
 
       <section aria-label="Products" className="mx-auto grid max-w-[1040px] grid-cols-2 gap-x-3 gap-y-7 px-4 pb-20 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 sm:px-8">

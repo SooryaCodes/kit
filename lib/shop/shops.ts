@@ -28,6 +28,7 @@ export interface ShopProduct {
   glbUrl: string;
   /** real-size AR copy, served by /api/ar/:itemId once a size is confirmed */
   arUrl: string | null;
+  arPose: "flat" | "upright";
 }
 
 export interface Shop {
@@ -65,7 +66,7 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
 
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, currency, description, real_size_m, link, offer_label, size_image_path, crop_path, styled_image_path, glb_path, display_order, hidden, status")
+    .select("id, idx, name, price, currency, description, real_size_m, link, offer_label, ar_pose, size_image_path, crop_path, styled_image_path, glb_path, display_order, hidden, status")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .eq("hidden", false)
@@ -88,7 +89,9 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
         cutoutUrl: i.crop_path ? await signedUrl("crops", i.crop_path, SIX_HOURS) : null,
         styledUrl: i.styled_image_path ? publicUrl("covers", i.styled_image_path) : null,
         glbUrl: publicUrl("glbs", i.glb_path!),
-        arUrl: page.published && i.real_size_m ? `/api/ar/${i.id}` : null,
+        // size and pose in the link, so a change is never served from a stale cache
+        arUrl: page.published && i.real_size_m ? `/api/ar/${i.id}?v=${Math.round(Number(i.real_size_m) * 1000)}-${i.ar_pose ?? "flat"}` : null,
+        arPose: i.ar_pose === "upright" ? "upright" : "flat",
       })),
   );
 

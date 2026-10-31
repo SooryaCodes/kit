@@ -228,6 +228,7 @@ export type Database = {
       }
       items: {
         Row: {
+          ar_pose: string | null
           offer_label: string | null
           size_image_path: string | null
           description: string | null
@@ -259,6 +260,7 @@ export type Database = {
           user_edited: boolean
         }
         Insert: {
+          ar_pose?: string | null
           offer_label?: string | null
           size_image_path?: string | null
           description?: string | null
@@ -290,6 +292,7 @@ export type Database = {
           user_edited?: boolean
         }
         Update: {
+          ar_pose?: string | null
           offer_label?: string | null
           size_image_path?: string | null
           description?: string | null

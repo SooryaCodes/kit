@@ -17,11 +17,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ itemId:
   if (!UUID.test(itemId)) return NextResponse.json({ error: "not found" }, { status: 404 });
   try {
     const db = supabaseAdmin();
-    const { data: item } = await db.from("items").select("id, job_id, glb_path, real_size_m, hidden").eq("id", itemId).maybeSingle();
+    const { data: item } = await db.from("items").select("id, job_id, glb_path, real_size_m, ar_pose, hidden").eq("id", itemId).maybeSingle();
     if (!item || item.hidden) return NextResponse.json({ error: "not found" }, { status: 404 });
     const { data: page } = await db.from("pages").select("id").eq("job_id", item.job_id).eq("published", true).limit(1).maybeSingle();
     if (!page) return NextResponse.json({ error: "not found" }, { status: 404 });
-    const url = await arModelUrl(item);
+    const url = await arModelUrl({ ...item, real_size_m: item.real_size_m === null ? null : Number(item.real_size_m) });
     if (!url) return NextResponse.json({ error: "no confirmed size" }, { status: 404 });
     return NextResponse.redirect(url, { status: 302, headers: { "cache-control": "public, max-age=300" } });
   } catch (err) {

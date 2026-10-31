@@ -33,6 +33,7 @@ async function sampleStudio(): Promise<EditorPage | null> {
       sizeM: p.sizeM,
       link: p.link,
       offer: p.offer,
+      arPose: p.arPose,
       hidden: false,
       order: n,
       cutoutUrl: p.cutoutUrl,

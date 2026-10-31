@@ -8,6 +8,7 @@ import { ProductModel } from "@/components/shop/product-model";
 import type { EditorPage, EditorProduct } from "@/lib/shop/editor";
 import { formatPrice, formatSize, referenceFor } from "@/lib/shop/links";
 import type { PriceCheck } from "@/lib/shop/price";
+import { QrCode } from "./share";
 import { api } from "./workspace";
 
 const field = "w-full rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none placeholder:text-ink-faint focus:bg-card focus:ring-2 focus:ring-cobalt-500";
@@ -73,6 +74,19 @@ function RealSize({ p }: { p: EditorProduct }) {
       ))}
       <figcaption className="text-center text-[13px] text-ink-muted">Longest side, to scale. Customers see it at this size in their room.</figcaption>
     </figure>
+  );
+}
+
+/** A QR code that opens this product on the seller's phone, ready for "See it in your room". */
+function TryInRoom({ slug, productId }: { slug: string; productId: string }) {
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
+  if (!origin) return null;
+  return (
+    <div className="mx-auto flex w-full max-w-[520px] items-center gap-4 rounded-2xl bg-card/90 p-3">
+      <QrCode url={`${origin}/k/${slug}?p=${productId}`} size={84} />
+      <p className="text-[14px] leading-[1.45] text-ink-soft">Try it yourself: scan with your phone and tap See it in your room.</p>
+    </div>
   );
 }
 
@@ -161,6 +175,24 @@ function Inspector({ p, mode, pageId, token, demo, onChange }: { p: EditorProduc
         <span className="text-[13px] font-semibold text-ink-soft">Description</span>
         <textarea value={p.description ?? ""} onChange={(e) => onChange({ description: e.target.value.slice(0, 400) || null })} rows={3} className={`${field} resize-none leading-relaxed`} />
       </label>
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[13px] font-semibold text-ink-soft">In a customer&apos;s room it</span>
+        <div className="flex gap-1 rounded-full bg-paper-deep p-1" role="radiogroup" aria-label="Pose in the room">
+          {(["upright", "flat"] as const).map((pose) => (
+            <button
+              key={pose}
+              type="button"
+              role="radio"
+              aria-checked={p.arPose === pose}
+              onClick={() => onChange({ arPose: pose })}
+              className={`flex-1 rounded-full px-3 py-2 text-[14px] font-medium transition-colors ${p.arPose === pose ? "bg-card text-ink" : "text-ink-muted hover:text-ink"}`}
+            >
+              {pose === "upright" ? "Stands up" : "Lies flat"}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold text-ink-soft">Offer badge</span>
@@ -252,8 +284,9 @@ export function ProductsTab({
             <p className="py-20 text-center text-ink-muted">This product has no 3D model.</p>
           )}
         </div>
-        <div className="relative px-4 pb-5">
+        <div className="relative flex flex-col gap-4 px-4 pb-5">
           <RealSize p={selected} />
+          {page.published && !demo && selected.sizeM !== null && !selected.hidden && <TryInRoom slug={page.slug} productId={selected.id} />}
         </div>
       </section>
 

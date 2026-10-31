@@ -47,7 +47,8 @@ export async function createDraftPage(jobId: string): Promise<{ pageId: string; 
         items.map((i) => ({ idx: i.idx, name: i.name, box: i.box as { left: number; top: number; right: number; bottom: number } })),
         resumeJob(jobId, 0),
       );
-      const byIdx = new Map(details.map((d) => [d.idx, d]));
+      const { products: described, view } = details;
+      const byIdx = new Map(described.map((d) => [d.idx, d]));
       await Promise.all(
         items.map((i, order) => {
           const d = byIdx.get(i.idx);
@@ -57,6 +58,7 @@ export async function createDraftPage(jobId: string): Promise<{ pageId: string; 
               ...(d && !i.user_edited ? { name: d.name } : {}),
               description: d?.description ?? null,
               real_size_m: d ? Math.round(d.size_cm) / 100 : null,
+              ar_pose: view === "front" ? "upright" : "flat",
               display_order: order,
             })
             .eq("id", i.id);
@@ -97,6 +99,8 @@ export interface EditorProduct {
   sizeM: number | null;
   link: string | null;
   offer: string | null;
+  /** how it is placed in a room: lying flat or standing up */
+  arPose: "flat" | "upright";
   hidden: boolean;
   order: number;
   cutoutUrl: string | null;
@@ -122,7 +126,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
   if (!page) throw new EditError(404, "page not found");
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, description, real_size_m, link, offer_label, hidden, display_order, crop_path, glb_path")
+    .select("id, idx, name, price, description, real_size_m, link, offer_label, ar_pose, hidden, display_order, crop_path, glb_path")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .order("display_order", { ascending: true, nullsFirst: false })
@@ -145,6 +149,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
         sizeM: i.real_size_m === null ? null : Number(i.real_size_m),
         link: i.link,
         offer: i.offer_label,
+        arPose: i.ar_pose === "upright" ? "upright" : "flat",
         hidden: i.hidden,
         order: i.display_order ?? n,
         cutoutUrl: i.crop_path ? await signedUrl("crops", i.crop_path, 6 * 60 * 60) : null,
@@ -178,6 +183,7 @@ export const PagePatch = z.object({
         sizeM: z.number().positive().max(9.99).nullable(),
         link: z.string().trim().url().max(500).nullable(),
         offer: z.string().trim().max(40).nullable().optional(),
+        arPose: z.enum(["flat", "upright"]).optional(),
         hidden: z.boolean(),
         order: z.number().int().min(0),
       }),
@@ -225,6 +231,7 @@ export async function updatePage(pageId: string, token: string | null, patch: Pa
               real_size_m: p.sizeM,
               link: p.link,
               ...(p.offer !== undefined ? { offer_label: p.offer || null } : {}),
+              ...(p.arPose ? { ar_pose: p.arPose } : {}),
               hidden: p.hidden,
               display_order: p.order,
               user_edited: true,
@@ -246,7 +253,7 @@ export async function preparePage(pageId: string): Promise<void> {
   if (!page) return;
   const { data: items } = await db
     .from("items")
-    .select("id, glb_path, real_size_m, crop_path, styled_image_path")
+    .select("id, glb_path, real_size_m, ar_pose, crop_path, styled_image_path")
     .eq("job_id", page.job_id)
     .eq("hidden", false)
     .eq("status", "ready");

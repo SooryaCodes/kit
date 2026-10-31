@@ -36,7 +36,7 @@ function patchOf(page: EditorPage, published?: boolean): PagePatch {
     whatsapp: page.whatsapp ?? "",
     affiliateTag: page.affiliateTag,
     ...(published !== undefined ? { published } : {}),
-    products: page.products.map((p, n) => ({ id: p.id, name: p.name, price: p.price, description: p.description, sizeM: p.sizeM, link: p.link, offer: p.offer, hidden: p.hidden, order: n })),
+    products: page.products.map((p, n) => ({ id: p.id, name: p.name, price: p.price, description: p.description, sizeM: p.sizeM, link: p.link, offer: p.offer, arPose: p.arPose, hidden: p.hidden, order: n })),
   };
 }
 

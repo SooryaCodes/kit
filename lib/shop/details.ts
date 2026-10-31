@@ -18,7 +18,8 @@ For each numbered product below (its position is given as a box on a 0 to 1000 g
 - description: one sentence, at most 18 words, about the product itself: material, colour, features. Never mention the photo, the background, where it lies or how it is placed. No claims you cannot see (no "waterproof", "genuine leather" unless printed on it).
 - size_cm: your best estimate of the product's longest side in centimetres, from what the product is and its size relative to the others.
 - size_confidence: "high" when the product has a standard size (phone, A4 notebook, shoe), "medium" for typical sizes, "low" when it could vary a lot.
-Return every product once, with its number.`;
+Return every product once, with its number.
+Also say how the photo was taken: "top" when the camera looked down on products lying flat (a flat lay), "front" when it looked at products standing or hanging (a shelf, a rail, a wall).`;
 
 const Detail = z.object({
   idx: z.number().int(),
@@ -27,14 +28,15 @@ const Detail = z.object({
   size_cm: z.number().positive().max(500),
   size_confidence: z.enum(["high", "medium", "low"]),
 });
-const Details = z.object({ products: z.array(Detail) });
+const Details = z.object({ view: z.enum(["top", "front"]), products: z.array(Detail) });
 export type ProductDetail = z.infer<typeof Detail>;
 
 const JSON_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["products"],
+  required: ["view", "products"],
   properties: {
+    view: { type: "string", enum: ["top", "front"] },
     products: {
       type: "array",
       items: {
@@ -64,14 +66,14 @@ export async function describeProducts(
   photo: { dataUrl: string; hash: string; width: number; height: number },
   items: DetailInput[],
   job?: JobBudget,
-): Promise<ProductDetail[]> {
+): Promise<{ view: "top" | "front"; products: ProductDetail[] }> {
   const list = items
     .map((i) => {
       const g = (v: number, d: number) => Math.round((v / d) * 1000);
       return `${i.idx}. ${i.name} [${g(i.box.left, photo.width)}, ${g(i.box.top, photo.height)}, ${g(i.box.right, photo.width)}, ${g(i.box.bottom, photo.height)}]`;
     })
     .join("\n");
-  const key = hash("shop-details-v3", META_MODELS.spark, PROMPT, photo.hash, list);
+  const key = hash("shop-details-v4", META_MODELS.spark, PROMPT, photo.hash, list);
 
   const { value, hit } = await cached(
     "shop-details",
@@ -96,11 +98,10 @@ export async function describeProducts(
             max_tokens: 4000,
           }),
       );
-      const parsed = Details.parse(JSON.parse(res.choices[0]?.message?.content ?? "{}"));
-      return parsed.products;
+      return Details.parse(JSON.parse(res.choices[0]?.message?.content ?? "{}"));
     },
     { store: "db" },
   );
-  log.info("described", { products: value.length, cached: hit });
+  log.info("described", { products: value.products.length, view: value.view, cached: hit });
   return value;
 }
