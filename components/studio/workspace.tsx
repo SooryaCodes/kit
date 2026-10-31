@@ -170,8 +170,10 @@ export function Workspace({ job }: { job: JobView }) {
     const noSize = shown.filter((p) => p.sizeM === null).length;
     if (noPrice) out.push(`${noPrice} ${noPrice === 1 ? "product has" : "products have"} no price`);
     if (noSize) out.push(`${noSize} ${noSize === 1 ? "product has" : "products have"} no size, so ${noSize === 1 ? "it can't" : "they can't"} be placed in a room`);
-    if (page.mode === "shop" && !page.whatsapp) out.push("Add your WhatsApp number so customers can order");
-    if (page.mode === "shop" && !page.info.delivery && !page.info.cod) out.push("Add delivery and cash on delivery on the Shop page tab, so buyers don't have to ask");
+    // products imported from a store order through their own product link
+    const storeLinks = shown.length > 0 && shown.every((p) => p.link);
+    if (page.mode === "shop" && !page.whatsapp && !storeLinks) out.push("Add your WhatsApp number so customers can order");
+    if (page.mode === "shop" && !storeLinks && !page.info.delivery && !page.info.cod) out.push("Add delivery and cash on delivery on the Shop page tab, so buyers don't have to ask");
     return out;
   }, [page]);
 
