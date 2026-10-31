@@ -11,7 +11,15 @@ import { loadModelViewer, type ModelViewerElement } from "./product-model";
 
 type State = "idle" | "loading" | "ready" | "unsupported" | "in-app";
 
-export function ShopRoomButton({ slug, count, pageUrl, onStart }: { slug: string; count: number; pageUrl: string; onStart?: () => void }) {
+// a short fingerprint of the products, their order, sizes and poses, so a change is never served from a cached link
+function version(arUrls: string[]): string {
+  let h = 5381;
+  for (const c of arUrls.join("|")) h = ((h * 33) ^ c.charCodeAt(0)) >>> 0;
+  return h.toString(36);
+}
+
+export function ShopRoomButton({ slug, arUrls, pageUrl, onStart }: { slug: string; arUrls: string[]; pageUrl: string; onStart?: () => void }) {
+  const count = arUrls.length;
   const [phone, setPhone] = useState<boolean | null>(null);
   const [state, setState] = useState<State>("idle");
   const [qr, setQr] = useState(false);
@@ -30,7 +38,7 @@ export function ShopRoomButton({ slug, count, pageUrl, onStart }: { slug: string
     setState("loading");
     await loadModelViewer();
     const el = document.createElement("model-viewer") as ModelViewerElement;
-    el.setAttribute("src", `/api/ar/shop/${slug}`);
+    el.setAttribute("src", `/api/ar/shop/${slug}?v=${version(arUrls)}`);
     el.setAttribute("ar", "");
     el.setAttribute("ar-modes", "webxr scene-viewer quick-look");
     el.setAttribute("ar-scale", "fixed");

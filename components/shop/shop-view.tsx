@@ -322,7 +322,7 @@ export function ShopView({ shop, pageUrl, sample }: { shop: Shop; pageUrl: strin
           </button>
         </div>
         {shop.published && shop.products.filter((p) => p.arUrl).length >= 2 && (
-          <ShopRoomButton slug={shop.slug} count={shop.products.filter((p) => p.arUrl).length} pageUrl={pageUrl} onStart={() => track(shop.id, "open_ar")} />
+          <ShopRoomButton slug={shop.slug} arUrls={shop.products.flatMap((p) => (p.arUrl ? [p.arUrl] : []))} pageUrl={pageUrl} onStart={() => track(shop.id, "open_ar")} />
         )}
       </header>
 
