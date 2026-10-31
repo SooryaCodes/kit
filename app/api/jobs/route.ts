@@ -43,6 +43,6 @@ export async function POST(req: Request) {
   } catch (err) {
     if (err instanceof BudgetError) return NextResponse.json({ error: err.userMessage, code: err.code }, { status: 429 });
     log.error("create job failed", { error: errorMessage(err) });
-    return NextResponse.json({ error: "We couldn't start this Reel. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: "We couldn't start with this photo. Please try again." }, { status: 500 });
   }
 }

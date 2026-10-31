@@ -84,7 +84,7 @@ export async function runReplayDetect(jobId: string): Promise<void> {
     log.error("replay detect failed", { job: jobId, error: errorMessage(err) });
     await db
       .from("jobs")
-      .update({ status: "failed", error: errorMessage(err).slice(0, 500), user_message: "Something went wrong while building this Reel. Please try again." })
+      .update({ status: "failed", error: errorMessage(err).slice(0, 500), user_message: "Something went wrong while building your products. Please try again." })
       .eq("id", jobId);
   }
 }

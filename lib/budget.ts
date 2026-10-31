@@ -36,7 +36,7 @@ const FRIENDLY: Record<BudgetCode, string> = {
   cap_job: "This photo needs more processing than one job allows. Try a photo with fewer items.",
   cap_items: "That's a lot of items. Kit handles up to 16 per photo.",
   cap_jobs_per_day: "Kit has hit today's limit. Please come back tomorrow.",
-  cap_ip: "You've made a lot of Reels this hour. Please wait a bit and try again.",
+  cap_ip: "You've started a lot of shops this hour. Please wait a bit and try again.",
 };
 
 export class BudgetError extends Error {

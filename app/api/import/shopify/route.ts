@@ -21,8 +21,9 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json().catch(() => ({}))) as { url?: unknown };
     if (typeof body.url !== "string" || !body.url.trim()) return NextResponse.json({ error: "Paste your store's address." }, { status: 400 });
-    await checkJobRateLimit(clientIp(req.headers));
+    // a mistyped or non-Shopify address fails here and doesn't count toward the hourly limit
     const { photo, source } = await importShopify(body.url);
+    await checkJobRateLimit(clientIp(req.headers));
     const prepared = await photoFromBuffer(photo);
 
     // the same store grid again replays the finished job for free

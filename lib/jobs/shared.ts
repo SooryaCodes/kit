@@ -52,7 +52,7 @@ export async function failJob(jobId: string, err: unknown, job?: JobBudget): Pro
     .update({
       status: budget ? "budget_exceeded" : "failed",
       error: errorMessage(err).slice(0, 500),
-      user_message: budget ? err.userMessage : "Something went wrong while building this Reel. Please try again.",
+      user_message: budget ? err.userMessage : "Something went wrong while building your products. Please try again.",
     })
     .eq("id", jobId);
 }

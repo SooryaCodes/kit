@@ -79,7 +79,7 @@ function plainText(html: string | null | undefined): string {
 }
 
 /** "boAt Stone 180 | Bluetooth Speaker with 5W sound" → "boAt Stone 180"; long titles end on a whole word. */
-function shortTitle(title: string): string {
+export function shortTitle(title: string): string {
   const head = title.split(/\s[|–—]\s/)[0]!.trim();
   if (head.length <= 60) return head;
   return head.slice(0, 60).replace(/\s+\S*$/, "");

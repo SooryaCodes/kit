@@ -79,7 +79,7 @@ async function categorize(products: { id: string; name: string; description: str
 }
 
 /** The real cut-out centred on white, 1080 px square: what Meta wants when there is no styled shot. */
-async function plainImage(item: { id: string; crop_path: string }): Promise<string> {
+export async function plainImage(item: { id: string; crop_path: string }): Promise<string> {
   const SIZE = 1080;
   const cutout = await sharp(await downloadFile("crops", item.crop_path))
     .trim()
@@ -97,7 +97,7 @@ async function plainImage(item: { id: string; crop_path: string }): Promise<stri
 
 const COLUMNS = ["id", "title", "description", "availability", "condition", "price", "link", "image_link", "additional_image_link", "brand", "google_product_category", "product_type", "custom_label_0"] as const;
 
-function csvCell(v: string): string {
+export function csvCell(v: string): string {
   return /[",\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
 
