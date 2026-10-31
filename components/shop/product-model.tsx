@@ -41,7 +41,6 @@ export function ProductModel({
 }) {
   const ref = useRef<ModelViewerElement>(null);
   const [ready, setReady] = useState(false);
-  const [canAr, setCanAr] = useState(false);
   // where AR can't open, the button stays and says why, instead of disappearing
   const [device, setDevice] = useState<{ phone: boolean; inApp: boolean }>({ phone: false, inApp: false });
   const [note, setNote] = useState<string | null>(null);
@@ -61,14 +60,11 @@ export function ProductModel({
   useEffect(() => {
     const el = ref.current;
     if (!el || !ready) return;
-    const onLoad = () => setCanAr(Boolean(arSrc && el.canActivateAR));
     const onAr = (e: Event) => {
       if ((e as CustomEvent<{ status: string }>).detail?.status === "session-started") onArStart?.();
     };
-    el.addEventListener("load", onLoad);
     el.addEventListener("ar-status", onAr);
     return () => {
-      el.removeEventListener("load", onLoad);
       el.removeEventListener("ar-status", onAr);
     };
   }, [ready, arSrc, onArStart]);
@@ -90,7 +86,8 @@ export function ProductModel({
           shadow-softness="0.8"
           exposure="1.05"
           camera-orbit="30deg 62deg auto"
-          {...(arSrc ? { ar: "", "ar-modes": "webxr scene-viewer quick-look", "ar-scale": "fixed", "ar-placement": "floor" } : {})}
+          // `ar` is a boolean property on the element: React sets it as one, so it must be true, not ""
+          {...(arSrc ? { ar: true, "ar-modes": "webxr scene-viewer quick-look", "ar-scale": "fixed", "ar-placement": "floor" } : {})}
           style={{ width: "100%", height: "100%", background: "transparent", ["--poster-color" as string]: "transparent" }}
         >
           <button slot="ar-button" className="hidden" aria-hidden tabIndex={-1} />
@@ -101,7 +98,7 @@ export function ProductModel({
           <img src={poster} alt={alt} className="shadow-object absolute inset-0 m-auto max-h-[70%] max-w-[70%] object-contain" />
         )
       )}
-      {arSrc && (canAr || device.phone) && (
+      {arSrc && device.phone && (
         <div className="absolute inset-x-3 bottom-3 flex flex-col items-center gap-2">
           {note && <p className="rounded-2xl bg-card/95 px-4 py-2.5 text-center text-[13px] leading-snug text-ink">{note}</p>}
           <button
@@ -117,7 +114,8 @@ export function ProductModel({
                 }
                 return;
               }
-              if (canAr && ref.current?.activateAR) {
+              // asked at the tap, not at load: the element decides once its src and AR settings are in place
+              if (ref.current?.canActivateAR && ref.current.activateAR) {
                 setNote(null);
                 await ref.current.activateAR();
                 return;
