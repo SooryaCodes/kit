@@ -9,6 +9,33 @@ import { CopyLink, QrCode, whatsappShareUrl } from "./share";
 
 const field = "w-full rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none placeholder:text-ink-faint focus:bg-card focus:ring-2 focus:ring-cobalt-500";
 
+/** The shop as a Meta catalog feed: one link that puts every product in the seller's WhatsApp catalog, Instagram and Facebook. */
+function CatalogFeed({ origin, slug }: { origin: string; slug: string }) {
+  const feed = `${origin}/api/k/${slug}/catalog.csv`;
+  return (
+    <section className="flex flex-col gap-3" aria-labelledby="catalog-h">
+      <div>
+        <h2 id="catalog-h" className="text-[16px] font-semibold text-ink">
+          Sell on WhatsApp, Instagram and Facebook
+        </h2>
+        <p className="mt-1 text-[14px] text-ink-muted">Your products as a Meta catalog. Add it once and it stays in step: new prices, sold out and new products follow on their own. Each product links back here, in 3D.</p>
+      </div>
+      <CopyLink link={feed} />
+      <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-[14px] leading-[1.45] text-ink-soft">
+        <li>
+          Open{" "}
+          <a href="https://business.facebook.com/commerce" target="_blank" rel="noopener noreferrer" className="font-medium text-cobalt-700 underline-offset-4 hover:underline">
+            Commerce Manager
+          </a>{" "}
+          and make or pick a catalog.
+        </li>
+        <li>Data sources, Add items, Data feed: paste the link above and choose Daily.</li>
+        <li>In WhatsApp Business, Catalog, connect that catalog. Your products appear in chats and on your profile.</li>
+      </ol>
+    </section>
+  );
+}
+
 /** The private link that opens this studio with edit rights on any device. Sent to the seller's own WhatsApp. */
 function EditLink({ origin, jobId, token }: { origin: string; jobId: string; token: string }) {
   const link = `${origin}/studio/${jobId}#key=${token}`;
@@ -157,6 +184,8 @@ export function ShopTab({
             </span>
           </label>
         </section>
+
+        {page.published && origin && page.mode === "shop" && <CatalogFeed origin={origin} slug={page.slug} />}
 
         {page.mode === "shop" && (
           <section className="flex flex-col gap-4" aria-labelledby="order-h">

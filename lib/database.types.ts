@@ -232,6 +232,8 @@ export type Database = {
           offer_label: string | null
           size_image_path: string | null
           sold_out: boolean
+          product_category: number | null
+          catalog_image_path: string | null
           description: string | null
           display_order: number | null
           hidden: boolean
@@ -265,6 +267,8 @@ export type Database = {
           offer_label?: string | null
           size_image_path?: string | null
           sold_out?: boolean
+          product_category?: number | null
+          catalog_image_path?: string | null
           description?: string | null
           display_order?: number | null
           hidden?: boolean
@@ -298,6 +302,8 @@ export type Database = {
           offer_label?: string | null
           size_image_path?: string | null
           sold_out?: boolean
+          product_category?: number | null
+          catalog_image_path?: string | null
           description?: string | null
           display_order?: number | null
           hidden?: boolean
