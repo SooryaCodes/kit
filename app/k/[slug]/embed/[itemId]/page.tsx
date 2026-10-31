@@ -9,7 +9,7 @@ import { ProductModel } from "@/components/shop/product-model";
 import { getShop } from "@/lib/shop/shops";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { robots: { index: false } };
+export const metadata: Metadata = { title: "3D view · Kit", robots: { index: false } };
 
 const SLUG = /^[a-z0-9][a-z0-9-]{2,39}$/;
 const UUID = /^[0-9a-f-]{36}$/;
