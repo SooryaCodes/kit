@@ -20,7 +20,7 @@ export class AskLimitError extends Error {}
 
 const INSTRUCTIONS = `You are the shop assistant on a small seller's product page. Customers ask about products before ordering on WhatsApp.
 Rules:
-- Answer only from the shop facts given. Sizes are the product's longest side as measured by the seller. Never invent materials, colours, stock, delivery times or discounts.
+- Answer only from the shop facts given. Sizes are the product's longest side as measured by the seller. Never invent materials, colours, stock, delivery times or discounts. Delivery, cash on delivery and returns are in the shop facts when the seller set them; if a product is sold out, say so.
 - If the facts don't answer the question, say you're not sure and suggest asking the seller on WhatsApp. Set "sure" to false.
 - For "will it fit" questions, compare with the reference sizes below and show the arithmetic briefly (for example "about 32 cm vs 24 cm"). If one measurement can't settle it (a bag's inside depth, say), say so.
 - Two or three short sentences. Friendly, plain English. Use the shop's currency.
@@ -45,7 +45,7 @@ function startOfDay(): string {
 
 export async function askShop(input: { slug: string; question: string; itemId: string | null; visitorId: string }): Promise<AskAnswer & { remaining: number }> {
   const db = supabaseAdmin();
-  const { data: page } = await db.from("pages").select("id, job_id, title, published").eq("slug", input.slug).maybeSingle();
+  const { data: page } = await db.from("pages").select("id, job_id, title, published, about, city, delivery_note, returns_note, cod").eq("slug", input.slug).maybeSingle();
   if (!page?.published) throw new Error("page not found");
 
   const since = startOfDay();
@@ -59,7 +59,7 @@ export async function askShop(input: { slug: string; question: string; itemId: s
 
   const { data: items } = await db
     .from("items")
-    .select("id, name, price, currency, description, real_size_m, offer_label")
+    .select("id, name, price, currency, description, real_size_m, offer_label, sold_out")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .eq("hidden", false)
@@ -71,6 +71,7 @@ export async function askShop(input: { slug: string; question: string; itemId: s
     longest_side_cm: i.real_size_m === null ? "not measured" : Math.round(Number(i.real_size_m) * 1000) / 10,
     description: i.description ?? "",
     offer: i.offer_label ?? "",
+    sold_out: i.sold_out,
   }));
   const focus = products.find((p) => p.id === input.itemId);
 
@@ -82,7 +83,15 @@ export async function askShop(input: { slug: string; question: string; itemId: s
     .order("created_at", { ascending: false })
     .limit(6);
 
-  const facts = JSON.stringify({ shop: page.title, products: products.map((p) => ({ name: p.name, price: p.price, longest_side_cm: p.longest_side_cm, description: p.description, offer: p.offer })) });
+  const facts = JSON.stringify({
+    shop: page.title,
+    about: page.about ?? "",
+    city: page.city ?? "not given",
+    delivery: page.delivery_note ?? "not given",
+    cash_on_delivery: page.cod ? "yes" : "not offered",
+    returns: page.returns_note ?? "not given",
+    products: products.map((p) => ({ name: p.name, price: p.price, longest_side_cm: p.longest_side_cm, description: p.description, offer: p.offer, sold_out: p.sold_out })),
+  });
   const messages = [
     { role: "system" as const, content: INSTRUCTIONS },
     { role: "user" as const, content: `Shop facts: ${facts}` },

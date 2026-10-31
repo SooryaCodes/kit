@@ -31,6 +31,7 @@ export function ShopTab({
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
   const link = `${origin}/k/${page.slug}`;
+  const setInfo = (patch: Partial<EditorPage["info"]>) => onShop({ info: { ...page.info, ...patch } });
   const preview = page.published ? `/k/${page.slug}` : `/k/${page.slug}?preview=${encodeURIComponent(token)}`;
 
   return (
@@ -122,6 +123,37 @@ export function ShopTab({
             </span>
           </label>
         </section>
+
+        {page.mode === "shop" && (
+          <section className="flex flex-col gap-4" aria-labelledby="order-h">
+            <div>
+              <h2 id="order-h" className="text-[16px] font-semibold text-ink">
+                Before they order
+              </h2>
+              <p className="mt-1 text-[14px] text-ink-muted">The questions every buyer asks. Shown next to Order, and the assistant answers from them.</p>
+            </div>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[13px] font-semibold text-ink-soft">About your shop</span>
+              <input value={page.info.about ?? ""} onChange={(e) => setInfo({ about: e.target.value.slice(0, 140) || null })} placeholder="Handmade leather bags, stitched in Jaipur" className={field} />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[13px] font-semibold text-ink-soft">City</span>
+              <input value={page.info.city ?? ""} onChange={(e) => setInfo({ city: e.target.value.slice(0, 40) || null })} placeholder="Jaipur" className={field} />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[13px] font-semibold text-ink-soft">Delivery</span>
+              <input value={page.info.delivery ?? ""} onChange={(e) => setInfo({ delivery: e.target.value.slice(0, 80) || null })} placeholder="Across India in 3 to 5 days, ₹60" className={field} />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[13px] font-semibold text-ink-soft">Returns or exchange</span>
+              <input value={page.info.returns ?? ""} onChange={(e) => setInfo({ returns: e.target.value.slice(0, 80) || null })} placeholder="Exchange within 7 days if unused" className={field} />
+            </label>
+            <label className="flex items-center justify-between gap-4 rounded-xl bg-paper px-3.5 py-3">
+              <span className="text-[15px] text-ink">Cash on delivery</span>
+              <input type="checkbox" checked={page.info.cod} onChange={(e) => setInfo({ cod: e.target.checked })} className="size-5 accent-[var(--color-cobalt-500)]" />
+            </label>
+          </section>
+        )}
       </div>
 
       <section className="bg-studio relative flex min-h-[720px] items-center justify-center p-6 lg:min-h-0" aria-label="Phone preview">

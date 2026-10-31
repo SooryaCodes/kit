@@ -7,6 +7,10 @@ export function whatsappOrderUrl(number: string, product: { name: string; price:
   return `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
 }
 
+export function whatsappAskUrl(number: string, message: string, pageUrl: string): string {
+  return `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(`${message} ${pageUrl}`)}`;
+}
+
 /** "45 cm" or "1.2 m": the longest side, as a shopper reads it. */
 export function formatSize(sizeM: number): string {
   return sizeM >= 1 ? `${Math.round(sizeM * 100) / 100} m` : `${Math.round(sizeM * 100)} cm`;

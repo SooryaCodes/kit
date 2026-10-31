@@ -27,7 +27,7 @@ export function StudioDemo({ initial }: { initial: EditorPage }) {
             </span>
           ))}
         </span>
-        <span className="ml-auto rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-white lg:ml-0">Update</span>
+        <span className="ml-auto rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-white lg:ml-0">Share</span>
       </div>
       <div className="min-h-0 flex-1 px-2 pb-2">
         <div className="h-full overflow-hidden rounded-2xl border border-paper-shade bg-card">

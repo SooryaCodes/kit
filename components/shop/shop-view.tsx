@@ -8,7 +8,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { QrCode } from "@/components/studio/share";
-import { formatPrice, formatSize, referenceFor, whatsappOrderUrl } from "@/lib/shop/links";
+import { formatPrice, formatSize, referenceFor, whatsappAskUrl, whatsappOrderUrl } from "@/lib/shop/links";
 import type { SampleNote } from "@/lib/shop/samples";
 import type { Shop, ShopProduct } from "@/lib/shop/shops";
 import { track } from "@/lib/shop/track";
@@ -49,7 +49,11 @@ function ProductCard({ product, onOpen }: { product: ShopProduct; onOpen: () => 
           />
         )}
         <span className="absolute bottom-2.5 right-2.5 rounded-full bg-card/90 px-2.5 py-1 text-[12px] font-semibold text-ink-soft">3D</span>
-        {product.offer && <span className="absolute left-2.5 top-2.5 rounded-full bg-cobalt-500 px-2.5 py-1 text-[12px] font-semibold text-white">{product.offer}</span>}
+        {product.soldOut ? (
+          <span className="absolute left-2.5 top-2.5 rounded-full bg-ink px-2.5 py-1 text-[12px] font-semibold text-white">Sold out</span>
+        ) : (
+          product.offer && <span className="absolute left-2.5 top-2.5 rounded-full bg-cobalt-500 px-2.5 py-1 text-[12px] font-semibold text-white">{product.offer}</span>
+        )}
       </span>
       <span className="flex flex-col gap-0.5 px-1">
         <span className="text-[16px] font-medium leading-snug text-ink">{product.name}</span>
@@ -59,6 +63,28 @@ function ProductCard({ product, onOpen }: { product: ShopProduct; onOpen: () => 
         </span>
       </span>
     </button>
+  );
+}
+
+/** Delivery, cash on delivery and returns, as the seller set them: what a buyer checks before ordering. */
+function OrderFacts({ shop }: { shop: Shop }) {
+  if (shop.mode !== "shop") return null;
+  const facts = [
+    { label: "Delivery", value: shop.info.delivery },
+    { label: "Payment", value: shop.info.cod ? "Cash on delivery available" : null },
+    { label: "Returns", value: shop.info.returns },
+    { label: "From", value: shop.info.city },
+  ].filter((f): f is { label: string; value: string } => Boolean(f.value));
+  if (!facts.length) return null;
+  return (
+    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-2xl bg-paper p-4 text-[15px]">
+      {facts.map((f) => (
+        <div key={f.label} className="contents">
+          <dt className="text-ink-muted">{f.label}</dt>
+          <dd className="text-ink">{f.value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -221,6 +247,7 @@ function ProductSheet({
               {product.sizeM !== null && <p className="text-[15px] text-ink-muted">About {formatSize(product.sizeM)} on its longest side.</p>}
             </div>
             {product.description && <p className="text-[16px] leading-[1.55] text-ink">{product.description}</p>}
+            <OrderFacts shop={shop} />
             {shop.published && <AskBox slug={shop.slug} product={product} onOrderMessage={setOrderMessage} />}
             <p className="text-[12px] text-ink-faint">The 3D model is rebuilt from one photo, so its back is a best guess. The photo shows the real product.</p>
           </div>
@@ -230,17 +257,17 @@ function ProductSheet({
         {order && (
           <div className="flex shrink-0 items-center gap-3 border-t border-paper-deep bg-card px-4 py-3 pb-[max(env(safe-area-inset-bottom),12px)] sm:px-5">
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[14px] text-ink-muted">{product.name}</span>
+              <span className="block truncate text-[14px] text-ink-muted">{product.soldOut ? "Sold out for now" : shop.mode === "shop" && shop.info.cod ? "Cash on delivery" : product.name}</span>
               <span className="block text-[17px] font-semibold tabular-nums text-ink">{product.price !== null ? formatPrice(product.price, product.currency) : "Ask for the price"}</span>
             </span>
             <a
-              href={order.href}
+              href={product.soldOut && shop.whatsapp ? whatsappAskUrl(shop.whatsapp, `Hi, will ${product.name} be back in stock?`, productLink) : order.href}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => track(shop.id, "buy", product.id)}
+              onClick={() => !product.soldOut && track(shop.id, "buy", product.id)}
               className="kit-press flex h-12 shrink-0 items-center rounded-full bg-cobalt-500 px-6 text-[16px] font-medium text-white hover:bg-cobalt-600"
             >
-              {order.label}
+              {product.soldOut ? "Ask when it's back" : order.label}
             </a>
           </div>
         )}
@@ -306,11 +333,25 @@ export function ShopView({ shop, pageUrl, sample }: { shop: Shop; pageUrl: strin
         <Avatar shop={shop} />
         <div className="flex flex-col items-center gap-1.5">
           <h1 className="font-display text-[clamp(2.75rem,1.6rem+4.6vw,4.75rem)] leading-[0.92] text-ink">{shop.title}</h1>
-          {shop.handle && <p className="text-[16px] text-ink-muted">@{shop.handle.replace(/^@/, "")}</p>}
+          {shop.handle && (
+            <a href={`https://instagram.com/${shop.handle.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="text-[16px] text-ink-muted underline-offset-4 hover:text-ink hover:underline">
+              @{shop.handle.replace(/^@/, "")}
+              {shop.info.city && ` · ${shop.info.city}`}
+            </a>
+          )}
+          {!shop.handle && shop.info.city && <p className="text-[16px] text-ink-muted">{shop.info.city}</p>}
         </div>
         <p className="max-w-[36ch] text-[16px] leading-[1.5] text-ink-soft">
-          {shop.products.length} {shop.products.length === 1 ? "product" : "products"} in 3D. Turn any of them, see it in your room at real size, and {shop.mode === "shop" ? "order on WhatsApp" : "buy through the link"}.
+          {shop.info.about ??
+            `${shop.products.length} ${shop.products.length === 1 ? "product" : "products"}. Turn each one in 3D, see it in your room at real size, and ${shop.mode === "shop" ? "order on WhatsApp" : "buy through the link"}.`}
         </p>
+        {shop.mode === "shop" && (shop.info.cod || shop.info.delivery || shop.info.returns) && (
+          <ul className="flex max-w-[44rem] flex-wrap justify-center gap-x-4 gap-y-1 text-[14px] text-ink-soft" aria-label="Delivery and returns">
+            {shop.info.cod && <li>Cash on delivery</li>}
+            {shop.info.delivery && <li>{shop.info.delivery}</li>}
+            {shop.info.returns && <li>{shop.info.returns}</li>}
+          </ul>
+        )}
         <div className="flex flex-wrap justify-center gap-2">
           {chat && (
             <a href={chat} target="_blank" rel="noopener noreferrer" className="kit-press flex h-11 items-center rounded-full bg-ink px-5 text-[15px] font-medium text-white hover:bg-ink-soft">
@@ -318,7 +359,7 @@ export function ShopView({ shop, pageUrl, sample }: { shop: Shop; pageUrl: strin
             </a>
           )}
           <button type="button" onClick={share} className="kit-press flex h-11 items-center rounded-full bg-paper-deep px-5 text-[15px] font-medium text-ink hover:bg-paper-shade">
-            {shared ? "Link copied" : "Share this shop"}
+            {shared ? "Link copied" : "Share"}
           </button>
         </div>
         {shop.published && shop.products.filter((p) => p.arUrl).length >= 2 && (

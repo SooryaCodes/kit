@@ -12,7 +12,7 @@ import { downloadFile, publicUrl, signedUrl } from "../supabase/storage";
 import { arModelUrl } from "./ar";
 import { describeProducts } from "./details";
 import { makeStyledShot } from "./images";
-import { hashToken, newEditToken } from "./shops";
+import { hashToken, newEditToken, shopInfoOf, type ShopInfo } from "./shops";
 
 const log = createLogger("shop:editor");
 
@@ -101,6 +101,7 @@ export interface EditorProduct {
   offer: string | null;
   /** how it is placed in a room: lying flat or standing up */
   arPose: "flat" | "upright";
+  soldOut: boolean;
   hidden: boolean;
   order: number;
   cutoutUrl: string | null;
@@ -115,6 +116,7 @@ export interface EditorPage {
   handle: string | null;
   whatsapp: string | null;
   affiliateTag: string | null;
+  info: ShopInfo;
   published: boolean;
   products: EditorProduct[];
 }
@@ -126,7 +128,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
   if (!page) throw new EditError(404, "page not found");
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, description, real_size_m, link, offer_label, ar_pose, hidden, display_order, crop_path, glb_path")
+    .select("id, idx, name, price, description, real_size_m, link, offer_label, ar_pose, sold_out, hidden, display_order, crop_path, glb_path")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .order("display_order", { ascending: true, nullsFirst: false })
@@ -139,6 +141,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
     handle: page.handle,
     whatsapp: page.whatsapp_number,
     affiliateTag: page.affiliate_tag,
+    info: shopInfoOf(page),
     published: page.published,
     products: await Promise.all(
       (items ?? []).map(async (i, n) => ({
@@ -150,6 +153,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
         link: i.link,
         offer: i.offer_label,
         arPose: i.ar_pose === "upright" ? "upright" : "flat",
+        soldOut: i.sold_out,
         hidden: i.hidden,
         order: i.display_order ?? n,
         cutoutUrl: i.crop_path ? await signedUrl("crops", i.crop_path, 6 * 60 * 60) : null,
@@ -172,6 +176,15 @@ export const PagePatch = z.object({
     .nullable()
     .optional(),
   affiliateTag: z.string().trim().max(60).nullable().optional(),
+  info: z
+    .object({
+      about: z.string().trim().max(140).nullable(),
+      city: z.string().trim().max(40).nullable(),
+      delivery: z.string().trim().max(80).nullable(),
+      returns: z.string().trim().max(80).nullable(),
+      cod: z.boolean(),
+    })
+    .optional(),
   published: z.boolean().optional(),
   products: z
     .array(
@@ -184,6 +197,7 @@ export const PagePatch = z.object({
         link: z.string().trim().url().max(500).nullable(),
         offer: z.string().trim().max(40).nullable().optional(),
         arPose: z.enum(["flat", "upright"]).optional(),
+        soldOut: z.boolean().optional(),
         hidden: z.boolean(),
         order: z.number().int().min(0),
       }),
@@ -207,6 +221,15 @@ export async function updatePage(pageId: string, token: string | null, patch: Pa
     ...(patch.whatsapp !== undefined ? { whatsapp_number: patch.whatsapp || null } : {}),
     ...(patch.affiliateTag !== undefined ? { affiliate_tag: patch.affiliateTag || null } : {}),
     ...(patch.published !== undefined ? { published: patch.published } : {}),
+    ...(patch.info
+      ? {
+          about: patch.info.about || null,
+          city: patch.info.city || null,
+          delivery_note: patch.info.delivery || null,
+          returns_note: patch.info.returns || null,
+          cod: patch.info.cod,
+        }
+      : {}),
   };
   if (Object.keys(fields).length) {
     const { error } = await db.from("pages").update(fields).eq("id", pageId);
@@ -232,6 +255,7 @@ export async function updatePage(pageId: string, token: string | null, patch: Pa
               link: p.link,
               ...(p.offer !== undefined ? { offer_label: p.offer || null } : {}),
               ...(p.arPose ? { ar_pose: p.arPose } : {}),
+              ...(p.soldOut !== undefined ? { sold_out: p.soldOut } : {}),
               hidden: p.hidden,
               display_order: p.order,
               user_edited: true,

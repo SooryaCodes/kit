@@ -24,6 +24,7 @@ async function sampleStudio(): Promise<EditorPage | null> {
     handle: shop.handle,
     whatsapp: null,
     affiliateTag: null,
+    info: shop.info,
     published: true,
     products: shop.products.map((p, n) => ({
       id: p.id,
@@ -34,6 +35,7 @@ async function sampleStudio(): Promise<EditorPage | null> {
       link: p.link,
       offer: p.offer,
       arPose: p.arPose,
+      soldOut: p.soldOut,
       hidden: false,
       order: n,
       cutoutUrl: p.cutoutUrl,

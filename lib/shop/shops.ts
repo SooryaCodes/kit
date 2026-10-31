@@ -9,6 +9,22 @@ import { publicUrl, signedUrl } from "../supabase/storage";
 
 export type ShopMode = "shop" | "creator";
 
+/** what a buyer asks before ordering from a small shop, set by the seller */
+export interface ShopInfo {
+  /** one line about the shop, in the seller's words */
+  about: string | null;
+  city: string | null;
+  /** delivery time and cost, like "Across India in 3 to 5 days, ₹60" */
+  delivery: string | null;
+  /** returns or exchange, like "Exchange within 7 days" */
+  returns: string | null;
+  cod: boolean;
+}
+
+export function shopInfoOf(page: { about: string | null; city: string | null; delivery_note: string | null; returns_note: string | null; cod: boolean }): ShopInfo {
+  return { about: page.about, city: page.city, delivery: page.delivery_note, returns: page.returns_note, cod: page.cod };
+}
+
 export interface ShopProduct {
   id: string;
   name: string;
@@ -29,6 +45,7 @@ export interface ShopProduct {
   /** real-size AR copy, served by /api/ar/:itemId once a size is confirmed */
   arUrl: string | null;
   arPose: "flat" | "upright";
+  soldOut: boolean;
 }
 
 export interface Shop {
@@ -39,6 +56,7 @@ export interface Shop {
   handle: string | null;
   avatarUrl: string | null;
   whatsapp: string | null;
+  info: ShopInfo;
   published: boolean;
   products: ShopProduct[];
 }
@@ -66,7 +84,7 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
 
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, currency, description, real_size_m, link, offer_label, ar_pose, size_image_path, crop_path, styled_image_path, glb_path, display_order, hidden, status")
+    .select("id, idx, name, price, currency, description, real_size_m, link, offer_label, ar_pose, sold_out, size_image_path, crop_path, styled_image_path, glb_path, display_order, hidden, status")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .eq("hidden", false)
@@ -92,6 +110,7 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
         // size and pose in the link, so a change is never served from a stale cache
         arUrl: page.published && i.real_size_m ? `/api/ar/${i.id}?v=${Math.round(Number(i.real_size_m) * 1000)}-${i.ar_pose ?? "flat"}` : null,
         arPose: i.ar_pose === "upright" ? "upright" : "flat",
+        soldOut: i.sold_out,
       })),
   );
 
@@ -103,6 +122,7 @@ export async function getShop(slug: string, opts: { previewToken?: string } = {}
     handle: page.handle,
     avatarUrl: page.avatar_path ? publicUrl("covers", page.avatar_path) : null,
     whatsapp: page.whatsapp_number,
+    info: shopInfoOf(page),
     published: page.published,
     products,
   };

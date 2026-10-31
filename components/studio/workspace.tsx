@@ -35,8 +35,9 @@ function patchOf(page: EditorPage, published?: boolean): PagePatch {
     mode: page.mode,
     whatsapp: page.whatsapp ?? "",
     affiliateTag: page.affiliateTag,
+    info: page.info,
     ...(published !== undefined ? { published } : {}),
-    products: page.products.map((p, n) => ({ id: p.id, name: p.name, price: p.price, description: p.description, sizeM: p.sizeM, link: p.link, offer: p.offer, arPose: p.arPose, hidden: p.hidden, order: n })),
+    products: page.products.map((p, n) => ({ id: p.id, name: p.name, price: p.price, description: p.description, sizeM: p.sizeM, link: p.link, offer: p.offer, arPose: p.arPose, soldOut: p.soldOut, hidden: p.hidden, order: n })),
   };
 }
 
@@ -160,6 +161,7 @@ export function Workspace({ job }: { job: JobView }) {
     if (noPrice) out.push(`${noPrice} ${noPrice === 1 ? "product has" : "products have"} no price`);
     if (noSize) out.push(`${noSize} ${noSize === 1 ? "product has" : "products have"} no size, so ${noSize === 1 ? "it can't" : "they can't"} be placed in a room`);
     if (page.mode === "shop" && !page.whatsapp) out.push("Add your WhatsApp number so customers can order");
+    if (page.mode === "shop" && !page.info.delivery && !page.info.cod) out.push("Add delivery and cash on delivery on the Shop page tab, so buyers don't have to ask");
     return out;
   }, [page]);
 
@@ -226,13 +228,14 @@ export function Workspace({ job }: { job: JobView }) {
           >
             {page.published ? "View page" : "Preview"}
           </Link>
+          {/* a live page takes edits as they save, so once it is live the action is sharing it */}
           <button
             type="button"
-            onClick={publish}
-            disabled={publishing || save === "saving"}
+            onClick={page.published ? () => setJustLive(true) : publish}
+            disabled={publishing || (!page.published && save === "saving")}
             className="kit-press inline-flex h-9 items-center rounded-full bg-ink px-4 text-[14px] font-medium text-white hover:bg-ink-soft disabled:opacity-60"
           >
-            {publishing ? "Publishing…" : page.published ? "Update" : "Publish"}
+            {publishing ? "Publishing…" : page.published ? "Share" : "Publish"}
           </button>
         </div>
       </header>

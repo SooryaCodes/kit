@@ -231,6 +231,7 @@ export type Database = {
           ar_pose: string | null
           offer_label: string | null
           size_image_path: string | null
+          sold_out: boolean
           description: string | null
           display_order: number | null
           hidden: boolean
@@ -263,6 +264,7 @@ export type Database = {
           ar_pose?: string | null
           offer_label?: string | null
           size_image_path?: string | null
+          sold_out?: boolean
           description?: string | null
           display_order?: number | null
           hidden?: boolean
@@ -295,6 +297,7 @@ export type Database = {
           ar_pose?: string | null
           offer_label?: string | null
           size_image_path?: string | null
+          sold_out?: boolean
           description?: string | null
           display_order?: number | null
           hidden?: boolean
@@ -453,15 +456,20 @@ export type Database = {
       }
       pages: {
         Row: {
+          about: string | null
           affiliate_tag: string | null
           avatar_path: string | null
+          city: string | null
+          cod: boolean
           created_at: string
+          delivery_note: string | null
           handle: string | null
           id: string
           job_id: string
           mode: string
           og_image_path: string | null
           published: boolean
+          returns_note: string | null
           slug: string
           theme: string
           title: string
@@ -469,15 +477,20 @@ export type Database = {
           whatsapp_number: string | null
         }
         Insert: {
+          about?: string | null
           affiliate_tag?: string | null
           avatar_path?: string | null
+          city?: string | null
+          cod?: boolean
           created_at?: string
+          delivery_note?: string | null
           handle?: string | null
           id?: string
           job_id: string
           mode?: string
           og_image_path?: string | null
           published?: boolean
+          returns_note?: string | null
           slug: string
           theme?: string
           title: string
@@ -485,15 +498,20 @@ export type Database = {
           whatsapp_number?: string | null
         }
         Update: {
+          about?: string | null
           affiliate_tag?: string | null
           avatar_path?: string | null
+          city?: string | null
+          cod?: boolean
           created_at?: string
+          delivery_note?: string | null
           handle?: string | null
           id?: string
           job_id?: string
           mode?: string
           og_image_path?: string | null
           published?: boolean
+          returns_note?: string | null
           slug?: string
           theme?: string
           title?: string

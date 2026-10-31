@@ -15,6 +15,7 @@ const field = "w-full rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink out
 
 function needs(p: EditorProduct): string | null {
   if (p.hidden) return "Not on the page";
+  if (p.soldOut) return "Sold out";
   if (p.price === null && p.sizeM === null) return "Needs a price and size";
   if (p.price === null) return "Needs a price";
   if (p.sizeM === null) return "Needs a size";
@@ -81,10 +82,21 @@ function RealSize({ p }: { p: EditorProduct }) {
 function TryInRoom({ slug, productId }: { slug: string; productId: string }) {
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
+  const [phone, setPhone] = useState(false);
+  useEffect(() => setPhone(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)), []);
   if (!origin) return null;
+  const url = `${origin}/k/${slug}?p=${productId}`;
+  // on a phone a QR code is no use: open the product, where See it in your room is one tap away
+  if (phone) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="kit-press mx-auto flex h-11 items-center rounded-full bg-ink px-5 text-[15px] font-medium text-white">
+        Try it in your room
+      </a>
+    );
+  }
   return (
     <div className="mx-auto flex w-full max-w-[520px] items-center gap-4 rounded-2xl bg-card/90 p-3">
-      <QrCode url={`${origin}/k/${slug}?p=${productId}`} size={84} />
+      <QrCode url={url} size={84} />
       <p className="text-[14px] leading-[1.45] text-ink-soft">Try it yourself: scan with your phone and tap See it in your room.</p>
     </div>
   );
@@ -206,6 +218,16 @@ function Inspector({ p, mode, pageId, token, demo, onChange }: { p: EditorProduc
         </label>
       )}
 
+      {mode === "shop" && (
+        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-paper px-3.5 py-3">
+          <span className="flex flex-col">
+            <span className="text-[15px] text-ink">Sold out</span>
+            <span className="text-[13px] text-ink-muted">Stays on the page, with Order turned off</span>
+          </span>
+          <input type="checkbox" checked={p.soldOut} onChange={(e) => onChange({ soldOut: e.target.checked })} className="size-5 accent-[var(--color-cobalt-500)]" />
+        </label>
+      )}
+
       <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-paper px-3.5 py-3">
         <span className="text-[15px] text-ink">Show on the shop page</span>
         <input type="checkbox" checked={!p.hidden} onChange={(e) => onChange({ hidden: !e.target.checked })} className="size-5 accent-[var(--color-cobalt-500)]" />
@@ -269,11 +291,11 @@ export function ProductsTab({
         <div className="relative flex items-center justify-between gap-2 px-4 pt-3 text-[13px] text-ink-muted">
           <span>Drag to turn. This is the model customers see.</span>
           <span className="flex shrink-0 gap-1">
-            <button type="button" onClick={() => move(-1)} disabled={index <= 0} className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
-              Up
+            <button type="button" onClick={() => move(-1)} disabled={index <= 0} aria-label="Move earlier on the shop page" className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
+              Earlier
             </button>
-            <button type="button" onClick={() => move(1)} disabled={index >= page.products.length - 1} className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
-              Down
+            <button type="button" onClick={() => move(1)} disabled={index >= page.products.length - 1} aria-label="Move later on the shop page" className="rounded-full bg-card px-3 py-1.5 font-medium text-ink-soft disabled:opacity-40">
+              Later
             </button>
           </span>
         </div>
