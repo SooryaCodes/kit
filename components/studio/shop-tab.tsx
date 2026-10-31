@@ -9,6 +9,30 @@ import { CopyLink, QrCode, whatsappShareUrl } from "./share";
 
 const field = "w-full rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none placeholder:text-ink-faint focus:bg-card focus:ring-2 focus:ring-cobalt-500";
 
+/**
+ * The page on a phone. Each save loads the new version behind the one on screen and swaps when it has loaded,
+ * so the preview never flashes blank while the seller types.
+ */
+function PhonePreview({ src, version }: { src: string; version: number }) {
+  const [frames, setFrames] = useState([{ key: version, ready: true }]);
+  useEffect(() => {
+    setFrames((cur) => (cur.some((f) => f.key === version) ? cur : [...cur.filter((f) => f.ready).slice(-1), { key: version, ready: false }]));
+  }, [version]);
+  return (
+    <>
+      {frames.map((f) => (
+        <iframe
+          key={f.key}
+          src={src}
+          title="Your shop page on a phone"
+          onLoad={() => setFrames((cur) => (cur.at(-1)?.key === f.key ? [{ key: f.key, ready: true }] : cur))}
+          className={`absolute inset-0 size-full ${f.ready ? "" : "pointer-events-none opacity-0"}`}
+        />
+      ))}
+    </>
+  );
+}
+
 /** The shop as a Meta catalog feed: one link that puts every product in the seller's WhatsApp catalog, Instagram and Facebook. */
 function CatalogFeed({ origin, slug }: { origin: string; slug: string }) {
   const feed = `${origin}/api/k/${slug}/catalog.csv`;
@@ -149,6 +173,10 @@ export function ShopTab({
           <h2 id="shop-h" className="text-[16px] font-semibold text-ink">
             Shop details
           </h2>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[13px] font-semibold text-ink-soft">Shop name</span>
+            <input value={page.title} onChange={(e) => onShop({ title: e.target.value.slice(0, 60) })} placeholder="The Leather Pouch Shop" className={field} />
+          </label>
           <div className="flex gap-1 rounded-full bg-paper-deep p-1" role="radiogroup" aria-label="Page type">
             {(["shop", "creator"] as const).map((m) => (
               <button
@@ -224,7 +252,7 @@ export function ShopTab({
       <section className="bg-studio relative flex min-h-[720px] items-center justify-center p-6 lg:min-h-0" aria-label="Phone preview">
         <div className="bg-grid pointer-events-none absolute inset-0" aria-hidden />
         <div className="relative h-[min(760px,calc(100svh-120px))] w-[min(380px,100%)] overflow-hidden rounded-[44px] border-[10px] border-ink bg-paper">
-          <iframe key={previewKey} src={preview} title="Your shop page on a phone" className="size-full" />
+          <PhonePreview src={preview} version={previewKey} />
         </div>
       </section>
     </div>
