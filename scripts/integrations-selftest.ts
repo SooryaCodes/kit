@@ -54,6 +54,37 @@ async function main() {
   assert.ok(CATEGORIES.every(([, path]) => path.split(" > ").length <= 2));
   assert.ok(CATEGORIES.some(([id, path]) => id === 6551 && path === "Apparel & Accessories > Handbags, Wallets & Cases"));
 
+  // USDZ for iPhone: stored (never compressed), every file's data 64-byte aligned, the scene first,
+  // metres and Y up, the glTF's node transform baked into the points and its v coordinate flipped
+  const { Document, NodeIO } = await import("@gltf-transform/core");
+  const { glbToUsdz } = await import("../lib/shop/usdz");
+  const doc = new Document();
+  doc.createBuffer();
+  const tri = doc
+    .createPrimitive()
+    .setAttribute("POSITION", doc.createAccessor().setType("VEC3").setArray(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])))
+    .setAttribute("TEXCOORD_0", doc.createAccessor().setType("VEC2").setArray(new Float32Array([0, 0, 1, 0, 0, 1])))
+    .setMaterial(doc.createMaterial().setBaseColorTexture(doc.createTexture().setMimeType("image/jpeg").setImage(new Uint8Array([0xff, 0xd8, 0xff, 0xd9]))));
+  doc.createScene().addChild(doc.createNode().setTranslation([0, 0.5, 0]).setMesh(doc.createMesh().addPrimitive(tri)));
+  const usdz = await glbToUsdz(Buffer.from(await new NodeIO().writeBinary(doc)));
+  const names: string[] = [];
+  for (let at = 0; usdz.readUInt32LE(at) === 0x04034b50; ) {
+    const size = usdz.readUInt32LE(at + 18);
+    const nameLen = usdz.readUInt16LE(at + 26);
+    const data = at + 30 + nameLen + usdz.readUInt16LE(at + 28);
+    names.push(usdz.subarray(at + 30, at + 30 + nameLen).toString());
+    assert.equal(usdz.readUInt16LE(at + 8), 0, "usdz files must be stored, not compressed");
+    assert.equal(data % 64, 0, `${names.at(-1)} must start on a 64-byte boundary`);
+    at = data + size;
+  }
+  assert.deepEqual(names, ["model.usda", "textures/t0.jpg"]);
+  const usda = usdz.subarray(usdz.indexOf("#usda"), usdz.indexOf(Buffer.from([0x50, 0x4b, 0x03, 0x04]), 1)).toString();
+  assert.match(usda, /metersPerUnit = 1/);
+  assert.match(usda, /upAxis = "Y"/);
+  assert.match(usda, /point3f\[\] points = \[\(0, 0.5, 0\), \(1, 0.5, 0\), \(0, 1.5, 0\)\]/);
+  assert.match(usda, /primvars:st = \[\(0, 1\), \(1, 1\), \(0, 0\)\]/);
+  assert.match(usda, /asset inputs:file = @textures\/t0.jpg@/);
+
   console.log("integrations self-test passed");
 }
 

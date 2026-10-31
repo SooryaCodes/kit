@@ -1,6 +1,6 @@
 // AR copies of product models, at real size, for "See it in your room".
-// Android Scene Viewer reads the GLB directly and iOS Quick Look converts it in the browser, so the copy is
-// plain glTF: no meshopt compression, JPEG textures. One unit is one metre (glTF convention), the longest side
+// Android Scene Viewer reads the GLB directly; iPhone Quick Look gets a USDZ written from it on the server.
+// The copy is plain glTF: no meshopt compression, JPEG textures. One unit is one metre (glTF convention), the longest side
 // is the seller's confirmed size, and the model rests on the floor (y = 0), centred, lying flat or standing up.
 
 import "server-only";
@@ -12,6 +12,7 @@ import { MeshoptDecoder } from "meshoptimizer";
 import sharp from "sharp";
 import { createLogger } from "../log";
 import { supabaseAdmin } from "../supabase/server";
+import { glbToUsdz } from "./usdz";
 import { downloadFile, publicUrl, uploadFile } from "../supabase/storage";
 
 const log = createLogger("shop:ar");
@@ -85,6 +86,29 @@ export async function arModelUrl(item: { id: string; glb_path: string | null; re
   return publicUrl("glbs", path);
 }
 
+export type ArFormat = "glb" | "usdz";
+
+/** The USDZ for iPhone next to a stored AR GLB: same name, built from it once. */
+async function usdzBeside(glbPath: string): Promise<string> {
+  const path = glbPath.replace(/\.glb$/, ".usdz");
+  const dir = path.split("/").slice(0, -1).join("/");
+  const { data } = await supabaseAdmin().storage.from("glbs").list(dir, { search: path.split("/").pop() });
+  if (!data?.length) {
+    const started = performance.now();
+    const out = await glbToUsdz(await downloadFile("glbs", glbPath));
+    await uploadFile("glbs", path, out, "model/vnd.usdz+zip");
+    log.info("usdz built", { path, bytes: out.length, ms: Math.round(performance.now() - started) });
+  }
+  return publicUrl("glbs", path);
+}
+
+/** The real-size AR model in the format the phone asks for: GLB for Android, USDZ for iPhone. */
+export async function arModelUrlAs(item: Parameters<typeof arModelUrl>[0], format: ArFormat): Promise<string | null> {
+  const glb = await arModelUrl(item);
+  if (!glb || format === "glb") return glb;
+  return usdzBeside(arPath(item.id, Number(item.real_size_m), item.ar_pose === "upright" ? "upright" : "flat"));
+}
+
 /**
  * The whole shop as one AR model: every visible product at its real size and pose, in neat rows on the floor
  * (up to four a row, 6 cm apart), centred on the spot the customer taps.
@@ -141,7 +165,11 @@ export async function buildShopArGlb(parts: Buffer[]): Promise<Buffer> {
 }
 
 /** Public URL of the whole shop's AR model, built and stored once per set of products, sizes and poses. */
-export async function shopArUrl(pageId: string, items: { id: string; glb_path: string | null; real_size_m: number | null; ar_pose?: string | null }[]): Promise<string | null> {
+export async function shopArUrl(
+  pageId: string,
+  items: { id: string; glb_path: string | null; real_size_m: number | null; ar_pose?: string | null }[],
+  format: ArFormat = "glb",
+): Promise<string | null> {
   const ready = items.filter((i) => i.glb_path && i.real_size_m);
   if (ready.length < 2) return null;
   const key = createHash("sha256")
@@ -162,5 +190,5 @@ export async function shopArUrl(pageId: string, items: { id: string; glb_path: s
     await uploadFile("glbs", path, out, "model/gltf-binary");
     log.info("shop ar model built", { page: pageId, products: ready.length, bytes: out.length, ms: Math.round(performance.now() - started) });
   }
-  return publicUrl("glbs", path);
+  return format === "usdz" ? usdzBeside(path) : publicUrl("glbs", path);
 }

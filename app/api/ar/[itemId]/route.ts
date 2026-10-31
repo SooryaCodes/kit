@@ -1,9 +1,10 @@
 // GET /api/ar/:itemId → the item's real-size AR model (built once, then served from storage).
+// ?format=usdz gives the USDZ iPhone Quick Look reads; the default is the GLB.
 // Only items on a published shop page, with a confirmed size, have one.
 
 import { NextResponse } from "next/server";
 import { createLogger, errorMessage } from "@/lib/log";
-import { arModelUrl } from "@/lib/shop/ar";
+import { arModelUrlAs } from "@/lib/shop/ar";
 import { supabaseAdmin } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -12,7 +13,7 @@ export const maxDuration = 60;
 const log = createLogger("api:ar");
 const UUID = /^[0-9a-f-]{36}$/;
 
-export async function GET(_req: Request, { params }: { params: Promise<{ itemId: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ itemId: string }> }) {
   const { itemId } = await params;
   if (!UUID.test(itemId)) return NextResponse.json({ error: "not found" }, { status: 404 });
   try {
@@ -21,7 +22,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ itemId:
     if (!item || item.hidden) return NextResponse.json({ error: "not found" }, { status: 404 });
     const { data: page } = await db.from("pages").select("id").eq("job_id", item.job_id).eq("published", true).limit(1).maybeSingle();
     if (!page) return NextResponse.json({ error: "not found" }, { status: 404 });
-    const url = await arModelUrl({ ...item, real_size_m: item.real_size_m === null ? null : Number(item.real_size_m) });
+    const format = new URL(req.url).searchParams.get("format") === "usdz" ? "usdz" : "glb";
+    const url = await arModelUrlAs({ ...item, real_size_m: item.real_size_m === null ? null : Number(item.real_size_m) }, format);
     if (!url) return NextResponse.json({ error: "no confirmed size" }, { status: 404 });
     return NextResponse.redirect(url, { status: 302, headers: { "cache-control": "public, max-age=300" } });
   } catch (err) {

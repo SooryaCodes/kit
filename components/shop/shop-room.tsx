@@ -39,6 +39,7 @@ export function ShopRoomButton({ slug, arUrls, pageUrl, onStart }: { slug: strin
     await loadModelViewer();
     const el = document.createElement("model-viewer") as ModelViewerElement;
     el.setAttribute("src", `/api/ar/shop/${slug}?v=${version(arUrls)}`);
+    el.setAttribute("ios-src", `/api/ar/shop/${slug}?v=${version(arUrls)}&format=usdz`);
     el.setAttribute("ar", "");
     el.setAttribute("ar-modes", "webxr scene-viewer quick-look");
     el.setAttribute("ar-scale", "fixed");

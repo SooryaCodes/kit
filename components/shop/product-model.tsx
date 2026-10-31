@@ -90,6 +90,8 @@ export function ProductModel({
           exposure="1.05"
           camera-orbit="30deg 62deg auto"
           // `ar` is a boolean property on the element: React sets it as one, so it must be true, not ""
+          // iPhone gets a USDZ made on the server, not one converted in the browser on the tap
+          {...(arSrc ? { "ios-src": `${arSrc}${arSrc.includes("?") ? "&" : "?"}format=usdz` } : {})}
           {...(arSrc ? { ar: true, "ar-modes": "webxr scene-viewer quick-look", "ar-scale": "fixed", "ar-placement": "floor" } : {})}
           style={{ width: "100%", height: "100%", background: "transparent", ["--poster-color" as string]: "transparent" }}
         >

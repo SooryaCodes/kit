@@ -1,4 +1,5 @@
 // GET /api/ar/shop/:slug → the whole shop as one real-size AR model (every visible product with a size, in rows).
+// ?format=usdz gives the USDZ iPhone Quick Look reads; the default is the GLB.
 
 import { NextResponse } from "next/server";
 import { createLogger, errorMessage } from "@/lib/log";
@@ -11,7 +12,7 @@ export const maxDuration = 120;
 const log = createLogger("api:ar-shop");
 const SLUG = /^[a-z0-9][a-z0-9-]{2,39}$/;
 
-export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   if (!SLUG.test(slug)) return NextResponse.json({ error: "not found" }, { status: 404 });
   try {
@@ -29,6 +30,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     const url = await shopArUrl(
       page.id,
       (items ?? []).map((i) => ({ ...i, real_size_m: i.real_size_m === null ? null : Number(i.real_size_m) })),
+      new URL(req.url).searchParams.get("format") === "usdz" ? "usdz" : "glb",
     );
     if (!url) return NextResponse.json({ error: "needs at least two products with a size" }, { status: 404 });
     return NextResponse.redirect(url, { status: 302, headers: { "cache-control": "public, max-age=300" } });

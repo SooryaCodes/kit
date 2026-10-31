@@ -9,7 +9,7 @@ import { createLogger, errorMessage } from "../log";
 import { photoFromBuffer } from "../pipeline/photo";
 import { supabaseAdmin } from "../supabase/server";
 import { downloadFile, publicUrl, signedUrl } from "../supabase/storage";
-import { arModelUrl } from "./ar";
+import { arModelUrlAs } from "./ar";
 import { describeProducts } from "./details";
 import { makeStyledShot } from "./images";
 import { hashToken, newEditToken, shopInfoOf, type ShopInfo } from "./shops";
@@ -316,7 +316,8 @@ export async function preparePage(pageId: string): Promise<void> {
     .eq("status", "ready");
   for (const item of items ?? []) {
     try {
-      await arModelUrl({ ...item, real_size_m: item.real_size_m === null ? null : Number(item.real_size_m) });
+      // the GLB for Android and the USDZ for iPhone, both ready before the first tap
+      await arModelUrlAs({ ...item, real_size_m: item.real_size_m === null ? null : Number(item.real_size_m) }, "usdz");
       if (!item.styled_image_path && item.crop_path) {
         await db.from("items").update({ styled_image_path: await makeStyledShot(pageId, item) }).eq("id", item.id);
       }
