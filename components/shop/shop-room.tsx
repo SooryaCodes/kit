@@ -44,7 +44,9 @@ export function ShopRoomButton({ slug, arUrls, pageUrl, onStart }: { slug: strin
     el.setAttribute("ar-scale", "fixed");
     el.setAttribute("ar-placement", "floor");
     el.setAttribute("alt", `All ${count} products, at real size`);
-    el.style.cssText = "position:fixed;width:1px;height:1px;left:-10px;bottom:0;opacity:0;pointer-events:none";
+    // model-viewer only loads once its element is on screen, so it sits inside the viewport, invisible, and loads eagerly
+    el.setAttribute("loading", "eager");
+    el.style.cssText = "position:fixed;width:2px;height:2px;left:0;bottom:0;opacity:0;pointer-events:none";
     el.addEventListener("load", () => setState(el.canActivateAR ? "ready" : "unsupported"));
     el.addEventListener("error", () => setState("unsupported"));
     el.addEventListener("ar-status", (e) => {
