@@ -86,7 +86,7 @@ export function ShopTab({
                   Open the page
                 </a>
               </div>
-              <div className="flex items-center gap-4 rounded-xl bg-paper p-3">
+              <div className="hidden items-center gap-4 rounded-xl bg-paper p-3 sm:flex">
                 {origin && <QrCode url={link} size={96} />}
                 <p className="text-[14px] leading-[1.45] text-ink-soft">Scan with your phone to try &ldquo;See it in your room&rdquo; yourself.</p>
               </div>

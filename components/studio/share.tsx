@@ -75,7 +75,7 @@ export function LiveDialog({ link, title, onClose }: { link: string; title: stri
             Open the page
           </a>
         </div>
-        <div className="flex items-center gap-4 rounded-2xl bg-paper p-3 text-left">
+        <div className="hidden items-center gap-4 rounded-2xl bg-paper p-3 text-left sm:flex">
           <QrCode url={link} size={112} />
           <p className="text-[14px] leading-[1.45] text-ink-soft">Scan with your phone to see your products in your own room, at real size.</p>
         </div>
