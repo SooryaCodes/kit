@@ -102,6 +102,31 @@ function TryInRoom({ slug, productId }: { slug: string; productId: string }) {
   );
 }
 
+/** The product in 3D on the seller's own store: an iframe to paste into a Shopify, WooCommerce or Dukaan product page. */
+function EmbedCode({ slug, productId, name }: { slug: string; productId: string; name: string }) {
+  const [origin, setOrigin] = useState("");
+  const [copied, setCopied] = useState(false);
+  useEffect(() => setOrigin(window.location.origin), []);
+  if (!origin) return null;
+  const code = `<iframe src="${origin}/k/${slug}/embed/${productId}" title="${name.replace(/"/g, "")} in 3D" style="width:100%;max-width:640px;aspect-ratio:1/1;border:0;border-radius:16px" loading="lazy" allow="fullscreen"></iframe>`;
+  return (
+    <div className="mx-auto flex w-full max-w-[520px] items-center justify-between gap-3 rounded-2xl bg-card/90 p-3">
+      <p className="text-[14px] leading-[1.45] text-ink-soft">Have a Shopify or other store? Put this 3D view on its product page.</p>
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(code);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1600);
+        }}
+        className="shrink-0 rounded-full bg-paper-deep px-4 py-2 text-[14px] font-medium text-ink hover:bg-paper-shade"
+      >
+        {copied ? "Copied" : "Copy code"}
+      </button>
+    </div>
+  );
+}
+
 function Inspector({ p, mode, pageId, token, demo, onChange }: { p: EditorProduct; mode: EditorPage["mode"]; pageId: string; token: string; demo?: boolean; onChange: (patch: Partial<EditorProduct>) => void }) {
   const [price, setPrice] = useState<{ state: "idle" | "checking" | "none" | "error"; check?: PriceCheck; message?: string }>({ state: "idle" });
   useEffect(() => setPrice({ state: "idle" }), [p.id]);
@@ -309,6 +334,7 @@ export function ProductsTab({
         <div className="relative flex flex-col gap-4 px-4 pb-5">
           <RealSize p={selected} />
           {page.published && !demo && selected.sizeM !== null && !selected.hidden && <TryInRoom slug={page.slug} productId={selected.id} />}
+          {page.published && !demo && !selected.hidden && <EmbedCode slug={page.slug} productId={selected.id} name={selected.name} />}
         </div>
       </section>
 

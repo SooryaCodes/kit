@@ -31,6 +31,7 @@ export function ProductModel({
   alt,
   poster,
   onArStart,
+  arLink,
 }: {
   src: string;
   /** real-size model; AR is offered only when there is one */
@@ -38,6 +39,8 @@ export function ProductModel({
   alt: string;
   poster?: string | null;
   onArStart?: () => void;
+  /** inside another site's frame: "See it in your room" opens this Kit page in a new tab, where AR opens reliably */
+  arLink?: string;
 }) {
   const ref = useRef<ModelViewerElement>(null);
   const [ready, setReady] = useState(false);
@@ -98,7 +101,19 @@ export function ProductModel({
           <img src={poster} alt={alt} className="shadow-object absolute inset-0 m-auto max-h-[70%] max-w-[70%] object-contain" />
         )
       )}
-      {arSrc && device.phone && (
+      {arLink && (
+        <div className="absolute inset-x-3 bottom-3 flex justify-center">
+          <a
+            href={arLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="kit-press rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-white shadow-[0_10px_30px_-10px_rgb(22_21_20/.6)]"
+          >
+            See it in your room
+          </a>
+        </div>
+      )}
+      {!arLink && arSrc && device.phone && (
         <div className="absolute inset-x-3 bottom-3 flex flex-col items-center gap-2">
           {note && <p className="rounded-2xl bg-card/95 px-4 py-2.5 text-center text-[13px] leading-snug text-ink">{note}</p>}
           <button
