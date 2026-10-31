@@ -15,10 +15,10 @@ const StoryScene = dynamic(() => import("./story-scene"), { ssr: false });
 const BOUNDS = [0.04, 0.25, 0.43, 0.64, 1] as const;
 
 const STEPS = [
-  { model: "Muse Spark Open", title: "Muse Spark lists every item", text: "It reads the photo and names all fourteen things in the bag, down to the USB stick." },
-  { model: "SAM 3.1", title: "SAM 3.1 cuts each one out", text: "A clean mask for every item, cables and pen clips included." },
-  { model: "SAM 3D Objects", title: "SAM 3D Objects rebuilds it in 3D", text: "Each cutout becomes a textured model you can turn, light and animate." },
-  { model: "Kit", title: "Kit lays out the page", text: "Every item named and in 3D, ready to share as one link, with a Reel to post." },
+  { model: "Muse Spark Open", title: "Muse Spark lists every item", text: "It reads the photo and names every product in it, down to the smallest." },
+  { model: "SAM 3.1", title: "SAM 3.1 cuts each one out", text: "A clean mask for every product, straps and clips included." },
+  { model: "SAM 3D Objects", title: "SAM 3D Objects rebuilds it in 3D", text: "Each cutout becomes a textured model customers can turn and place in their room." },
+  { model: "Kit", title: "Kit makes the shop link", text: "Every product named, priced and in 3D, with Order on WhatsApp. One link for your bio." },
 ];
 
 function stepFor(p: number) {

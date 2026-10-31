@@ -13,18 +13,21 @@ interface Loaded {
   shop: SavedShop;
   page: EditorPage | null;
   metrics: ShopMetrics | null;
+  failed?: boolean;
 }
 
-async function load(shop: SavedShop): Promise<Loaded> {
+// the page first, so the row fills in at once; this week's numbers follow
+async function load(shop: SavedShop, onUpdate: (patch: Partial<Loaded>) => void): Promise<void> {
   const headers = { "x-kit-edit": shop.token };
   const page = await fetch(`/api/pages/${shop.pageId}`, { headers }).then((r) => (r.ok ? (r.json() as Promise<EditorPage>) : null)).catch(() => null);
-  const metrics = page?.published
-    ? await fetch(`/api/pages/${shop.pageId}/report`, { headers })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((j: { metrics?: ShopMetrics } | null) => j?.metrics ?? null)
-        .catch(() => null)
-    : null;
-  return { shop, page, metrics };
+  if (!page) return onUpdate({ failed: true });
+  onUpdate({ page });
+  if (!page.published) return;
+  const metrics = await fetch(`/api/pages/${shop.pageId}/report`, { headers })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((j: { metrics?: ShopMetrics } | null) => j?.metrics ?? null)
+    .catch(() => null);
+  onUpdate({ metrics });
 }
 
 function ShopRow({ item }: { item: Loaded }) {
@@ -49,7 +52,7 @@ function ShopRow({ item }: { item: Loaded }) {
           {page && <span className={`shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold ${page.published ? "bg-cobalt-50 text-cobalt-700" : "bg-paper-deep text-ink-soft"}`}>{page.published ? "Live" : "Draft"}</span>}
         </div>
         <span className="text-[14px] tabular-nums text-ink-muted">
-          {page ? `${products.length} products` : "Loading…"}
+          {page ? `${products.length} products` : item.failed ? "Couldn't open this shop. It may have been made with an older link." : "Loading…"}
           {metrics ? ` · ${metrics.pageViews} ${metrics.pageViews === 1 ? "visit" : "visits"} and ${orders} order ${orders === 1 ? "tap" : "taps"} this week` : page?.published === false ? " · not published yet" : ""}
         </span>
       </div>
@@ -73,9 +76,7 @@ export function ShopsList() {
   useEffect(() => {
     const shops = listShops();
     setItems(shops.map((shop) => ({ shop, page: null, metrics: null })));
-    shops.forEach((shop, i) =>
-      load(shop).then((loaded) => setItems((cur) => (cur ? cur.map((x, n) => (n === i ? loaded : x)) : cur))),
-    );
+    shops.forEach((shop, i) => void load(shop, (patch) => setItems((cur) => (cur ? cur.map((x, n) => (n === i ? { ...x, ...patch } : x)) : cur))));
   }, []);
 
   if (items === null) return null;
@@ -101,10 +102,7 @@ export function ShopsList() {
           Make another shop
         </Link>
         <p className="text-[14px] text-ink-muted">
-          Shops are kept on this device.{" "}
-          <Link href="/reels" className="font-medium text-cobalt-700 underline-offset-4 hover:underline">
-            My Reels
-          </Link>
+          Shops are kept on this device. To edit on another phone, open the studio here and copy its link.
         </p>
       </div>
     </div>

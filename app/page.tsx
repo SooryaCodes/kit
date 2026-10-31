@@ -8,7 +8,6 @@ import type { EditorPage } from "@/lib/shop/editor";
 import { getShop } from "@/lib/shop/shops";
 import { SmoothScroll } from "@/components/landing/smooth-scroll";
 import { Story } from "@/components/landing/story";
-import { Studio } from "@/components/landing/studio";
 
 // the studio section runs on the live sample shop; refreshed every few minutes
 export const revalidate = 300;
@@ -65,7 +64,6 @@ export default async function Home() {
       )}
       <Models />
       <Creators />
-      <Studio />
       <Closing />
       <Footer />
     </main>

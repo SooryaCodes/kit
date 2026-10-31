@@ -9,9 +9,42 @@ import { CopyLink, QrCode, whatsappShareUrl } from "./share";
 
 const field = "w-full rounded-xl bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none placeholder:text-ink-faint focus:bg-card focus:ring-2 focus:ring-cobalt-500";
 
+/** The private link that opens this studio with edit rights on any device. Sent to the seller's own WhatsApp. */
+function EditLink({ origin, jobId, token }: { origin: string; jobId: string; token: string }) {
+  const link = `${origin}/studio/${jobId}#key=${token}`;
+  const [copied, setCopied] = useState(false);
+  return (
+    <section className="flex flex-col gap-3" aria-labelledby="edit-h">
+      <div>
+        <h2 id="edit-h" className="text-[16px] font-semibold text-ink">
+          Your edit link
+        </h2>
+        <p className="mt-1 text-[14px] text-ink-muted">There&apos;s no account: this link is how you edit the shop from another phone or after clearing your browser. Keep it to yourself.</p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <a href={`https://wa.me/?text=${encodeURIComponent(`My Kit edit link (keep private): ${link}`)}`} target="_blank" rel="noopener noreferrer" className="rounded-full bg-paper-deep px-4 py-2 text-[14px] font-medium text-ink hover:bg-paper-shade">
+          Send it to my WhatsApp
+        </a>
+        <button
+          type="button"
+          onClick={async () => {
+            await navigator.clipboard.writeText(link);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1600);
+          }}
+          className="rounded-full bg-paper-deep px-4 py-2 text-[14px] font-medium text-ink hover:bg-paper-shade"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export function ShopTab({
   page,
   token,
+  jobId,
   previewKey,
   issues,
   onShop,
@@ -21,6 +54,7 @@ export function ShopTab({
 }: {
   page: EditorPage;
   token: string;
+  jobId: string;
   previewKey: number;
   issues: string[];
   onShop: (patch: Partial<EditorPage>) => void;
@@ -154,6 +188,8 @@ export function ShopTab({
             </label>
           </section>
         )}
+
+        {origin && <EditLink origin={origin} jobId={jobId} token={token} />}
       </div>
 
       <section className="bg-studio relative flex min-h-[720px] items-center justify-center p-6 lg:min-h-0" aria-label="Phone preview">

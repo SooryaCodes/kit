@@ -67,6 +67,16 @@ export function Workspace({ job }: { job: JobView }) {
     started.current = true;
     (async () => {
       try {
+        // an edit link (#key=…) from another device: check it, keep it on this one, and take it out of the address bar
+        const key = new URLSearchParams(window.location.hash.slice(1)).get("key");
+        if (key && !findShop(job.id)) {
+          const existing = await api<{ pageId?: string }>(`/api/jobs/${job.id}/page`, null);
+          if (existing.pageId) {
+            const p = await api<EditorPage>(`/api/pages/${existing.pageId}`, key);
+            saveShop({ jobId: job.id, pageId: p.id, slug: p.slug, token: key, title: p.title, createdAt: new Date().toISOString() });
+          }
+        }
+        if (key) window.history.replaceState(null, "", window.location.pathname);
         const saved = findShop(job.id);
         if (saved) {
           setToken(saved.token);
@@ -78,7 +88,7 @@ export function Workspace({ job }: { job: JobView }) {
         }
         const existing = await api<{ pageId?: string }>(`/api/jobs/${job.id}/page`, null);
         if (existing.pageId) {
-          setState({ kind: "error", message: "This shop was set up on another device. Open it there to edit." });
+          setState({ kind: "error", message: "This shop was set up on another device. Open its edit link, from the Shop page tab there, to edit it here." });
           return;
         }
         setState({ kind: "loading", message: "Muse Spark is naming each product and estimating its size" });
@@ -250,6 +260,7 @@ export function Workspace({ job }: { job: JobView }) {
             <ShopTab
               page={page}
               token={token}
+              jobId={job.id}
               previewKey={previewKey}
               issues={issues}
               onShop={setShop}

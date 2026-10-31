@@ -67,19 +67,19 @@ export function Footer() {
         <Link href="/" className="font-display text-[88px] leading-none md:text-[120px]" aria-label="Kit, home">
           Kit
         </Link>
-        <p className="mt-4 max-w-[26rem] text-[16px] leading-[1.5] text-paper/70">Photograph your things. Get them back in 3D, ready to post.</p>
+        <p className="mt-4 max-w-[26rem] text-[16px] leading-[1.5] text-paper/70">One photo of your products. A shop link customers can see in their room and order from on WhatsApp.</p>
         <nav className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-[16px]" aria-label="Footer">
-          <Link href="/new" className="text-paper hover:text-cobalt-200">
-            Make a Reel
+          <Link href="/new?mode=shop" className="text-paper hover:text-cobalt-200">
+            Make a shop link
           </Link>
-          <a href="#formats" className="text-paper/80 hover:text-paper">
-            Templates
-          </a>
+          <Link href="/k/sample-shop" className="text-paper/80 hover:text-paper">
+            Sample shop
+          </Link>
           <a href="#how" className="text-paper/80 hover:text-paper">
             How it works
           </a>
-          <Link href="/reels" className="text-paper/80 hover:text-paper">
-            My Reels
+          <Link href="/dashboard" className="text-paper/80 hover:text-paper">
+            My shops
           </Link>
         </nav>
         <p className="mt-12 max-w-[44rem] text-[13px] leading-[1.7] text-paper/55">

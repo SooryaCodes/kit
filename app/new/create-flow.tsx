@@ -119,8 +119,11 @@ export function CreateFlow({ initialTemplate }: { initialTemplate: TemplateId })
             </div>
           ) : (
             <div className="flex flex-col items-center gap-4 text-center">
-              <p className="font-display text-[clamp(30px,2.6vw,40px)] leading-tight text-ink">Drop your photo here</p>
-              <p className="max-w-sm text-[16px] text-ink-muted">JPEG or PNG from your phone, up to 15 MB.</p>
+              <p className="font-display text-[clamp(30px,2.6vw,40px)] leading-tight text-ink">
+                <span className="sm:hidden">Add your photo</span>
+                <span className="hidden sm:inline">Drop your photo here</span>
+              </p>
+              <p className="max-w-sm text-[16px] text-ink-muted">All your products in one shot. JPEG or PNG, up to 15 MB.</p>
               <div className="mt-2 flex flex-wrap justify-center gap-2">
                 <button type="button" onClick={() => cameraRef.current?.click()} className="kit-press rounded-full bg-cobalt-500 px-7 py-4 text-[17px] font-medium text-white hover:bg-cobalt-600 lg:hidden">
                   Take a photo
