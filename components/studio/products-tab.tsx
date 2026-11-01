@@ -41,7 +41,7 @@ function Row({ p, selected, onSelect }: { p: EditorProduct; selected: boolean; o
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-[15px] font-medium text-ink">{p.name}</span>
           <span className={`truncate text-[13px] ${note && !p.hidden ? "text-cobalt-700" : "text-ink-muted"}`}>
-            {note ?? `${formatPrice(p.price!, "₹")} · ${formatSize(p.sizeM!)}`}
+            {note ?? `${formatPrice(p.price!, p.currency)} · ${formatSize(p.sizeM!)}`}
           </span>
         </span>
       </button>
@@ -141,7 +141,7 @@ function Inspector({ p, mode, pageId, token, demo, onChange }: { p: EditorProduc
 
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold text-ink-soft">Price (₹)</span>
+          <span className="text-[13px] font-semibold text-ink-soft">Price ({p.currency.trim()})</span>
           <input
             inputMode="numeric"
             value={p.price ?? ""}

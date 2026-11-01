@@ -29,6 +29,7 @@ async function sampleStudio(): Promise<EditorPage | null> {
       id: p.id,
       name: p.name,
       price: p.price,
+      currency: p.currency,
       description: p.description,
       sizeM: p.sizeM,
       link: p.link,

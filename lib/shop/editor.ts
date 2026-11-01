@@ -128,6 +128,8 @@ export interface EditorProduct {
   id: string;
   name: string;
   price: number | null;
+  /** the symbol prices show with: ₹ for a photo shop, the store's own for an import */
+  currency: string;
   description: string | null;
   sizeM: number | null;
   link: string | null;
@@ -161,7 +163,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
   if (!page) throw new EditError(404, "page not found");
   const { data: items } = await db
     .from("items")
-    .select("id, idx, name, price, description, real_size_m, link, offer_label, ar_pose, sold_out, hidden, display_order, crop_path, glb_path")
+    .select("id, idx, name, price, currency, description, real_size_m, link, offer_label, ar_pose, sold_out, hidden, display_order, crop_path, glb_path")
     .eq("job_id", page.job_id)
     .eq("status", "ready")
     .order("display_order", { ascending: true, nullsFirst: false })
@@ -181,6 +183,7 @@ export async function getEditorPage(pageId: string, token: string | null): Promi
         id: i.id,
         name: i.name,
         price: i.price === null ? null : Number(i.price),
+        currency: i.currency ?? "₹",
         description: i.description,
         sizeM: i.real_size_m === null ? null : Number(i.real_size_m),
         link: i.link,
@@ -282,7 +285,6 @@ export async function updatePage(pageId: string, token: string | null, patch: Pa
             .update({
               name: p.name,
               price: p.price,
-              currency: "₹",
               description: p.description,
               real_size_m: p.sizeM,
               link: p.link,
