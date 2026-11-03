@@ -3,6 +3,8 @@
 <p align="center"><b>One photo of your products becomes a shop where every product is real-size 3D.<br>Customers place it on their own table, ask questions, and order on WhatsApp.</b></p>
 
 <p align="center">
+  <a href="https://youtu.be/TOynMmXz-O0"><b>Watch the 1:44 demo</b></a>
+  &nbsp;·&nbsp;
   <a href="https://kit-flame-beta.vercel.app/k/sample-shop"><b>Try the sample shop on your phone</b></a>
   &nbsp;·&nbsp;
   <a href="https://kit-flame-beta.vercel.app/new"><b>Make your own (free, no sign-up)</b></a>
@@ -10,7 +12,7 @@
   <a href="https://kit-flame-beta.vercel.app"><b>kit-flame-beta.vercel.app</b></a>
 </p>
 
-<a href="https://kit-flame-beta.vercel.app"><img src="docs/images/hero.jpg" alt="Kit's landing page: Your products, on their table" width="100%"></a>
+<a href="https://youtu.be/TOynMmXz-O0"><img src="docs/images/hero.jpg" alt="Kit's landing page. Click to watch the demo video" width="100%"></a>
 
 ## The problem
 
