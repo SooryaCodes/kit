@@ -1,33 +1,51 @@
-# Kit
+<h1 align="center">Kit</h1>
 
-**Take one photo of your products and get a 3D shop link. Customers see each product in their own room at real size, ask questions, and order on WhatsApp.**
+<p align="center"><b>One photo of your products becomes a shop where every product is real-size 3D.<br>Customers place it on their own table, ask questions, and order on WhatsApp.</b></p>
 
-Try it on your phone: open the [sample shop](https://kit-flame-beta.vercel.app/k/sample-shop), tap a bag, then **See it in your room**. It stands on your floor at its real 24 cm. Or tap **See all 10 in your room** to place the whole shop at once.
+<p align="center">
+  <a href="https://kit-flame-beta.vercel.app/k/sample-shop"><b>Try the sample shop on your phone</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://kit-flame-beta.vercel.app/new"><b>Make your own (free, no sign-up)</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://kit-flame-beta.vercel.app"><b>kit-flame-beta.vercel.app</b></a>
+</p>
 
-- Live: [kit-flame-beta.vercel.app](https://kit-flame-beta.vercel.app)
-- Make your own: [kit-flame-beta.vercel.app/new](https://kit-flame-beta.vercel.app/new) (free, no sign-up)
+<a href="https://kit-flame-beta.vercel.app"><img src="docs/images/hero.jpg" alt="Kit's landing page: Your products, on their table" width="100%"></a>
 
-## Why
+## The problem
 
-Small sellers on Instagram and WhatsApp answer the same questions all day: what size is it, will my laptop fit, can you show the back, do you do cash on delivery. A flat photo can't answer them, and a studio 3D model costs thousands of rupees per product. By the time the seller replies, most buyers have moved on.
+Small sellers on Instagram and WhatsApp answer the same questions on every post: what size is it, will my laptop fit, can you show the back, do you do cash on delivery. A flat photo can't answer any of them, and a studio 3D model costs thousands of rupees per product. By the time the seller replies, most buyers have bought somewhere else.
 
-Kit turns one ordinary phone photo of several products into a shop page where every product is a real-size 3D model, with the answers buyers look for next to the Order button.
+## One photo in, every product in 3D
 
-## What the seller gets
+The seller takes one photo of the shelf. Muse Spark Open finds every product, SAM 3.1 cuts each one out, and SAM 3D Objects rebuilds them all at once, about two minutes for a dozen products at about 2 US cents each.
 
-1. **One photo in.** Lay the products out and take one picture. Already on Shopify? Paste the store address instead.
-2. **Every product in 3D.** Each one is found, cut out and rebuilt as a textured model, in about two minutes for a dozen products.
-3. **Details filled in.** A name, a short description and an estimated real size for each product, to check. An optional price check searches Indian shops and shows a range with its sources.
-4. **Buyer details.** City, delivery time and cost, cash on delivery, returns, and a Sold out switch per product.
-5. **One link out** (`/k/your-shop`) for the Instagram bio, WhatsApp status and customer groups, plus a private edit link to send to their own WhatsApp. There are no accounts.
-6. **A Shop Manager.** A morning report from the shop's own numbers and customer questions, with suggested changes that apply only after the seller taps Approve.
+<img src="docs/images/build.gif" alt="The live build: twelve bags lift off the shelf photo into 3D one by one" width="100%">
 
 ## What the customer sees
 
-- Every product in 3D, to turn and zoom, next to its real photo.
-- **See it in your room** at real size through the phone camera, with no app: one product, or the whole shop laid out in rows on the floor.
-- **Ask about this product.** Answers come from the seller's own measurements and details, with fit arithmetic ("about 32 cm vs 24 cm"), and say so when they can't know.
-- Delivery, cash on delivery and returns, right next to **Order on WhatsApp**, which opens with the product and price already written.
+On the shop link: every product in 3D to turn and zoom, its real size next to an A4 sheet, **See it in your room**, answers from the seller's own measurements, and delivery, cash on delivery and returns right next to **Order on WhatsApp**.
+
+<img src="docs/images/phones.jpg" alt="The shop on a phone: the shop page, a product in 3D with See it in your room, and the assistant answering whether a 14-inch laptop fits" width="100%">
+
+**See it in your room** places the product at its real size through the phone camera, with no app. **See all in your room** places the whole shop at once, in rows on the floor.
+
+<img src="docs/images/ar.jpg" alt="Illustration of the AR view: the bag on a coffee table at 24 cm, and the whole shop as one real-size model" width="100%">
+
+<sub>Illustration: Kit's real AR models rendered into a stock room photo (Wikimedia Commons, CC BY 2.0) and onto a plain floor. On a phone, Kit opens them in AR Quick Look (iPhone) or Scene Viewer (Android).</sub>
+
+## What the seller gets
+
+<img src="docs/images/studio.jpg" alt="The studio: every product with its price and size, the 3D model, size against an A4 sheet, and the stands up or lies flat setting" width="100%">
+
+1. **One photo in.** Lay the products out and take one picture. Already on Shopify? Paste the store address instead.
+2. **Every product in 3D,** found, cut out and rebuilt as a textured model.
+3. **Details filled in.** A name, a short description and an estimated real size for each product, to check; Muse Spark also decides whether it stands up or lies flat in a room. An optional price check searches Indian shops and shows a range with its sources.
+4. **Buyer details.** City, delivery time and cost, cash on delivery, returns, and a Sold out switch per product.
+5. **One link out** (`/k/your-shop`) for the Instagram bio, WhatsApp status and customer groups, plus a private edit link to send to their own WhatsApp. No accounts.
+6. **A Shop Manager.** A morning report from the shop's own numbers and customer questions, with suggested changes that apply only after the seller taps Approve.
+
+<img src="docs/images/studio-shop-page.jpg" alt="The Shop page tab: the link, buyer details and the live page on a phone" width="100%">
 
 ## Works with what sellers already use
 
@@ -53,7 +71,7 @@ Kit turns one ordinary phone photo of several products into a shop page where ev
 From the `api_spend` and `jobs` tables, not estimates:
 
 - **A dozen products in about two minutes.** A real Shopify store import (12 products, 16 pieces found): listing 7 s, finding and cutting out 33 s in all, all 16 models rebuilt in parallel in 71 s.
-- **About 2 US cents per product.** That import cost $0.36 in model calls; SAM 3D Objects is $0.02 a product. The 156 models built so far cost $2.48 in total across every model.
+- **About 2 US cents per product.** That import cost $0.36 in model calls; SAM 3D Objects is $0.02 a product. The 196 models built so far cost $2.97 in total across every model.
 - A customer question costs about 1 cent; a Shop Manager report about 3 cents. Both are capped per shop per day.
 
 ## How real-size AR works
